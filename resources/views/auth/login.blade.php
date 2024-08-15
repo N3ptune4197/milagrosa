@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         .login-background {
@@ -40,12 +41,12 @@
         }
 
         .form-check-label {
-            margin-left: 8px; /* Ajusta este valor según sea necesario */
+            margin-left: 8px; 
         }
 
         .error-message {
-            color: #dc3545; /* Color rojo */
-            font-weight: bold; /* Texto en negrita */
+            color: #dc3545; 
+            font-weight: bold; 
         }
     </style>
 </head>
@@ -79,11 +80,21 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-outline mb-4">
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control form-control-lg" placeholder="Email" required autofocus />
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control border-start" placeholder="Email" required autofocus />
+                        </div>
                     </div>
 
                     <div class="form-outline mb-4">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
                         <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Contraseña" required autocomplete="current-password" />
+                        </div>
                     </div>
 
                     <div class="form-check d-flex justify-content-start mb-4">
