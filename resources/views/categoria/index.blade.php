@@ -3,12 +3,15 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-<h1><i class="bi bi-tags-fill"></i> Categorías</h1>
-    
-    <div class="float-right">
-        <a href="{{ route('categorias.create') }}" class="btn btn-primary btn-md float-right"  data-placement="left">
-          {{ __('Crear Nuevo') }}
-        </a>
+
+    <div class="d-flex justify-content-between mb-2">
+        <h1><i class="bi bi-tags-fill"></i> Categorías</h1>
+
+                
+            <a href="{{ route('categorias.create') }}" class="btn btn-primary btn-md"  data-placement="left">
+                {{ __('Crear Nuevo') }}
+            </a>
+
     </div>
 @stop
 
