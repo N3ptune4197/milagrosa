@@ -14,9 +14,9 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => '',
     'title_prefix' => '',
-    'title_postfix' => '',
+    'title_postfix' => ' | Medalla Milagrosa',
 
     /*
     |--------------------------------------------------------------------------
@@ -317,17 +317,16 @@ return [
         ],
 
         [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
+            'text' => 'Dashboard',
+            'url' => 'home',
+            'icon' => 'bi bi-grid-fill',
         ],
 
         
         [
             'text' => 'Categorias',
             'url' => 'categorias',
+            'icon' => 'bi bi-tags-fill',
         ],
         
 
