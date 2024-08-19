@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\TipodocController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,3 +10,4 @@ Auth::routes();
 
 Route::resource('categorias', App\Http\Controllers\CategoriaController::class)->middleware('auth');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::resource('tipodocs', TipodocController::class);

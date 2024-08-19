@@ -328,6 +328,12 @@ return [
             'url' => 'categorias',
             'icon' => 'bi bi-tags-fill',
         ],
+
+        [
+            'text' => 'Documentos',
+            'url' => 'tipodocs',
+            'icon' => 'bi bi-person-vcard',
+        ],
         
 
         ['header' => 'account_settings'],
