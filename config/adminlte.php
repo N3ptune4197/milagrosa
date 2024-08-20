@@ -334,6 +334,12 @@ return [
             'url' => 'tipodocs',
             'icon' => 'bi bi-person-vcard',
         ],
+
+        [
+            'text' => 'Personal',
+            'url' => 'personals',
+            'icon' => 'bi bi-person',
+        ],
         
 
         ['header' => 'account_settings'],
