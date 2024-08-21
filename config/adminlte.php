@@ -352,6 +352,12 @@ return [
             'url' => 'marcas',
             'icon' => 'bi bi-journal-bookmark',
         ],
+
+        [
+            'text' => 'Recursos',
+            'url' => 'recursos',
+            'icon' => 'bi bi-pc-display-horizontal',
+        ],
         
 
         ['header' => 'account_settings'],
