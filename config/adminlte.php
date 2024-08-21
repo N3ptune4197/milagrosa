@@ -340,6 +340,18 @@ return [
             'url' => 'personals',
             'icon' => 'bi bi-person',
         ],
+
+        [
+            'text' => 'Prestamos',
+            'url' => 'prestamos',
+            'icon' => 'bi bi-arrow-left-righ',
+        ],
+
+        [
+            'text' => 'Marcas',
+            'url' => 'marcas',
+            'icon' => 'bi bi-journal-bookmark',
+        ],
         
 
         ['header' => 'account_settings'],
