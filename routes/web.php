@@ -18,3 +18,5 @@ Route::resource('tipodocs', TipodocController::class);
 Route::resource('personals', PersonalController::class);
 Route::resource('prestamos', PrestamoController::class);
 Route::resource('marcas', MarcaController::class);
+
+Route::get('/buscar-dni/{dni}', [PersonalController::class, 'buscarDni']);

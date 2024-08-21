@@ -329,28 +329,27 @@ return [
             'icon' => 'bi bi-tags-fill',
         ],
 
-        [
-            'text' => 'Documentos',
-            'url' => 'tipodocs',
-            'icon' => 'bi bi-person-vcard',
-        ],
+        
+        ['header' => 'DOCENTES'],
 
         [
             'text' => 'Personal',
             'url' => 'personals',
-            'icon' => 'bi bi-person',
+            'icon' => 'bi bi-people-fill',
         ],
 
         [
-            'text' => 'Prestamos',
-            'url' => 'prestamos',
-            'icon' => 'bi bi-arrow-left-righ',
-        ],
+            'text' => 'Documentos',
+            'url' => 'tipodocs',
+            'icon' => 'bi bi-person-vcard-fill',
+        ],  
+
+        ['header' => 'RECURSOS'],
 
         [
             'text' => 'Marcas',
             'url' => 'marcas',
-            'icon' => 'bi bi-journal-bookmark',
+            'icon' => 'bi bi-journal-album',
         ],
         
 
@@ -358,7 +357,7 @@ return [
         [
             'text' => 'profile',
             'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
+            'icon' => 'bi-person-circle',
         ],
         [
             'text' => 'change_password',

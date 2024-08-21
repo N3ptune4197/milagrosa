@@ -9,6 +9,7 @@ use App\Http\Requests\PersonalRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Tipodoc;
+use Illuminate\Support\Facades\Http;
 
 class PersonalController extends Controller
 {
@@ -83,5 +84,26 @@ class PersonalController extends Controller
 
         return Redirect::route('personals.index')
             ->with('success', 'Personal deleted successfully');
+    }
+
+
+
+
+
+
+
+
+    public function buscarDni($dni)
+    {
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImNhcmxvc2NoZXJvMTM0QGdtYWlsLmNvbSJ9.R_AH9D_aSHmHUK7K8O5WnLFzjt4NnpTRaZgybVhlZgg';
+        $url = "https://dniruc.apisperu.com/api/v1/dni/{$dni}?token={$token}";
+
+        $response = Http::get($url);
+
+        if ($response->successful()) {
+            return response()->json($response->json());
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }
