@@ -21,3 +21,4 @@ Route::resource('prestamos', PrestamoController::class);
 Route::resource('marcas', MarcaController::class);
 Route::resource('recursos', RecursoController::class);
 
+

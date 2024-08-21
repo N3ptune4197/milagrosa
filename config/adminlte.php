@@ -344,7 +344,7 @@ return [
         [
             'text' => 'Prestamos',
             'url' => 'prestamos',
-            'icon' => 'bi bi-arrow-left-righ',
+            'icon' => 'bi bi-journal-check',
         ],
 
         [
