@@ -339,17 +339,21 @@ return [
         ],
 
         [
-            'text' => 'Documentos',
-            'url' => 'tipodocs',
-            'icon' => 'bi bi-person-vcard-fill',
-        ],  
-
-        ['header' => 'RECURSOS'],
+            'text' => 'Prestamos',
+            'url' => 'prestamos',
+            'icon' => 'bi bi-arrow-left-righ',
+        ],
 
         [
             'text' => 'Marcas',
             'url' => 'marcas',
             'icon' => 'bi bi-journal-album',
+        ],
+
+        [
+            'text' => 'Recursos',
+            'url' => 'recursos',
+            'icon' => 'bi bi-pc-display-horizontal',
         ],
         
 
