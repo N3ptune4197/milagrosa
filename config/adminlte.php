@@ -339,8 +339,17 @@ return [
         ],
 
         [
+            'text' => 'Documentos',
+            'url' => 'tipodocs',
+            'icon' => 'bi bi-person-vcard-fill',
+        ],
+
+
+        ['header' => 'PRESTAMOS'],
+        [
             'text' => 'Prestamos',
             'url' => 'prestamos',
+            
             'icon' => 'bi bi-arrow-left-righ',
         ],
 

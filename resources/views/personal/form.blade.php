@@ -79,7 +79,7 @@
                 $("#nro_documento").attr("maxlength", 8);
                 $("#nro_documento").attr("placeholder", "Ingresar DNI");
             } else if (selectedValue === "2") { // ID para extranjero
-                $("#nro_documento").attr("maxlength", 11);
+                $("#nro_documento").attr("maxlength", 9);
                 $("#nro_documento").attr("placeholder", "Ingresar Número de Extranjero");
             } else {
                 $("#nro_documento").attr("maxlength", ""); // Limpiar la longitud máxima si no está seleccionado
@@ -114,9 +114,10 @@
                 method: 'GET',
                 success: function(response) {
                     if (response.success) {
-                        $("#nombres").val(response.nombres);
-                        $("#a_paterno").val(response.apellidoPaterno);
-                        $("#a_materno").val(response.apellidoMaterno);
+                        $("#nombres").val(response.nombres).prop('readonly', true);
+                        $("#a_paterno").val(response.apellidoPaterno).prop('readonly', true);
+                        $("#a_materno").val(response.apellidoMaterno).prop('readonly', true);
+
                     } else {
                         alert("No se encontraron datos para el DNI ingresado.");
                     }
@@ -136,11 +137,14 @@
                 },
                 success: function(response) {
                     if (response.status === 200) {
-                        $("#nombres").val(response.data.nombres);
-                        $("#a_paterno").val(response.data.apellido_paterno);
-                        $("#a_materno").val(response.data.apellido_materno);
+                        $("#nombres").val(response.data.nombres).prop('readonly', true);
+                        $("#a_paterno").val(response.data.apellido_paterno).prop('readonly', true);
+                        $("#a_materno").val(response.data.apellido_materno).prop('readonly', true);
                     } else {
                         alert("Número de extranjero no válido.");
+                        $("#nombres").val('').prop('readonly', false);
+                        $("#a_paterno").val('').prop('readonly', false);
+                        $("#a_materno").val('').prop('readonly', false);
                     }
                 },
                 error: function() {
