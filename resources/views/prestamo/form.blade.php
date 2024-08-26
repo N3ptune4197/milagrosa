@@ -39,6 +39,19 @@
             {!! $errors->first('observacion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
+        <!-- Campo para seleccionar el recurso (tabla detalle_prestamo) -->
+    <div class="form-group">
+        <label for="idRecurso">Recurso</label>
+        <select name="idRecurso" class="form-control @error('idRecurso') is-invalid @enderror" required>
+            @foreach($recursos as $recurso)
+                <option value="{{ $recurso->id }}">{{ $recurso->nombre }}</option>
+            @endforeach
+        </select>
+        @error('idRecurso')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     </div>
     <div class="col-md-12 mt20 mt-2">
         <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>

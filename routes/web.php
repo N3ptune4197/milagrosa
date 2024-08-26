@@ -21,6 +21,7 @@ Route::resource('personals', PersonalController::class);
 Route::resource('prestamos', PrestamoController::class);
 Route::resource('marcas', MarcaController::class);
 Route::resource('detalleprestamos', DetalleprestamoController::class);
+Route::put('/prestamos/{id}/mark-as-returned', [PrestamoController::class, 'markAsReturned'])->name('prestamos.markAsReturned');
 
 Route::get('/buscar-dni/{dni}', [PersonalController::class, 'buscarDni']);
 

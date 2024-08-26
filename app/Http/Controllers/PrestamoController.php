@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PrestamoRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Detalleprestamo;
+use App\Models\Recurso;
 
 class PrestamoController extends Controller
 {
@@ -16,12 +18,13 @@ class PrestamoController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request): View
-    {
-        $prestamos = Prestamo::paginate();
+{
+    $prestamos = Prestamo::with('detalleprestamos.recurso')->paginate();
 
-        return view('prestamo.index', compact('prestamos'))
-            ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
-    }
+    return view('prestamo.index', compact('prestamos'))
+        ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,8 +33,8 @@ class PrestamoController extends Controller
     {
         $prestamo = new Prestamo();
         $personals = Personal::select('id', 'nombres', 'a_paterno')->get(); // Obtener el listado de personal
-
-        return view('prestamo.create', compact('prestamo', 'personals'));
+        $recursos = Recurso::all();
+        return view('prestamo.create', compact('prestamo', 'personals','recursos'));
     }
 
     /**
@@ -42,7 +45,20 @@ class PrestamoController extends Controller
         $data = $request->validated();
         $data['fecha_prestamo'] = now(); // Establece la fecha de préstamo como la fecha del sistema
     
-        Prestamo::create($data);
+
+        // Guardar el préstamo
+    $prestamo = Prestamo::create([
+        'idPersonal' => $request->idPersonal,
+        'fecha_prestamo' => now(),
+        'fecha_devolucion' => $request->fecha_devolucion,
+        'observacion' => $request->observacion,
+    ]);
+
+    // Guardar el detalle del préstamo
+    DetallePrestamo::create([
+        'idprestamo' => $prestamo->id,
+        'id_recurso' => $request->idRecurso,
+    ]);
     
         return Redirect::route('prestamos.index')
             ->with('success', 'Préstamo creado exitosamente.');
@@ -93,4 +109,26 @@ class PrestamoController extends Controller
         return Redirect::route('prestamos.index')
             ->with('success', 'Préstamo eliminado exitosamente');
     }
+    public function markAsReturned($id)
+{
+    // Encuentra el préstamo
+    $prestamo = Prestamo::find($id);
+
+    if (!$prestamo) {
+        return redirect()->route('prestamos.index')->with('error', 'Préstamo no encontrado.');
+    }
+
+    // Encuentra los detalles del préstamo relacionados
+    $detallePrestamos = Detalleprestamo::where('idprestamo', $prestamo->id)->get();
+
+    // Elimina los detalles del préstamo relacionados
+    foreach ($detallePrestamos as $detalle) {
+        $detalle->delete();
+    }
+
+    // Marca el recurso como devuelto (puedes agregar lógica adicional aquí)
+    $prestamo->delete(); // O cualquier otra acción que necesites para marcar como devuelto
+
+    return redirect()->route('prestamos.index')->with('success', 'Préstamo marcado como devuelto.');
+}
 }

@@ -28,34 +28,30 @@
                     <th>Fecha de Devolución</th>
                     <th>Cantidad Total</th>
                     <th>Observación</th>
+                    <th>Recurso</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($prestamos as $prestamo)
-                    <tr>
-                        <td>{{ ++$i }}</td>
-                        <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                        <td>{{ $prestamo->fecha_prestamo->format('d/m/Y') }}</td>
-                        <td>{{ $prestamo->fecha_devolucion ? $prestamo->fecha_devolucion->format('d/m/Y') : 'N/A' }}</td>
-                        <td>{{ $prestamo->cantidad_total }}</td>
-                        <td>{{ $prestamo->observacion }}</td>
-                        <td>
-                            <form action="{{ route('prestamos.destroy', $prestamo->id) }}" method="POST">
-                                <a class="btn btn-sm btn-primary" href="{{ route('prestamos.show', $prestamo->id) }}">
-                                    <i class="fa fa-fw fa-eye"></i> {{ __('Mostrar') }}
-                                </a>
-                                <a class="btn btn-sm btn-success" href="{{ route('prestamos.edit', $prestamo->id) }}">
-                                    <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
-                                </a>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); if(confirm('¿Estás seguro de eliminar?')) { this.closest('form').submit(); }">
-                                    <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                    @foreach ($prestamo->detalleprestamos as $detalle)
+                        <tr>
+                            <td>{{ ++$i }}</td>
+                            <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                            <td>{{ $prestamo->fecha_prestamo->format('d/m/Y') }}</td>
+                            <td>{{ $prestamo->fecha_devolucion ? $prestamo->fecha_devolucion->format('d/m/Y') : 'N/A' }}</td>
+                            <td>{{ $prestamo->cantidad_total }}</td>
+                            <td>{{ $prestamo->observacion }}</td>
+                            <td>{{ $detalle->recurso->nombre ?? 'N/A' }}</td>
+                            <td>
+                                <form action="{{ route('prestamos.markAsReturned', $prestamo->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres marcar como devuelto el recurso?');">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-success">Marcar como devuelto</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
                 @endforeach
             </tbody>
         </table>

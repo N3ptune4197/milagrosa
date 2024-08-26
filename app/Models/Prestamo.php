@@ -82,4 +82,9 @@ class Prestamo extends Model
             $prestamo->fecha_prestamo = now(); // Establecer la fecha de préstamo como la fecha actual
         });
     }
+    public function detalleprestamos()
+    {
+        return $this->hasMany(Detalleprestamo::class, 'idprestamo');
+    }
+
 }
