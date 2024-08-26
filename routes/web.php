@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DetalleprestamoController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PrestamoController;
@@ -19,6 +20,7 @@ Route::resource('tipodocs', TipodocController::class);
 Route::resource('personals', PersonalController::class);
 Route::resource('prestamos', PrestamoController::class);
 Route::resource('marcas', MarcaController::class);
+Route::resource('detalleprestamos', DetalleprestamoController::class);
 
 Route::get('/buscar-dni/{dni}', [PersonalController::class, 'buscarDni']);
 
