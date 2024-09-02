@@ -31,25 +31,25 @@
         
         <div class="form-group mb-2 mb20">
             <label for="nombres" class="form-label">{{ __('Nombres') }}</label>
-            <input type="text" name="nombres" class="form-control @error('nombres') is-invalid @enderror" value="{{ old('nombres', $personal?->nombres) }}" id="nombres" placeholder="Nombres">
+            <input type="text" name="nombres" class="form-control @error('nombres') is-invalid @enderror" value="{{ old('nombres', $personal?->nombres) }}" id="nombres" placeholder="Nombres" oninput="this.value = this.value.toUpperCase()" pattern="[A-Z]{1, 15}">
             {!! $errors->first('nombres', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
         <div class="form-group mb-2 mb20">
             <label for="a_paterno" class="form-label">{{ __('Apellido Paterno') }}</label>
-            <input type="text" name="a_paterno" class="form-control @error('a_paterno') is-invalid @enderror" value="{{ old('a_paterno', $personal?->a_paterno) }}" id="a_paterno" placeholder="A Paterno">
+            <input type="text" name="a_paterno" class="form-control @error('a_paterno') is-invalid @enderror" value="{{ old('a_paterno', $personal?->a_paterno) }}" id="a_paterno" placeholder="A Paterno" oninput="this.value = this.value.toUpperCase()" pattern="[A-Z]{1, 15}">
             {!! $errors->first('a_paterno', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
         <div class="form-group mb-2 mb20">
             <label for="a_materno" class="form-label">{{ __('A Materno') }}</label>
-            <input type="text" name="a_materno" class="form-control @error('a_materno') is-invalid @enderror" value="{{ old('a_materno', $personal?->a_materno) }}" id="a_materno" placeholder="A Materno">
+            <input type="text" name="a_materno" class="form-control @error('a_materno') is-invalid @enderror" value="{{ old('a_materno', $personal?->a_materno) }}" id="a_materno" placeholder="A Materno" oninput="this.value = this.value.toUpperCase()" pattern="[A-Z]{1, 15}">
             {!! $errors->first('a_materno', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
         <div class="form-group mb-2 mb20">
             <label for="telefono" class="form-label">{{ __('Telefono') }}</label>
-            <input type="text" onkeypress='return validaNumericos(event)' maxlength="9" name="telefono" class="form-control @error('telefono') is-invalid @enderror" value="{{ old('telefono', $personal?->telefono) }}" id="telefono" placeholder="Telefono">
+            <input type="text" onkeypress='return validaNumericos(event)' maxlength="9" minlength="9" name="telefono" class="form-control @error('telefono') is-invalid @enderror" value="{{ old('telefono', $personal?->telefono) }}" id="telefono" placeholder="Telefono">
             {!! $errors->first('telefono', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
@@ -77,13 +77,17 @@
 
             if (selectedValue === "1") { // ID para DNI
                 $("#nro_documento").attr("maxlength", 8);
+                $("#nro_documento").attr("minlength", 8);
                 $("#nro_documento").attr("placeholder", "Ingresar DNI");
+                $("#nro_documento").attr("readonly", false); // Limpiar la longitud máxima si no está seleccionado
             } else if (selectedValue === "2") { // ID para extranjero
                 $("#nro_documento").attr("maxlength", 9);
+                $("#nro_documento").attr("minlength", 9);
                 $("#nro_documento").attr("placeholder", "Ingresar Número de Extranjero");
+                $("#nro_documento").attr("readonly", false); // Limpiar la longitud máxima si no está seleccionado
             } else {
-                $("#nro_documento").attr("maxlength", ""); // Limpiar la longitud máxima si no está seleccionado
-                $("#nro_documento").attr("placeholder", "Ingresar Documento");
+                $("#nro_documento").attr("readonly", true); // Limpiar la longitud máxima si no está seleccionado
+                $("#nro_documento").attr("placeholder", "Seleccionar Tipo de Documento");
             }
         });
 

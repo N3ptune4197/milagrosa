@@ -18,50 +18,56 @@
         </div>
     @endif
 
-    <div class="table-responsive">
-        <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Personal</th>
-                    <th>Fecha de Préstamo</th>
-                    <th>Fecha de Devolución</th>
-                    <th>Cantidad Total</th>
-                    <th>Observación</th>
-                    <th>Recurso</th>
-                    <th>Opciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($prestamos as $prestamo)
-                    @foreach ($prestamo->detalleprestamos as $detalle)
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ ++$i }}</td>
-                            <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                            <td>{{ $prestamo->fecha_prestamo->format('d/m/Y') }}</td>
-                            <td>{{ $prestamo->fecha_devolucion ? $prestamo->fecha_devolucion->format('d/m/Y') : 'N/A' }}</td>
-                            <td>{{ $prestamo->cantidad_total }}</td>
-                            <td>{{ $prestamo->observacion }}</td>
-                            <td>{{ $detalle->recurso->nombre ?? 'N/A' }}</td>
-                            <td>
-                                <form action="{{ route('prestamos.markAsReturned', $prestamo->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres marcar como devuelto el recurso?');">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-success">Marcar como devuelto</button>
-                                </form>
-                            </td>
+                            <th>No</th>
+                            <th>Personal</th>
+                            <th>Fecha de Préstamo</th>
+                            <th>Fecha de Devolución</th>
+                            <th>Cantidad Total</th>
+                            <th>Observación</th>
+                            <th>Recurso</th>
+                            <th>Opciones</th>
                         </tr>
-                    @endforeach
-                @endforeach
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($prestamos as $prestamo)
+                            @foreach ($prestamo->detalleprestamos as $detalle)
+                                <tr>
+                                    <td>{{ ++$i }}</td>
+                                    <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                                    <td>{{ $prestamo->fecha_prestamo->format('d/m/Y') }}</td>
+                                    <td>{{ $prestamo->fecha_devolucion ? $prestamo->fecha_devolucion->format('d/m/Y') : 'N/A' }}</td>
+                                    <td>{{ $prestamo->cantidad_total }}</td>
+                                    <td>{{ $prestamo->observacion }}</td>
+                                    <td>{{ $detalle->recurso->nombre ?? 'N/A' }}</td>
+                                    <td>
+                                        <form action="{{ route('prestamos.markAsReturned', $prestamo->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres marcar como devuelto el recurso?');">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-success">Marcar como devuelto</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     {!! $prestamos->withQueryString()->links() !!}
 @stop
 
+
+
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
@@ -69,20 +75,21 @@
 @stop
 
 @section('js')
-    <script src="https://cdn.datatables.net/2.1.3/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('#prestamosTable').DataTable({
-                responsive: true,
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es.json' // Añadir traducción al español si es necesario
-                }
-            });
+        new DataTable('#prestamosTable', {
+            responsive: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.1.4/i18n/es-MX.json',
+            },
         });
+
+
+
     </script>
 @stop

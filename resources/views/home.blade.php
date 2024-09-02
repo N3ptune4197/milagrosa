@@ -5,6 +5,11 @@
     $statement->execute();
     $cantidadCategoria = $statement->fetch(PDO::FETCH_ASSOC);
 
+    
+    $statement2 = $PDO->prepare("SELECT COUNT(*) FROM personals");
+    $statement2->execute();
+    $cantidadPersonal = $statement2->fetch(PDO::FETCH_ASSOC);
+
 
 
 ?>
@@ -17,63 +22,128 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1>Dashboard</h1>
+    <div class="flex align-middle items-center ">
+
+        <span class="bi bi-grid-fill text-2xl "></span>
+
+
+        <h1 class="ml-2 font-semibold">Dashboard</h1>
+    </div>
 @stop
 
 @section('content')
-    <div class="container">
-        <div class="row g-3">
-
+    <div class="container mt-3">
+        <div class="row g-3 mb-5">
             
 
-            <a class="col-12 col-sm-6 col-lg-4 text-decoration-none" href="{{route('categorias.index')}}">
-                <div class="rounded-3 border-start border-4 border-primary alert-primary shadow h-100">
-                    <span class="bi bi-tags-fill fs-1 m-4 float-start"></span>
-                    <div class="text-end p-4">
-                        <span class="d-block text-dark">Categorias</span>
-                        <span class="text-dark fs-3"> <?php echo $cantidadCategoria['COUNT(*)'] ?></span>
+            <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('categorias.index') }}">
+                <div class="rounded-lg border-l-[5px] border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
+                    <span class="bi bi-tags-fill text-4xl m-4 flex-shrink-0 text-blue-900"></span>
+                    <div class="flex-1 text-right p-4">
+                        <span class="block text-gray-800">Categorias</span>
+                        <span class="text-gray-800 text-3xl"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
+                    </div>
+                </div>
+            </a>
+            
+
+            
+            <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('personals.index') }}">
+                <div class="rounded-lg border-l-[5px] border-red-500 bg-red-100 shadow-lg h-full flex items-center">
+                    <span class="bi bi-people-fill text-4xl m-4 flex-shrink-0 text-red-900 "></span>
+                    <div class="flex-1 text-right p-4">
+                        <span class="block text-gray-800">Personal</span>
+                        <span class="text-gray-800 text-3xl"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
                     </div>
                 </div>
             </a>
 
 
-            
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="rounded-3 border-start border-4 border-danger alert-danger shadow h-100">
-                    <span class="bi bi-people-fill fs-1 m-4 float-start"></span>
-                    <div class="text-end p-4">
-                        <span class="d-block text-dark">Profesores</span>
-                        <span class="text-dark fs-3">Total 18.85</span>
+
+            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
+                <div class="rounded-lg border-l-[5px] border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+                    <span class="bi bi-box-fill text-4xl m-4 flex-shrink-0 text-amber-900"></span>
+                    <div class="flex-1 text-right p-4">
+                        <span class="block text-gray-800">Recursos</span>
+                        <span class="text-gray-800 text-3xl">Total 18.85</span>
                     </div>
                 </div>
             </div>
 
 
 
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="rounded-3 border-start border-4 border-warning alert-warning shadow h-100">
-                    <span class="bi bi-box-fill fs-1 m-4 float-start"></span>
-                    <div class="text-end p-4">
-                        <span class="d-block text-dark">Recursos</span>
-                        <span class="text-dark fs-3">Total 18.85</span>
+            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
+                <div class="rounded-lg border-l-[5px] border-green-500 bg-green-100 shadow-lg h-full flex items-center">
+                    <span class="bi bi-clock-fill text-4xl m-4 flex-shrink-0 text-green-900"></span>
+                    <div class="flex-1 text-right p-4">
+                        <span class="block text-gray-800">Préstamos</span>
+                        <span class="text-gray-800 text-3xl">Total 18.85</span>
                     </div>
                 </div>
             </div>
-
-
-
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="rounded-3 border-start border-4 border-success alert-success shadow h-100">
-                    <span class="bi bi-clock-fill fs-1 m-4 float-start"></span>
-                    <div class="text-end p-4">
-                        <span class="d-block text-dark">Préstamos</span>
-                        <span class="text-dark fs-3">Total 18.85</span>
-                    </div>
-                </div>
-            </div>
-
-
         </div>
+
+        <div>
+            <h1 class="font-bold">Hola Mundo</h1>
+        </div>
+
+
+
+
+        {{-- <div class="container mx-auto">
+            <div class="relative">
+                <input id="searchInput" type="text" placeholder="Search..." 
+                       class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <ul id="suggestions" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-auto z-10 hidden">
+                    <!-- Suggestions will be inserted here -->
+                </ul>
+            </div>
+        </div>
+    
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchInput = document.getElementById('searchInput');
+                const suggestionsBox = document.getElementById('suggestions');
+                const options = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape', 'Honeydew'];
+    
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase();
+                    suggestionsBox.innerHTML = '';
+    
+                    if (query) {
+                        const filteredOptions = options.filter(option => 
+                            option.toLowerCase().includes(query)
+                        );
+    
+                        if (filteredOptions.length > 0) {
+                            suggestionsBox.classList.remove('hidden');
+                            filteredOptions.forEach(option => {
+                                const li = document.createElement('li');
+                                li.textContent = option;
+                                li.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
+                                li.addEventListener('click', () => {
+                                    searchInput.value = option;
+                                    suggestionsBox.classList.add('hidden');
+                                });
+                                suggestionsBox.appendChild(li);
+                            });
+                        } else {
+                            suggestionsBox.classList.add('hidden');
+                        }
+                    } else {
+                        suggestionsBox.classList.add('hidden');
+                    }
+                });
+    
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                        suggestionsBox.classList.add('hidden');
+                    }
+                });
+            });
+        </script> --}}
+        
+
     </div>
 
 
@@ -87,15 +157,21 @@
     {{-- Add here extra stylesheets --}}
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    @viteReactRefresh
+    @vite('resources/js/main.jsx')
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite('resources/css/app.css')
+
 @stop
 
 @section('js')
-    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
+    <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 @stop
