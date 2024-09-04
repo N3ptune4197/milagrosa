@@ -1,17 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Categorias')
 
 @section('content_header')
 
     <div class="d-flex justify-content-between mb-2">
-        <h1><i class="bi bi-tags-fill"></i> Categorías</h1>
-
-                
-            <a href="{{ route('categorias.create') }}" class="btn btn-primary btn-md"  data-placement="left">
-                {{ __('Crear Nuevo') }}
-            </a>
-            
+        <h1><i class="bi bi-tags-fill"></i>    <span  class="font-semibold">Categorías</span></h1>
     </div>
 
     
@@ -26,11 +20,27 @@
     <div id="app"></div>
 
 
-    <div class="card">
+    <div class="card ">
+        
         <div class="card-body">
-            <div class="table-responsive">
 
-                <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-3" style="width:100%">
+            <div class="flex justify-between items-center mb-4">
+                <p></p>
+                <h2 class="text-2xl font-semibold font-montserrat">Tabla de Categorías</h2>
+                <a href="{{ route('categorias.create') }}" class="btn bg-emerald-400 py-2 font-semibold font-montserrat btn-md">
+                    {{ __('Crear Nuevo') }}
+                </a>
+            </div>
+            
+            
+            <hr>
+
+
+            <div class="table-responsive mt-4">
+
+                <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-3 border-spacing-2  " style="width:100%">
+                    
+
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -77,6 +87,10 @@
     
     @viteReactRefresh
     @vite('resources/js/main.jsx')
+
+    
+    @vite('resources/css/app.css')
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
 @stop
 

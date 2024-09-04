@@ -1,12 +1,12 @@
 // resources/js/App.jsx
 import React from 'react';
-import CategoriaTable from './CategoriaTable';
-import Example from './CategoriaTable';
+import SimpleBarCharts from './HomeRechart';
+
 
 function App() {
   return (
     <>
-      <Example />
+      <SimpleBarCharts />
     </>
   );
 }

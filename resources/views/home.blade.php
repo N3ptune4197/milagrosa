@@ -32,16 +32,18 @@
 @stop
 
 @section('content')
-    <div class="container mt-3">
-        <div class="row g-3 mb-5">
+    <div class="mt-3">
+
+        <div class="section-one row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl">
+            <h2 class="text-2xl ml-3 md:ml-14 lg:text-3xl font-montserrat font-semibold underline underline-offset-2 mb-3">Inicio Rápido</h2>
             
 
             <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('categorias.index') }}">
-                <div class="rounded-lg border-l-[5px] border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
+                <div class="rounded-lg border-l-[5px] py-2 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
                     <span class="bi bi-tags-fill text-4xl m-4 flex-shrink-0 text-blue-900"></span>
                     <div class="flex-1 text-right p-4">
                         <span class="block text-gray-800">Categorias</span>
-                        <span class="text-gray-800 text-3xl"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
+                        <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
                     </div>
                 </div>
             </a>
@@ -49,11 +51,11 @@
 
             
             <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('personals.index') }}">
-                <div class="rounded-lg border-l-[5px] border-red-500 bg-red-100 shadow-lg h-full flex items-center">
+                <div class="rounded-lg border-l-[5px] py-2 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
                     <span class="bi bi-people-fill text-4xl m-4 flex-shrink-0 text-red-900 "></span>
                     <div class="flex-1 text-right p-4">
                         <span class="block text-gray-800">Personal</span>
-                        <span class="text-gray-800 text-3xl"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
+                        <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
                     </div>
                 </div>
             </a>
@@ -61,11 +63,11 @@
 
 
             <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
-                <div class="rounded-lg border-l-[5px] border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+                <div class="rounded-lg border-l-[5px] py-2 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
                     <span class="bi bi-box-fill text-4xl m-4 flex-shrink-0 text-amber-900"></span>
                     <div class="flex-1 text-right p-4">
                         <span class="block text-gray-800">Recursos</span>
-                        <span class="text-gray-800 text-3xl">Total 18.85</span>
+                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
                     </div>
                 </div>
             </div>
@@ -73,18 +75,37 @@
 
 
             <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
-                <div class="rounded-lg border-l-[5px] border-green-500 bg-green-100 shadow-lg h-full flex items-center">
+                <div class="rounded-lg border-l-[5px] py-2 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
                     <span class="bi bi-clock-fill text-4xl m-4 flex-shrink-0 text-green-900"></span>
                     <div class="flex-1 text-right p-4">
                         <span class="block text-gray-800">Préstamos</span>
-                        <span class="text-gray-800 text-3xl">Total 18.85</span>
+                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
                     </div>
                 </div>
             </div>
+
+
+
+            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
+                <div class="rounded-lg border-l-[5px] py-2 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+                    <span class="bi bi-box-fill text-4xl m-4 flex-shrink-0 text-amber-900"></span>
+                    <div class="flex-1 text-right p-4">
+                        <span class="block text-gray-800">Cantidad total de Préstamos</span>
+                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+
         </div>
 
-        <div>
-            <h1 class="font-bold">Hola Mundo</h1>
+
+
+        <div class="section-two">
+
+            <div id="root" class="root"></div>
         </div>
 
 
@@ -150,8 +171,13 @@
 
 
 
+
+
     
 @stop
+
+
+
 
 @section('css')
     {{-- Add here extra stylesheets --}}
@@ -160,18 +186,29 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+
+
     @viteReactRefresh
     @vite('resources/js/main.jsx')
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     @vite('resources/css/app.css')
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 @stop
+
+
+
+
+
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
     <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+
 @stop
