@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Detalleprestamo;
 use App\Models\Recurso;
+use App\Models\Historial;
 
 class PrestamoController extends Controller
 {
@@ -41,12 +42,11 @@ class PrestamoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(PrestamoRequest $request): RedirectResponse
-    {
-        $data = $request->validated();
-        $data['fecha_prestamo'] = now(); // Establece la fecha de préstamo como la fecha del sistema
-    
+{
+    $data = $request->validated();
+    $data['fecha_prestamo'] = now(); 
 
-        // Guardar el préstamo
+    // Crear el préstamo
     $prestamo = Prestamo::create([
         'idPersonal' => $request->idPersonal,
         'fecha_prestamo' => now(),
@@ -59,11 +59,10 @@ class PrestamoController extends Controller
         'idprestamo' => $prestamo->id,
         'id_recurso' => $request->idRecurso,
     ]);
-    
-        return Redirect::route('prestamos.index')
-            ->with('success', 'Préstamo creado exitosamente.');
-    }
 
+    return Redirect::route('prestamos.index')
+        ->with('success', 'Préstamo creado exitosamente.');
+}
     /**
      * Display the specified resource.
      */
@@ -80,7 +79,7 @@ class PrestamoController extends Controller
     public function edit($id): View
     {
         $prestamo = Prestamo::find($id);
-        $personals = Personal::select('id', 'nombres', 'a_paterno')->get(); // Obtener el listado de personal
+        $personals = Personal::select('id', 'nombres', 'a_paterno')->get(); 
 
         return view('prestamo.edit', compact('prestamo', 'personals'));
     }
@@ -91,7 +90,7 @@ class PrestamoController extends Controller
     public function update(PrestamoRequest $request, Prestamo $prestamo): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['fecha_prestamo'] = $prestamo->fecha_prestamo; // Mantener la fecha de préstamo actual
+        $validated['fecha_prestamo'] = $prestamo->fecha_prestamo; // Mantener la fecha de prestamo actual
 
         $prestamo->update($validated);
 
@@ -111,24 +110,30 @@ class PrestamoController extends Controller
     }
     public function markAsReturned($id)
 {
-    // Encuentra el préstamo
+    
     $prestamo = Prestamo::find($id);
 
     if (!$prestamo) {
         return redirect()->route('prestamos.index')->with('error', 'Préstamo no encontrado.');
     }
 
-    // Encuentra los detalles del préstamo relacionados
+    
     $detallePrestamos = Detalleprestamo::where('idprestamo', $prestamo->id)->get();
 
-    // Elimina los detalles del préstamo relacionados
+    // guardar cada detalle del prestamo (id) en historial
     foreach ($detallePrestamos as $detalle) {
+        Historial::create([
+            'id_detalle_prestamo' => $detalle->id,
+        ]);
+        
+        
         $detalle->delete();
     }
 
-    // Marca el recurso como devuelto (puedes agregar lógica adicional aquí)
-    $prestamo->delete(); // O cualquier otra acción que necesites para marcar como devuelto
+    // Eliminar el préstamo
+    $prestamo->delete();
 
-    return redirect()->route('prestamos.index')->with('success', 'Préstamo marcado como devuelto.');
+    return redirect()->route('prestamos.index')->with('success', 'Préstamo marcado como devuelto y guardado en el historial.');
 }
+
 }
