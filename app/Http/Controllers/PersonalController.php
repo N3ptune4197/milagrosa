@@ -17,35 +17,41 @@ class PersonalController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request): View
-    {
-        $personals = Personal::paginate();
+{
+    $personals = Personal::paginate();
+    $tipodocs = Tipodoc::all();
 
-        return view('personal.index', compact('personals'))
-            ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
-    }
+    return view('personal.index', compact('personals','tipodocs'))
+        ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
+}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create(): View
-    {
-        $personal = new Personal();
-
-        $tipodocs = Tipodoc::select('id', 'abreviatura')->get();
-        $personal = null;
-        return view('personal.create', compact('tipodocs', 'personal'));
-    }
+{
+    $tipodocs = Tipodoc::select('id', 'abreviatura')->get();
+    $personal = new Personal(); // Crear una instancia nueva y vacía
+    return view('personal.create', compact('tipodocs', 'personal'));
+}
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PersonalRequest $request): RedirectResponse
-    {
-        Personal::create($request->validated());
+    public function store(Request $request)
+{
+    $request->validate([
+        'id_tipodocs' => 'required|exists:tipodocs,id',
+        'nro_documento' => 'required|numeric',
+        'telefono' => 'required',
+        'nombres' => 'required',
+        'a_paterno' => 'required',
+        'a_materno' => 'required',
+        'cargo' => 'required',
+    ]);
 
-        return Redirect::route('personals.index')
-            ->with('success', 'Personal created successfully.');
-    }
+    return redirect()->back()->with('success', 'Personal agregado exitosamente.');
+}
 
     /**
      * Display the specified resource.
