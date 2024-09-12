@@ -40,6 +40,7 @@ class PersonalController extends Controller
      */
     public function store(Request $request)
 {
+    // Validación de los datos
     $request->validate([
         'id_tipodocs' => 'required|exists:tipodocs,id',
         'nro_documento' => 'required|numeric',
@@ -50,8 +51,19 @@ class PersonalController extends Controller
         'cargo' => 'required',
     ]);
 
+    $personal = new Personal();
+    $personal->id_tipodocs = $request->id_tipodocs;
+    $personal->nro_documento = $request->nro_documento;
+    $personal->telefono = $request->telefono;
+    $personal->nombres = $request->nombres;
+    $personal->a_paterno = $request->a_paterno;
+    $personal->a_materno = $request->a_materno;
+    $personal->cargo = $request->cargo;
+
+    $personal->save();
     return redirect()->back()->with('success', 'Personal agregado exitosamente.');
 }
+
 
     /**
      * Display the specified resource.
@@ -66,23 +78,22 @@ class PersonalController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
-    {
-        $personal = Personal::findOrFail($id);
-    $tipodocs = Tipodoc::select('id', 'abreviatura')->get(); 
-    return view('personal.edit', compact('personal', 'tipodocs'));
-    }
+    public function edit($id)
+{
+    $personal = Personal::find($id);
+    return response()->json($personal);
+}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PersonalRequest $request, Personal $personal): RedirectResponse
-    {
-        $personal->update($request->validated());
+    public function update(Request $request, $id)
+{
+    $personal = Personal::findOrFail($id);
+    $personal->update($request->all());
 
-        return Redirect::route('personals.index')
-            ->with('success', 'Personal updated successfully');
-    }
+    return redirect()->route('personals.index')->with('success', 'Personal actualizado correctamente');
+}
 
     public function destroy($id): RedirectResponse
     {
@@ -91,13 +102,6 @@ class PersonalController extends Controller
         return Redirect::route('personals.index')
             ->with('success', 'Personal deleted successfully');
     }
-
-
-
-
-
-
-
 
     public function buscarDni($dni)
     {
