@@ -1,18 +1,23 @@
 <div class="row padding-1 p-1">
     <div class="col-md-12">
 
+        
         <div class="form-group mb-2 mb20">
-            <label for="id_tipodocs" class="form-label">{{ __('Tipo de Documento') }}</label>
-            <select name="id_tipodocs" id="id_tipodocs" class="form-control @error('id_tipodocs') is-invalid @enderror">
-                <option value="">{{ __('Seleccione un tipo de documento') }}</option>
-                @foreach($tipodocs as $tipodoc)
-                    <option value="{{ $tipodoc->id }}" {{ old('id_tipodocs', $personal?->id_tipodocs) == $tipodoc->id ? 'selected' : '' }}>
-                        {{ $tipodoc->abreviatura }}
-                    </option>
-                @endforeach
+            <label for="tipodoc" class="form-label">{{ __('Tipo de Documento') }}</label>
+
+            <select name="tipodoc" id="id_tipodoc" class="form-control @error('tipodoc') is-invalid @enderror">
+                <option value="Documento Nacional de Identidad">
+                    Documento Nacional de Identidad
+                </option>
+                <option value="Documento de Extranjeria">
+                    Carnet de Extranjeria
+                </option>
             </select>
-            {!! $errors->first('id_tipodocs', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            {!! $errors->first('tipodoc', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
+
+
+
 
         <div class="form-group mb-2 mb20">
             <label for="nro_documento" class="form-label">{{ __('Ingresar Número de documento') }}</label>
@@ -72,15 +77,17 @@
     }
 
     $(document).ready(function() {
-        $("#id_tipodocs").change(function() {
+        $("#id_tipodoc").change(function() {
             var selectedValue = $(this).val();
 
-            if (selectedValue === "1") { // ID para DNI
+            if (selectedValue === "Documento Nacional de Identidad") { // ID para DNI
                 $("#nro_documento").attr("maxlength", 8);
                 $("#nro_documento").attr("minlength", 8);
                 $("#nro_documento").attr("placeholder", "Ingresar DNI");
                 $("#nro_documento").attr("readonly", false); // Limpiar la longitud máxima si no está seleccionado
-            } else if (selectedValue === "2") { // ID para extranjero
+
+
+            } else if (selectedValue === "Documento de Extranjeria") { // ID para extranjero
                 $("#nro_documento").attr("maxlength", 9);
                 $("#nro_documento").attr("minlength", 9);
                 $("#nro_documento").attr("placeholder", "Ingresar Número de Extranjero");
@@ -92,16 +99,16 @@
         });
 
         $("#buscar").click(function() {
-            var tipoDoc = $("#id_tipodocs").val();
+            var tipoDoc = $("#id_tipodoc").val();
             var documento = $("#nro_documento").val();
 
-            if (tipoDoc === "1") { // DNI
+            if (tipoDoc === "Documento Nacional de Identidad") { // DNI
                 if (documento.length === 8) {
                     buscarDni(documento);
                 } else {
                     alert("El DNI debe tener 8 dígitos.");
                 }
-            } else if (tipoDoc === "2") { // Extranjero
+            } else if (tipoDoc === "Documento de Extranjeria") { // Extranjero
                 if (documento.length === 9) {
                     buscarExtranjero(documento);
                 } else {
@@ -158,11 +165,11 @@
         }
 
         // Asegúrate de que la longitud máxima y el placeholder se establezcan correctamente al cargar la página
-        $("#id_tipodocs").trigger("change");
+        $("#id_tipodoc").trigger("change");
     });
 </script>
 
-{{-- 
+
 <script>
     $("#buscar").click(function() {
         let dni = $("#nro_documento").val();
@@ -184,9 +191,7 @@
                     alert("Hubo un error al realizar la solicitud.");
                 }
             });
-        } else {
-            alert("El DNI debe tener 8 dígitos.");
         }
     });
 </script>
- --}}
+ 

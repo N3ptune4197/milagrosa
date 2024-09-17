@@ -23,62 +23,53 @@ class CategoriaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        $categoria = new Categoria();
-
-        return view('categoria.create', compact('categoria'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(CategoriaRequest $request): RedirectResponse
     {
+        // Validación y creación de la categoría
         Categoria::create($request->validated());
 
-        return Redirect::route('categorias.index')
-            ->with('success', 'Categoria created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $categoria = Categoria::find($id);
-
-        return view('categoria.show', compact('categoria'));
+        // Redirigir de vuelta con un mensaje de éxito
+        return redirect()->back()->with('success', 'Categoría creada exitosamente.');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit($id)
     {
-        $categoria = Categoria::find($id);
+        // Obtener la categoría por su ID
+        $categoria = Categoria::findOrFail($id);
 
-        return view('categoria.edit', compact('categoria'));
+        // Devolver los datos de la categoría en formato JSON para usar con AJAX
+        return response()->json($categoria);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CategoriaRequest $request, Categoria $categoria): RedirectResponse
+    public function update(CategoriaRequest $request, $id): RedirectResponse
     {
+        // Encontrar la categoría por su ID
+        $categoria = Categoria::findOrFail($id);
+
+        // Actualizar los datos de la categoría
         $categoria->update($request->validated());
 
-        return Redirect::route('categorias.index')
-            ->with('success', 'Categoria updated successfully');
+        // Redirigir de vuelta con un mensaje de éxito
+        return redirect()->back()->with('success', 'Categoría actualizada exitosamente.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id): RedirectResponse
     {
-        Categoria::find($id)->delete();
+        // Encontrar la categoría y eliminarla
+        Categoria::findOrFail($id)->delete();
 
-        return Redirect::route('categorias.index')
-            ->with('success', 'Categoria deleted successfully');
+        // Redirigir de vuelta con un mensaje de éxito
+        return redirect()->back()->with('success', 'Categoría eliminada exitosamente.');
     }
 }

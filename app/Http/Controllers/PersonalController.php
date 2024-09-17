@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PersonalRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\Tipodoc;
 use Illuminate\Support\Facades\Http;
 
 class PersonalController extends Controller
@@ -31,20 +30,36 @@ class PersonalController extends Controller
     {
         $personal = new Personal();
 
-        $tipodocs = Tipodoc::select('id', 'abreviatura')->get();
-        $personal = null;
-        return view('personal.create', compact('tipodocs', 'personal'));
+        return view('personal.create', compact('personal'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PersonalRequest $request): RedirectResponse
+    public function store(PersonalRequest $request): RedirectResponse 
     {
-        Personal::create($request->validated());
-
-        return Redirect::route('personals.index')
-            ->with('success', 'Personal created successfully.');
+        $request->validate([
+        
+        'nro_documento' => 'required|numeric',
+        'telefono' => 'required',
+        'nombres' => 'required',
+        'a_paterno' => 'required',
+        'a_materno' => 'required',
+        'cargo' => 'required',
+        'tipodoc' => 'required'
+        ]);
+        
+        $personal = new Personal();
+        $personal->nro_documento = $request->nro_documento;
+        $personal->telefono = $request->telefono;
+        $personal->nombres = $request->nombres;
+        $personal->a_paterno = $request->a_paterno;
+        $personal->a_materno = $request->a_materno;
+        $personal->cargo = $request->cargo;
+        $personal->tipodoc = $request->tipodoc;
+        
+        $personal->save();
+        return redirect()->back()->with('success', 'Personal agregado exitosamente.');
     }
 
     /**
@@ -60,22 +75,25 @@ class PersonalController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit($id)
     {
-        $personal = Personal::findOrFail($id);
-    $tipodocs = Tipodoc::select('id', 'abreviatura')->get(); 
-    return view('personal.edit', compact('personal', 'tipodocs'));
+        $personal = Personal::find($id);
+        return response()->json($personal);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PersonalRequest $request, Personal $personal): RedirectResponse
-    {
-        $personal->update($request->validated());
+    
+    
+    //  public function update(PersonalRequest $request, Personal $personal): RedirectResponse
+    public function update(Request $request, $id)
 
-        return Redirect::route('personals.index')
-            ->with('success', 'Personal updated successfully');
+    {
+        $personal = Personal::findOrFail($id);
+        $personal->update($request->all());
+
+        return redirect()->route('personals.index')->with('success', 'Personal actualizado correctamente');
     }
 
     public function destroy($id): RedirectResponse
@@ -85,13 +103,6 @@ class PersonalController extends Controller
         return Redirect::route('personals.index')
             ->with('success', 'Personal deleted successfully');
     }
-
-
-
-
-
-
-
 
     public function buscarDni($dni)
     {
@@ -106,4 +117,25 @@ class PersonalController extends Controller
 
         return response()->json(['success' => false], 404);
     }
+
+
+
+    public function autocomplete(Request $request)
+    {
+        $query = $request->input('query');
+        $personals = Personal::where('nombres', 'like', "%{$query}%")
+                            ->orWhere('a_paterno', 'like', "%{$query}%")
+                            ->orWhere('a_materno', 'like', "%{$query}%")
+                            ->limit(10)
+                            ->get(['id', 'nombres', 'a_paterno', 'a_materno']);
+
+        return response()->json($personals);
+    }
 }
+
+
+
+
+
+
+

@@ -301,9 +301,6 @@ return [
         ],
 
         
-        ['header' => 'Espacio de Trabajo'],
-
-
 
         [
             'text' => 'blog',
@@ -317,12 +314,6 @@ return [
             'icon' => 'bi bi-grid-fill',
         ],
 
-        
-        [
-            'text' => 'Categorias',
-            'url' => 'categorias',
-            'icon' => 'bi bi-tags-fill',
-        ],
 
         
         ['header' => 'DOCENTES'],
@@ -333,14 +324,9 @@ return [
             'icon' => 'bi bi-people-fill',
         ],
 
-        [
-            'text' => 'Documentos',
-            'url' => 'tipodocs',
-            'icon' => 'bi bi-person-vcard-fill',
-        ],
-
 
         ['header' => 'PRESTAMOS'],
+
         [
             'text' => 'Prestamos',
             'url' => 'prestamos',
@@ -348,11 +334,9 @@ return [
             'icon' => 'bi bi-hourglass-split',
         ],
 
-        [
-            'text' => 'Marcas',
-            'url' => 'marcas',
-            'icon' => 'bi bi-journal-album',
-        ],
+
+        ['header' => 'RECURSOS'],
+
 
         [
             'text' => 'Recursos',
@@ -360,6 +344,20 @@ return [
             'icon' => 'bi bi-pc-display-horizontal',
         ],
         
+
+        [
+            'text' => 'Marcas',
+            'url' => 'marcas',
+            'icon' => 'bi bi-journal-album',
+        ],
+
+
+        [
+            'text' => 'Categorias',
+            'url' => 'categorias',
+            'icon' => 'bi bi-tags-fill',
+        ],
+
 
         ['header' => 'account_settings'],
         [

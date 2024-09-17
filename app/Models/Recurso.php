@@ -36,7 +36,6 @@ class Recurso extends Model
         'nombre',
         'id_categoria',
         'estado',
-        'modelo',
         'nro_serie',
         'id_marca',
         'fecha_registro',

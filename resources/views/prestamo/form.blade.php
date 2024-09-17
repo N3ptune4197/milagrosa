@@ -1,8 +1,10 @@
 <div class="row padding-1 p-1">
     <div class="col-md-12">
+        
         <div class="form-group mb-2 mb20">
             <label for="id_personal" class="form-label">{{ __('Personal') }}</label>
             <select name="idPersonal" class="form-control @error('idPersonal') is-invalid @enderror" id="id_personal">
+                <div id="root"></div>
                 <option value="">Seleccione la persona</option>
                 @foreach ($personals as $personal)
                     <option value="{{ $personal->id }}" {{ old('idPersonal', $prestamo?->idPersonal) == $personal->id ? 'selected' : '' }}>

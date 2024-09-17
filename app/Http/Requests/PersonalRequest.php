@@ -26,7 +26,7 @@ class PersonalRequest extends FormRequest
 			'a_paterno' => 'required|string',
 			'a_materno' => 'required|string',
 			'telefono' => 'required',
-			'id_tipodocs' => 'required',
+			'tipodoc' => 'required',
 			'nro_documento' => 'required|string',
 			'cargo' => 'required|string',
         ];

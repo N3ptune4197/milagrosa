@@ -43,11 +43,7 @@
             <input type="text" id="fecha_registro" class="form-control" value="{{ $recurso->fecha_registro ? $recurso->fecha_registro->format('d/m/Y') : '' }}" readonly>
             {!! $errors->first('fecha_registro', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
-        <div class="form-group mb-2 mb20">
-            <label for="modelo" class="form-label">{{ __('Modelo') }}</label>
-            <input type="text" name="modelo" class="form-control @error('modelo') is-invalid @enderror" value="{{ old('modelo', $recurso?->modelo) }}" id="modelo" placeholder="Modelo">
-            {!! $errors->first('modelo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
+        
         <div class="form-group mb-2 mb20">
             <label for="nro_serie" class="form-label">{{ __('Nro Serie') }}</label>
             <input type="text" name="nro_serie" class="form-control @error('nro_serie') is-invalid @enderror" value="{{ old('nro_serie', $recurso?->nro_serie) }}" id="nro_serie" placeholder="Nro Serie">

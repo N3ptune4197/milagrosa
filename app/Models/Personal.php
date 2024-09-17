@@ -32,7 +32,7 @@ class Personal extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombres', 'a_paterno', 'a_materno', 'telefono', 'id_tipodocs', 'nro_documento', 'cargo'];
+    protected $fillable = ['nombres', 'a_paterno', 'a_materno', 'telefono', 'tipodoc', 'nro_documento', 'cargo'];
 
 
     /**
