@@ -69,11 +69,11 @@
                     @csrf
                     <div class="mb-4">
                         <label for="nombre" class="block text-sm font-medium text-gray-700">{{ __('Nombre') }}</label>
-                        <input type="text" name="nombre" id="nombre" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Nombre de la Categoría" required>
+                        <input type="text" name="nombre" id="nombre" class="block w-full mt-1 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Nombre de la Categoría" required>
                     </div>
                     <div class="mb-4">
                         <label for="descripcion" class="block text-sm font-medium text-gray-700">{{ __('Descripción') }}</label>
-                        <textarea name="descripcion" id="descripcion" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" rows="3" placeholder="Descripción de la Categoría" required></textarea>
+                        <textarea name="descripcion" id="descripcion" class="block w-full mt-1 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" rows="3" placeholder="Descripción de la Categoría" required></textarea>
                     </div>
                     <!-- Input oculto para ID de la categoría -->
                     <input type="hidden" name="categoria_id" id="categoria_id">
@@ -135,9 +135,6 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     @viteReactRefresh
     @vite('resources/js/main.jsx')
@@ -154,7 +151,6 @@
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
 
-    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script>
         function clearForm() {
@@ -194,15 +190,4 @@
         });
     </script>
 @stop
-
-
-
-
-
-
-
-
-
-
-
 

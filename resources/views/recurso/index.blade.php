@@ -88,7 +88,18 @@
                                 <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
                                 <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre del recurso" required>
                             </div>
+<<<<<<< HEAD
                             
+=======
+                        </div>
+    
+                        <!-- Fila para los campos Modelo y Número de Serie -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="modelo" class="form-label">{{ __('Modelo') }}</label>
+                                <input type="text" class="form-control" name="modelo" id="modelo" placeholder="Modelo" required>
+                            </div>
+>>>>>>> a6fef93b3de71a6a16fd67429d975be655d67e72
                             <div class="col-md-6">
                                 <label for="nro_serie" class="form-label">{{ __('Nro de Serie') }}</label>
                                 <input type="text" class="form-control" name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
@@ -170,6 +181,10 @@
             $('#nombre').val(response.nombre);
             $('#categoria').val(response.id_categoria);
             $('#estado').val(response.estado);
+<<<<<<< HEAD
+=======
+            $('#modelo').val(response.modelo);
+>>>>>>> a6fef93b3de71a6a16fd67429d975be655d67e72
             $('#nro_serie').val(response.nro_serie);
             $('#marca').val(response.id_marca);
 

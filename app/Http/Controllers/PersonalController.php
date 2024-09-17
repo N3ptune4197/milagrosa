@@ -16,12 +16,11 @@ class PersonalController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request): View
-    {
-        $personals = Personal::paginate();
-
-        return view('personal.index', compact('personals'))
-            ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
-    }
+{
+    $personals = Personal::paginate();
+    return view('personal.index', compact('personals'))
+    ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
+}
 
     /**
      * Show the form for creating a new resource.
@@ -32,6 +31,7 @@ class PersonalController extends Controller
 
         return view('personal.create', compact('personal'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -46,6 +46,7 @@ class PersonalController extends Controller
         'a_paterno' => 'required',
         'a_materno' => 'required',
         'cargo' => 'required',
+
         'tipodoc' => 'required'
         ]);
         
@@ -61,6 +62,7 @@ class PersonalController extends Controller
         $personal->save();
         return redirect()->back()->with('success', 'Personal agregado exitosamente.');
     }
+
 
     /**
      * Display the specified resource.
@@ -84,7 +86,6 @@ class PersonalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
     
     //  public function update(PersonalRequest $request, Personal $personal): RedirectResponse
     public function update(Request $request, $id)
