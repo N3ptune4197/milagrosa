@@ -29,7 +29,7 @@
 
         <div class="form-group mb-2 mb20">
             <label for="cantidad_total" class="form-label">{{ __('Cantidad Total') }}</label>
-            <input type="number" name="cantidad_total" class="form-control @error('cantidad_total') is-invalid @enderror" value="{{ old('cantidad_total', $prestamo?->cantidad_total) }}" id="cantidad_total" placeholder="Cantidad Total">
+            <input type="number" name="cantidad_total" class="form-control @error('cantidad_total') is-invalid @enderror" value="{{ old('cantidad_total', $prestamo?->cantidad_total) }}" id="cantidad_total" placeholder="Cantidad Total" readonly>
             {!! $errors->first('cantidad_total', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
@@ -39,21 +39,140 @@
             {!! $errors->first('observacion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
-        <!-- Campo para seleccionar el recurso (tabla detalle_prestamo) -->
-    <div class="form-group">
-        <label for="idRecurso">Recurso</label>
-        <select name="idRecurso" class="form-control @error('idRecurso') is-invalid @enderror" required>
-            @foreach($recursos as $recurso)
-                <option value="{{ $recurso->id }}">{{ $recurso->nombre }}</option>
-            @endforeach
-        </select>
-        @error('idRecurso')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+         <!-- Selección de Recursos -->
+         <div class="form-group">
+            <label for="recursos">Recursos</label>
+            <div id="recursos-container">
+                <!-- Primer campo de selección de recursos -->
+                <div class="resource-item d-flex align-items-center mb-3">
+                    <select name="idRecurso[]" class="form-control">
+                        @foreach($recursos as $recurso)
+                            @if($recurso->estado == 1)
+                                <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    <!-- Ícono de eliminar (X) oculto inicialmente en el primer recurso -->
+                    <button type="button" class="btn btn-danger btn-sm ms-2 remove-resource" style="display: none;">&times;</button>
+                </div>
+            </div>
 
-    </div>
-    <div class="col-md-12 mt20 mt-2">
-        <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
+            <!-- Ícono para añadir recurso -->
+            <button type="button" id="add-resource" class="btn btn-success btn-sm" style="display: none;">
+                <i class="fas fa-plus"></i> Añadir Recurso
+            </button>
+
+            @error('idRecurso')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <!-- Botón de enviar -->
+        <div class="col-md-12 mt20 mt-2">
+            <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
+        </div>
     </div>
 </div>
+
+<!-- SCRIPTS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const recursosContainer = document.getElementById('recursos-container');
+        const cantidadTotalInput = document.getElementById('cantidad_total');
+        const addResourceButton = document.getElementById('add-resource');
+        const maxRecursos = {{ $recursos->count() }}; // Número total de recursos disponibles
+        let recursosAgregados = 1; // Inicialmente ya hay un recurso mostrado
+
+        // Mostrar el botón de añadir recurso solo si hay recursos disponibles
+        if (maxRecursos > 1) { 
+            addResourceButton.style.display = 'inline-block';
+        }
+
+        // Función para actualizar la cantidad total
+        function updateCantidadTotal() {
+            let cantidadTotal = 0;
+
+            // Obtener todos los campos de selección
+            const selects = recursosContainer.querySelectorAll('select');
+
+            selects.forEach(select => {
+                // Obtener las opciones seleccionadas en cada campo
+                const opcionesSeleccionadas = Array.from(select.selectedOptions);
+
+                // Sumar la cantidad de cada recurso seleccionado
+                opcionesSeleccionadas.forEach(opcion => {
+                    cantidadTotal += parseInt(opcion.getAttribute('data-cantidad')) || 0;
+                });
+            });
+
+            // Actualizar el campo de cantidad total
+            cantidadTotalInput.value = cantidadTotal;
+        }
+
+        // Agregar evento para actualizar la cantidad total cuando cambian las opciones
+        recursosContainer.addEventListener('change', updateCantidadTotal);
+
+        // Función para agregar un nuevo campo de recursos
+        document.getElementById('add-resource').addEventListener('click', function() {
+            if (recursosAgregados < maxRecursos) {
+                const newField = document.createElement('div');
+                newField.classList.add('resource-item', 'd-flex', 'align-items-center', 'mb-3');
+                newField.innerHTML = `
+                    <select name="idRecurso[]" class="form-control">
+                        @foreach($recursos as $recurso)
+                            @if($recurso->estado == 1)
+                                <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    <button type="button" class="btn btn-danger btn-sm ms-2 remove-resource">&times;</button>
+                `;
+                recursosContainer.appendChild(newField);
+
+                recursosAgregados++;
+
+                // Ocultar el botón si se ha alcanzado el número máximo de recursos
+                if (recursosAgregados >= maxRecursos) {
+                    addResourceButton.style.display = 'none';
+                }
+
+                // Añadir evento para eliminar el campo al hacer clic en la X
+                newField.querySelector('.remove-resource').addEventListener('click', function () {
+                    newField.remove();
+                    recursosAgregados--;
+
+                    // Mostrar el botón de añadir recurso si se elimina un recurso y el límite no ha sido alcanzado
+                    if (recursosAgregados < maxRecursos) {
+                        addResourceButton.style.display = 'inline-block';
+                    }
+
+                    updateCantidadTotal();
+                });
+
+                updateCantidadTotal();
+            }
+        });
+
+        // Evento para eliminar un recurso (para los campos ya existentes)
+        document.querySelectorAll('.remove-resource').forEach(function (button) {
+            button.addEventListener('click', function () {
+                this.parentElement.remove();
+                recursosAgregados--;
+
+                // Mostrar el botón de añadir recurso si se elimina un recurso y el límite no ha sido alcanzado
+                if (recursosAgregados < maxRecursos) {
+                    addResourceButton.style.display = 'inline-block';
+                }
+
+                updateCantidadTotal();
+            });
+        });
+    });
+</script>
+</script>
+    <!-- CSS de Bootstrap Multiselect -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.min.css">
+
+<!-- JS de Bootstrap Multiselect -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>
+    
