@@ -28,7 +28,7 @@ class Detalleprestamo extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['idprestamo', 'id_recurso'];
+    protected $fillable = ['idprestamo', 'id_recurso','fecha_devolucion'];
 
 
     /**

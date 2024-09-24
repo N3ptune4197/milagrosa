@@ -34,7 +34,8 @@ class Prestamo extends Model
         'fecha_prestamo',
         'fecha_devolucion',
         'cantidad_total',
-        'observacion'
+        'observacion',
+        'fecha_devolucion_real'
     ];
 
     /**
@@ -42,9 +43,10 @@ class Prestamo extends Model
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'fecha_prestamo' => 'datetime',
-        'fecha_devolucion' => 'datetime',
+    protected $dates = [
+        'fecha_prestamo',
+        'fecha_devolucion',
+        'fecha_devolucion_real'
     ];
 
     /**
