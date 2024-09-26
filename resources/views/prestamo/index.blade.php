@@ -70,7 +70,6 @@
                             <th>Fecha de Préstamo</th>
                             <th>Fecha de Devolución</th>
                             <th>Fecha de Devolución Marcada</th>
-                            <th>Cantidad Total</th>
                             <th>Observación</th>
                             <th>Recurso</th>
                             <th>Estado</th> <!-- Nueva columna para mostrar el estado -->
@@ -86,7 +85,6 @@
                                     <td>{{ $prestamo->fecha_prestamo }}</td>
                                     <td>{{ $detalle->fecha_devolucion }}</td>
                                     <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                                    <td>{{ $prestamo->cantidad_total }}</td>
                                     <td>{{ $prestamo->observacion }}</td>
                                     <td>{{ $detalle->recurso->nombre ?? 'N/A' }}</td>
                                     <td>
@@ -183,11 +181,6 @@
                                 <input type="text" name="fecha_prestamo" class="form-control" value="{{ now()->format('d/m/Y') }}" id="fecha_prestamo" readonly>
                             </div>
 
-                            <div class="form-group mb-2">
-                                <label for="cantidad_total" class="form-label">{{ __('Cantidad Total') }}</label>
-                                <input type="number" name="cantidad_total" class="form-control" id="cantidad_total" placeholder="Cantidad Total" readonly>
-                            </div>
-
 
                             <!-- Selección de Recursos -->
                             <div class="form-group">
@@ -198,7 +191,7 @@
                                             <select name="idRecurso[]" class="form-control select2" required>
                                                 <option value="">Seleccione un recurso</option>
                                                 @foreach($recursos as $recurso)
-                                                    <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
+                                                    <option value="{{ $recurso->id }}" >{{ $recurso->nombre }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -307,22 +300,10 @@ $('#recursos-container').on('click', '#add-resource', function() {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const recursosContainer = document.getElementById('recursos-container');
-        const cantidadTotalInput = document.getElementById('cantidad_total');
         const addResourceButton = document.getElementById('add-resource');
         const maxRecursos = {{ $recursos->count() }};
         let recursosAgregados = recursosContainer.querySelectorAll('select').length;
 
-        function updateCantidadTotal() {
-            let cantidadTotal = 0;
-            const selects = recursosContainer.querySelectorAll('select');
-            selects.forEach(select => {
-                const opcionesSeleccionadas = Array.from(select.selectedOptions);
-                opcionesSeleccionadas.forEach(opcion => {
-                    cantidadTotal += parseInt(opcion.getAttribute('data-cantidad')) || 0;
-                });
-            });
-            cantidadTotalInput.value = cantidadTotal;
-        }
 
         addResourceButton.addEventListener('click', function() {
             if (recursosAgregados < maxRecursos) {
@@ -333,7 +314,7 @@ $('#recursos-container').on('click', '#add-resource', function() {
                         <select name="idRecurso[]" class="form-control" required>
                             <option value="">Seleccione un recurso</option>
                             @foreach($recursos as $recurso)
-                                <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
+                                <option value="{{ $recurso->id }}">{{ $recurso->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -360,10 +341,8 @@ $('#recursos-container').on('click', '#add-resource', function() {
                     if (recursosAgregados < maxRecursos) {
                         addResourceButton.style.display = 'inline-block';
                     }
-                    updateCantidadTotal();
                 });
 
-                updateCantidadTotal();
             }
         });
 
@@ -374,11 +353,9 @@ $('#recursos-container').on('click', '#add-resource', function() {
                 if (recursosAgregados < maxRecursos) {
                     addResourceButton.style.display = 'inline-block';
                 }
-                updateCantidadTotal();
             });
         });
 
-        updateCantidadTotal();
     });
 </script>
 

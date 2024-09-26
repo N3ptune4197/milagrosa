@@ -33,7 +33,6 @@ class Prestamo extends Model
         'idPersonal',
         'fecha_prestamo',
         'fecha_devolucion',
-        'cantidad_total',
         'observacion',
         'fecha_devolucion_real'
     ];

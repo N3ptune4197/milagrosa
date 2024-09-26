@@ -111,7 +111,6 @@ class PrestamoController extends Controller
                 $prestamo = Prestamo::create([
                     'idPersonal' => $idPersonal,
                     'fecha_prestamo' => now(), // Fecha actual del sistema
-                    'cantidad_total' => 1, // Cada préstamo se considera individual
                     'observacion' => $observacion
                 ]);
 

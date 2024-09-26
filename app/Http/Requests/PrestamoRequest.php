@@ -25,7 +25,6 @@ class PrestamoRequest extends FormRequest
 			'idPersonal' => 'required',
 			'fecha_prestamo' => 'required', 'date', 'after_or_equal:today',
 			'fecha_devolucion' => 'required',
-			'cantidad_total' => 'required',
 			'observacion' => 'nullable|string',
         ];
     }
