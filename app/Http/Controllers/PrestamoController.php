@@ -73,76 +73,79 @@ class PrestamoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(PrestamoRequest $request): RedirectResponse
-    {
-        // Obtener los datos del formulario
-        $idPersonal = $request->input('idPersonal');
-        $observacion = $request->input('observacion');
-        $idRecursos = $request->input('idRecurso'); // Array de recursos seleccionados
-        $fechaDevoluciones = $request->input('fecha_devolucion'); // Array de fechas de devolución
-    
-        // Validar que haya recursos seleccionados
-        if (empty($idRecursos) || !is_array($idRecursos)) {
-            return back()->withErrors(['error' => 'Debes seleccionar al menos un recurso.']);
-        }
-    
-        // Validar que las fechas de devolución estén presentes y sean válidas
-        if (empty($fechaDevoluciones) || !is_array($fechaDevoluciones) || count($fechaDevoluciones) !== count($idRecursos)) {
-            return back()->withErrors(['error' => 'Debes proporcionar una fecha de devolución para cada recurso seleccionado.']);
-        }
-    
-        // Validar la cantidad de recursos disponibles
-        $cantidadRecursosSeleccionados = count($idRecursos);
-        $cantidadRecursosDisponibles = Recurso::where('estado', 1)->count();
-    
-        if ($cantidadRecursosSeleccionados > $cantidadRecursosDisponibles) {
-            return Redirect::back()->withErrors(['error' => 'No puedes seleccionar más recursos de los que están disponibles.']);
-        }
-    
-        // Iniciar una transacción para asegurar la integridad de los datos
-        DB::beginTransaction();
-        try {
-            // Crear el préstamo principal
-            $prestamo = Prestamo::create([
-                'idPersonal' => $idPersonal,
-                'fecha_prestamo' => now(), // Fecha actual del sistema
-                'cantidad_total' => $cantidadRecursosSeleccionados,
-                'observacion' => $observacion
-            ]);
-    
-            // Recorrer los recursos seleccionados para crear los detalles del préstamo
-            foreach ($idRecursos as $index => $idRecursoItem) {
-                $recurso = Recurso::find($idRecursoItem);
-    
-                // Verificar que el recurso esté disponible antes de procesar
-                if ($recurso && $recurso->estado == 1) {
-                    // Crear el detalle del préstamo asociado con 'fecha_devolucion'
-                    DetallePrestamo::create([
-                        'idprestamo' => $prestamo->id,
-                        'id_recurso' => $recurso->id,
-                        'fecha_devolucion' => $fechaDevoluciones[$index],
-                    ]);
-    
-                    // Actualizar el estado del recurso a "Prestado"
-                    $recurso->estado = 2; // Estado 2 significa "Prestado"
-                    $recurso->save();
-                } else {
-                    // Si el recurso no está disponible, lanzar una excepción
-                    throw new \Exception("El recurso con ID {$idRecursoItem} no está disponible.");
-                }
-            }
-    
-            // Confirmar la transacción
-            DB::commit();
-    
-            return Redirect::route('prestamos.index')
-                ->with('success', 'Préstamo creado exitosamente con todos los recursos seleccionados.');
-        } catch (\Exception $e) {
-            // Revertir la transacción en caso de error
-            DB::rollback();
-    
-            return Redirect::back()->withErrors(['error' => 'Error al crear el préstamo: ' . $e->getMessage()]);
-        }
+{
+    // Obtener los datos del formulario
+    $idPersonal = $request->input('idPersonal');
+    $observacion = $request->input('observacion');
+    $idRecursos = $request->input('idRecurso'); // Array de recursos seleccionados
+    $fechaDevoluciones = $request->input('fecha_devolucion'); // Array de fechas de devolución
+
+    // Validar que haya recursos seleccionados
+    if (empty($idRecursos) || !is_array($idRecursos)) {
+        return back()->withErrors(['error' => 'Debes seleccionar al menos un recurso.']);
     }
+
+    // Validar que las fechas de devolución estén presentes y sean válidas
+    if (empty($fechaDevoluciones) || !is_array($fechaDevoluciones) || count($fechaDevoluciones) !== count($idRecursos)) {
+        return back()->withErrors(['error' => 'Debes proporcionar una fecha de devolución para cada recurso seleccionado.']);
+    }
+
+    // Validar la cantidad de recursos disponibles
+    $cantidadRecursosSeleccionados = count($idRecursos);
+    $cantidadRecursosDisponibles = Recurso::where('estado', 1)->count();
+
+    if ($cantidadRecursosSeleccionados > $cantidadRecursosDisponibles) {
+        return Redirect::back()->withErrors(['error' => 'No puedes seleccionar más recursos de los que están disponibles.']);
+    }
+
+    // Iniciar una transacción para asegurar la integridad de los datos
+    DB::beginTransaction();
+    try {
+        // Recorrer los recursos seleccionados para crear los detalles del préstamo
+        foreach ($idRecursos as $index => $idRecursoItem) {
+            $recurso = Recurso::find($idRecursoItem);
+
+            // Verificar que el recurso esté disponible antes de procesar
+            if ($recurso && $recurso->estado == 1) {
+                // Crear un préstamo individual para cada recurso
+                $prestamo = Prestamo::create([
+                    'idPersonal' => $idPersonal,
+                    'fecha_prestamo' => now(), // Fecha actual del sistema
+                    'cantidad_total' => 1, // Cada préstamo se considera individual
+                    'observacion' => $observacion
+                ]);
+
+                // Crear el detalle del préstamo asociado con 'fecha_devolucion'
+                DetallePrestamo::create([
+                    'idprestamo' => $prestamo->id,
+                    'id_recurso' => $recurso->id,
+                    'fecha_devolucion' => $fechaDevoluciones[$index],
+                ]);
+
+                // Actualizar el estado del recurso a "Prestado"
+                $recurso->estado = 2; // Estado 2 significa "Prestado"
+                $recurso->save();
+            } else {
+                // Si el recurso no está disponible, lanzar una excepción
+                throw new \Exception("El recurso con ID {$idRecursoItem} no está disponible.");
+            }
+        }
+
+        // Confirmar la transacción
+        DB::commit();
+
+        return Redirect::route('prestamos.index')
+            ->with('success', 'Préstamos creados exitosamente para todos los recursos seleccionados.');
+    } catch (\Exception $e) {
+        // Revertir la transacción en caso de error
+        DB::rollback();
+
+        return Redirect::back()->withErrors(['error' => 'Error al crear los préstamos: ' . $e->getMessage()]);
+    }
+}
+
+
+    
     /**
      * Display the specified resource.
      */
@@ -191,7 +194,7 @@ class PrestamoController extends Controller
     public function markAsReturned(Request $request, $id)
 {
     // Encuentra el detalle del préstamo
-    $detallePrestamo = Detalleprestamo::find($id);
+    $detallePrestamo = DetallePrestamo::find($id);
 
     if (!$detallePrestamo) {
         return redirect()->route('prestamos.index')->with('error', 'Detalle del préstamo no encontrado.');
@@ -210,18 +213,16 @@ class PrestamoController extends Controller
     $prestamo->observacion = $observacion;
     $prestamo->save();
 
-    // Obtener el estado del recurso desde el formulario
-    $nuevoEstado = $request->input('estado', 1); // Por defecto será 1 (Disponible)
+    // Actualiza la fecha de devolución en el detalle del préstamo
+    $detallePrestamo->fecha_devolucion = now(); // Aquí estableces la fecha de devolución
+    $detallePrestamo->save();
 
-    // Actualiza el estado del recurso según lo seleccionado
-    $recurso->estado = $nuevoEstado; // Cambia el estado del recurso basado en la selección
+    // Cambiar el estado del recurso a "Disponible"
+    $recurso->estado = 1; // Estado 1 significa "Disponible"
     $recurso->save();
 
-    // Elimina o actualiza el detalle del préstamo si es necesario
-    $detallePrestamo->delete();
-
     // Verifica si todos los detalles del préstamo han sido devueltos
-    if ($prestamo->detalleprestamos()->count() == 0) {
+    if ($prestamo->detalleprestamos()->whereNull('fecha_devolucion')->count() == 0) {
         // Si todos los recursos han sido devueltos, cambia el estado del préstamo
         $prestamo->estado = 'desactivo';
         $prestamo->fecha_devolucion_real = now(); // Fecha de devolución real
@@ -230,6 +231,7 @@ class PrestamoController extends Controller
 
     return redirect()->route('prestamos.index')->with('success', 'Recurso marcado como devuelto.');
 }
+
 
 
     
