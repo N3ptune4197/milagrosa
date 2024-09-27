@@ -17,9 +17,6 @@
             <p>{{ $message }}</p>
         </div>
     @endif
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
     
     <div class="card">
         <div class="card-body">
@@ -108,41 +105,47 @@
                                         @endif
                                     </td>
                                 </tr>
-                                
-<!-- Modal para marcar como devuelto -->
-<div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="devolucionModalLabel-{{ $detalle->id }}">Marcar como devuelto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="devolucionForm-{{ $detalle->id }}" action="{{ route('prestamos.markAsReturned', $detalle->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
+                                                              
+             <!-- Modal para marcar como devuelto -->
+                          <!-- Modal para marcar como devuelto -->
 
-                    <div class="form-group">
-                        <label for="estado-{{ $detalle->id }}">Estado del recurso</label>
-                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control">
-                            <option value="1">Disponible</option>
-                            <option value="4">Dañado</option>
-                        </select>
-                    </div>
+                                       <!-- Modal para marcar como devuelto -->
 
-                    <div class="form-group">
-                        <label for="observacion-{{ $detalle->id }}">Observación (opcional)</label>
-                        <textarea name="observacion" id="observacion-{{ $detalle->id }}" class="form-control" placeholder="Ingrese observación sobre el estado del recurso al devolverlo (por ejemplo, si está dañado)."></textarea>
-                    </div>
+                                                    <!-- Modal para marcar como devuelto -->
 
-                    <button type="submit" class="btn btn-success">Confirmar devolución</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                                <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="devolucionModalLabel-{{ $detalle->id }}">Marcar como devuelto</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="devolucionForm-{{ $detalle->id }}" action="{{ route('prestamos.markAsReturned', $detalle->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+
+                                                    <div class="form-group">
+                                                        <label for="estado-{{ $detalle->id }}">Estado del recurso</label>
+                                                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control">
+                                                            <option value="1">Disponible</option>
+                                                            <option value="4">Dañado</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="observacion-{{ $detalle->id }}">Observación (opcional)</label>
+                                                        <textarea name="observacion" id="observacion-{{ $detalle->id }}" class="form-control" placeholder="Ingrese observación sobre el estado del recurso al devolverlo (por ejemplo, si está dañado)."></textarea>
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-success">Confirmar devolución</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
 
@@ -154,84 +157,99 @@
         </div>
     </div>
 
-<!-- Modal de Creación/Edición de Préstamos -->
-<div class="modal fade" id="prestamoModal" tabindex="-1" aria-labelledby="prestamoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg flex items-center justify-center" role="document">
-        <div class="modal-content rounded-xl border-4 border-black">
-            <div class="modal-header bg-blue-500 text-white flex justify-between items-center p-4 border-b-10 border-blue-800">
-                <h5 class="modal-title text-center flex-1 font-bold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Aquí empieza el formulario -->
-                <form action="{{ route('prestamos.store') }}" method="POST">
-                    @csrf
-                    <div class="row padding-1 p-1">
-                        <div class="col-md-12">
-                            <div class="form-group mb-5">
-                                <label for="id_personal" class="form-label">{{ __('Personal') }}</label>
-                                <select name="idPersonal" class="form-control select2" id="id_personal" required>
-                                    <option value="">Seleccione la persona</option>
-                                    @foreach ($personals as $personal)
-                                        <option value="{{ $personal->id }}">{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-2">
-                                <label for="fecha_prestamo" class="form-label">{{ __('Fecha Prestamo') }}</label>
-                                <input type="text" name="fecha_prestamo" class="form-control" value="{{ now()->format('d/m/Y') }}" id="fecha_prestamo" readonly>
-                            </div>
-
-                            <div class="form-group mb-2">
-                                <label for="cantidad_total" class="form-label">{{ __('Cantidad Total') }}</label>
-                                <input type="number" name="cantidad_total" class="form-control" id="cantidad_total" placeholder="Cantidad Total" readonly>
-                            </div>
 
 
-                            <!-- Selección de Recursos -->
-                            <div class="form-group">
-                                <label for="recursos">{{ __('Recursos') }}</label>
-                                <div id="recursos-container">
-                                    <div class="resource-item row mb-3 align-items-end">
-                                        <div class="col-md-6">
-                                            <select name="idRecurso[]" class="form-control select2" required>
-                                                <option value="">Seleccione un recurso</option>
-                                                @foreach($recursos as $recurso)
-                                                    <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                            
-                                        <div class="col-md-4">
-                                            <label for="fecha_devolucion[]" class="form-label">{{ __('Fecha de devolución') }}</label>
-                                            <input type="date" name="fecha_devolucion[]" class="form-control" min="{{ now()->format('Y-m-d') }}" required>
-                                        </div>
-                            
-                                        <div class="col-md-2 text-end">
-                                            <button type="button" class="btn btn-danger btn-sm remove-resource" style="display: none;">&times;</button>
+
+
+
+
+
+
+
+
+
+    <!-- Modal de Creación/Edición de Préstamos -->
+    <div class="modal fade" id="prestamoModal" tabindex="-1" aria-labelledby="prestamoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg flex items-center justify-center" role="document">
+            <div class="modal-content rounded-xl border-4 border-black">
+                <div class="modal-header bg-blue-500 text-white flex justify-between items-center p-4 border-b-10 border-blue-800">
+                    <h5 class="modal-title text-center flex-1 font-bold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aquí empieza el formulario -->
+                    <form action="{{ route('prestamos.store') }}" method="POST">
+                        @csrf
+                        <div class="row padding-1 p-1">
+                            <div class="col-md-12">
+                                <div class="form-group mb-5">
+                                    <label for="id_personal" class="form-label">{{ __('Personal') }}</label>
+                                    <select name="idPersonal" class="js-example-basic-single rounded-lg form-control block w-full px-4 border border-gray-300 shadow-sm" id="id_personal" required>
+                                        <option value="">Seleccione Personal</option>
+                                        @foreach ($personals as $personal)
+                                            <option value="{{ $personal->id }}">{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+
+                                <div class="form-group mb-5">
+                                    <label for="fecha_prestamo" class="form-label">{{ __('Fecha Prestamo') }}</label>
+                                    <input type="text" name="fecha_prestamo" class="form-control" value="{{ now()->format('d/m/Y') }}" id="fecha_prestamo" readonly>
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="cantidad_total" class="form-label">{{ __('Cantidad Total') }}</label>
+                                    <input type="number" name="cantidad_total" class="form-control" id="cantidad_total" placeholder="Cantidad Total" readonly>
+                                </div>
+
+
+                                <!-- Selección de Recursos -->
+                                <div class="form-group">
+                                    <div id="recursos-container">
+                                        <div class="resource-item row align-items-end ">
+                                            <div class="col-md-6">
+                                                <label for="recurso[]" class="form-label">{{ __('Recurso') }}</label>
+
+                                                <select name="idRecurso[]" class="form-control select2" required>
+                                                    <option value="">Seleccione un recurso</option>
+                                                    @foreach($recursos as $recurso)
+                                                        <option value="{{ $recurso->id }}" data-cantidad="{{ $recurso->cantidad }}">{{ $recurso->nombre }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                
+                                            <div class="col-md-4">
+                                                <label for="fecha_devolucion[]" class="form-label">{{ __('Fecha de devolución') }}</label>
+                                                <input type="date" name="fecha_devolucion[]" class="form-control" min="{{ now()->format('Y-m-d') }}" required>
+                                            </div>
+                                
+                                            <div class="col-md-2 text-end">
+                                                <button type="button" class="btn btn-danger btn-sm remove-resource" style="display: none;">&times;</button>
+                                            </div>
                                         </div>
                                     </div>
+                                    <button type="button" id="add-resource" class="btn btn-success btn-sm mt-2">
+                                        <i class="fas fa-plus"></i> {{ __('Añadir Recurso') }}
+                                    </button>
                                 </div>
-                                <button type="button" id="add-resource" class="btn btn-success btn-sm mt-2">
-                                    <i class="fas fa-plus"></i> {{ __('Añadir Recurso') }}
-                                </button>
-                            </div>
-                            
+                                
 
-                            <!-- Botón de enviar -->
-                            <div class="col-md-12 mt-2">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
-                                <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
+                                <!-- Botón de enviar -->
+                                <hr>
+                                <hr>
+                                <div class="col-md-12 mt-2 flex justify-end gap-1">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
+                                    <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-                <!-- Fin del formulario -->
+                    </form>
+                    <!-- Fin del formulario -->
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
     
@@ -246,9 +264,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+
     @viteReactRefresh
-    @vite('resources/js/main.jsx')
+    @vite('resources/js/main.jsx') 
 
     
     @vite('resources/css/app.css')
@@ -257,12 +279,23 @@
 @stop
     
 @section('js')
-    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Incluye jQuery una sola vez -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Incluye Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Incluye Select2 una sola vez -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Incluye DataTables JS -->
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 
     <script>
         new DataTable('#prestamosTable', {
@@ -272,34 +305,31 @@
             },
         });
     </script>
+
+
+
+
     <script>
-       $(document).ready(function() {
-    // Inicialización para el selector de Personal
-    $('#id_personal').select2({
-        placeholder: "Seleccione la persona",
-        allowClear: true,
-        width: '100%', // Asegura que el Select2 ocupe todo el ancho del contenedor
-        tags: false // Permite buscar pero no agregar nuevas opciones
+
+    $(document).ready(function() {
+        // Inicializa Select2 en el campo con ID 'id_personal'
+        $('#id_personal').select2({
+            width: '100%',
+        });
     });
 
-    // Inicialización para el selector de Recursos
-    $('select[name="idRecurso[]"]').select2({
-        placeholder: "Seleccione un recurso",
-        allowClear: true,
-        width: '100%',
-        tags: false // También aquí se busca pero no se crean nuevos recursos
-    });
-});
+
 
 // Inicializar select2 en recursos agregados dinámicamente
-$('#recursos-container').on('click', '#add-resource', function() {
-    $('select[name="idRecurso[]"]').select2({
-        placeholder: "Seleccione un recurso",
-        allowClear: true,
-        width: '100%',
-        tags: false
+
+    $('#recursos-container').on('click', '#add-resource', function() {
+        $('select[name="idRecurso[]"]').select2({
+            placeholder: "Seleccione un recurso",
+            allowClear: true,
+            width: '100%',
+            tags: false
+        });
     });
-});
 
         </script>
     
@@ -339,11 +369,10 @@ $('#recursos-container').on('click', '#add-resource', function() {
                     </div>
 
                     <div class="col-md-4">
-                        <label for="fecha_devolucion[]" class="form-label">Fecha de devolución</label>
-                        <input type="date" name="fecha_devolucion[]" class="form-control" required>
+                        <input type="date" name="fecha_devolucion[]" class="form-control " required>
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-md-2 d-flex align-items-center">
                         <button type="button" class="btn btn-danger btn-sm remove-resource">&times;</button>
                     </div>
                 `;

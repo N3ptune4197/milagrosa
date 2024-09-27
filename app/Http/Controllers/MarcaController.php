@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\MarcaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Database\QueryException; 
 
 class MarcaController extends Controller
 {
@@ -23,62 +24,47 @@ class MarcaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        $marca = new Marca();
-
-        return view('marca.create', compact('marca'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(MarcaRequest $request): RedirectResponse
     {
         Marca::create($request->validated());
-
-        return Redirect::route('marcas.index')
-            ->with('success', 'Marca created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $marca = Marca::find($id);
-
-        return view('marca.show', compact('marca'));
+        return redirect()->back()->with('success', 'Marca creada exitosamente.');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit($id)
     {
-        $marca = Marca::find($id);
-
-        return view('marca.edit', compact('marca'));
+        $marca = Marca::findOrFail($id);
+        return response()->json($marca);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(MarcaRequest $request, Marca $marca): RedirectResponse
+    public function update(MarcaRequest $request, $id): RedirectResponse
     {
+        $marca = Marca::findOrFail($id);
         $marca->update($request->validated());
-
-        return Redirect::route('marcas.index')
-            ->with('success', 'Marca updated successfully');
+        return redirect()->back()->with('success', 'Marca actualizada exitosamente.');
     }
 
-    public function destroy($id): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
     {
-        Marca::find($id)->delete();
-
-        return Redirect::route('marcas.index')
-            ->with('success', 'Marca deleted successfully');
+        try {
+            $marca = Marca::findOrFail($id);
+            $marca->delete();
+            return response()->json(['message' => 'Marca eliminada correctamente.'], 200);
+        } catch (QueryException $e) {
+            if ($e->getCode() === 23000) {
+                return response()->json(['message' => 'No se puede eliminar esta marca porque está relacionada con otros registros.'], 400);
+            }
+            return response()->json(['message' => 'Error al eliminar la marca.'], 500);
+        }
     }
 }
