@@ -6,18 +6,14 @@
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-tags"></i> Marcas</h1>
                 
-        <a href="#" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#marcaModal">
-            {{ __('Crear Nueva') }}
-        </a>
+        <button href="#" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#marcaModal" onclick="clearForm()"><i class="fa-solid fa-plus fa-shake"></i>
+            {{ __('Crear Nuevo') }}
+        </button>
     </div>
 @stop
 
 @section('content')
-@if ($message = Session::get('success'))
-    <div class="alert alert-success">
-        <p>{{ $message }}</p>
-    </div>
-@endif
+
 
 <p class="mb-4">Aquí se mostrarán las marcas registradas.</p>
 
@@ -36,20 +32,20 @@
                 <tbody>
                     @foreach ($marcas as $marca)
                         <tr>
-                            <td>{{ ++$i }}</td>
+                            <td>{{ $marca->id }}</td>
                             <td>{{ $marca->nombre }}</td>
                             <td>{{ $marca->descripcion }}</td>
                             <td>
-                                <a class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#marcaModal" data-id="{{ $marca->id }}" data-nombre="{{ $marca->nombre }}" data-descripcion="{{ $marca->descripcion }}" data-action="{{ route('marcas.show', $marca->id) }}">
-                                    <i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}
-                                </a>
-                                <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#marcaModal" data-id="{{ $marca->id }}" data-nombre="{{ $marca->nombre }}" data-descripcion="{{ $marca->descripcion }}" data-action="{{ route('marcas.update', $marca->id) }}">
-                                    <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
-                                </a>
+                                
                                 <form action="{{ route('marcas.destroy', $marca->id) }}" method="POST" style="display:inline;">
+                                    
+                                    <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="confirmEdit('{{ $marca->nombre }}', {{ $marca->id }})">
+                                        <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
+                                    </a>
+
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Está seguro de que desea eliminar esta marca?') ? this.closest('form').submit() : false;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $marca->nombre }}')">
                                         <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                     </button>
                                 </form>
@@ -62,6 +58,8 @@
     </div>
 </div>
 
+
+
 <!-- Modal de Creación/Edición de Marcas -->
 <div class="modal fade" id="marcaModal" tabindex="-1" aria-labelledby="marcaModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">
@@ -73,7 +71,6 @@
             <div class="modal-body">
                 <form id="marcaForm" method="POST">
                     @csrf
-                    @method('POST') <!-- Este método se actualizará dinámicamente -->
                     <div class="mb-3">
                         <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
                         <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre de la Marca" required>
@@ -101,8 +98,11 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+   
     @viteReactRefresh
     @vite('resources/js/main.jsx')
+
+    
     @vite('resources/css/app.css')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 @stop
@@ -114,6 +114,10 @@
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="https://kit.fontawesome.com/89c262ed76.js" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         new DataTable('#marcasTable', {
             responsive: true,
@@ -123,7 +127,7 @@
         });
 
         // Script para manejar la apertura del modal para edición
-        document.addEventListener('DOMContentLoaded', function() {
+        /* document.addEventListener('DOMContentLoaded', function() {
             var marcaModal = document.getElementById('marcaModal');
             marcaModal.addEventListener('show.bs.modal', function(event) {
                 var button = event.relatedTarget; // Button that triggered the modal
@@ -156,6 +160,157 @@
                     inputDescripcion.value = '';
                 }
             });
-        });
+        }); */
     </script>
+
+
+<!--                        agregar marca                            -->
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: '¡Éxito!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#66b366'
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#66b366'
+            });
+        </script>
+    @endif
+
+<!--                        Editar marca                            -->
+
+    <script>
+        function clearForm() {
+            $('#marcaForm')[0].reset();
+            $('#marcaForm').attr('action', '{{ route("marcas.store") }}');
+            $('#marcaForm').find('input[name="_method"]').remove();
+        }
+
+        function confirmEdit(nombre, id) {
+        Swal.fire({
+            title: '¿Desea editarlo?',
+            html: 'A partir de ahora <b>"' + nombre + '"</b> cambiará <i class="fa-regular fa-face-flushed"></i>.',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, ¡editarlo!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, llama a la función de edición
+                editMarca(id);
+            }
+        });
+    }
+
+        function editMarca(id) {
+            $.ajax({
+                url: '/marcas/' + id + '/edit',
+                type: 'GET',
+                success: function(response) {
+                    $('#marca_id').val(response.id);
+                    $('#nombre').val(response.nombre);
+                    $('#descripcion').val(response.descripcion);
+
+                    // Cambiar el action del formulario para editar
+                    $('#marcaForm').attr('action', '/marcas/' + id);
+                    $('#marcaForm').append('<input type="hidden" name="_method" value="PATCH">');
+                    $('#marcaModal').modal('show');
+                },
+                error: function(xhr) {
+                    console.error("Error al obtener los datos de la marca: ", xhr.responseText);
+                }
+            });
+        }
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--                        Eliminar marca                            -->
+
+
+    <script>
+        function confirmDelete(e, form, nombre) {
+            e.preventDefault(); // Evitar el envío inmediato del formulario
+        
+            Swal.fire({
+                title: "¿Está seguro que desea eliminarlo?",
+                html: '<b>"' + nombre + '"</b> ya no volverá <i class="fa-regular fa-face-sad-tear"></i> ',
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: '<i class="fa-regular fa-face-frown"></i> Sí, ¡elimínalo!',
+                cancelButtonText: '<i class="fa-regular fa-face-laugh-beam"></i> Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Realizar la solicitud AJAX
+                    $.ajax({
+                        url: form.action,
+                        type: 'POST', // Cambiar a POST para enviar el CSRF token
+                        data: {
+                            _method: 'DELETE', // Esto es importante para que Laravel lo reconozca
+                            _token: $('meta[name="csrf-token"]').attr('content') // Obtener el token CSRF
+                        },
+                        success: function(response) {
+                            // Si se eliminó correctamente
+                            Swal.fire({
+                                title: "¡Eliminado!",
+                                text: "La categoría ha sido eliminada.",
+                                icon: "success"
+                            }).then(() => {
+                                // Redireccionar o actualizar la página según lo necesites
+                                location.reload(); // Por ejemplo, recargar la página
+                            });
+                        },
+                        error: function(xhr) {
+                            // Si hay un error, mostrar la alerta de error
+                            let errorMessage = xhr.responseJSON.message || "Ocurrió un error inesperado.";
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: errorMessage, // Mensaje del servidor
+                                footer: '<p>¡Salvados por la alerta! <i class="fa-regular fa-face-grin-beam-sweat"></i></p>'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+                    
+    </script>
+    
+
+
 @stop

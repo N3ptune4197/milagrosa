@@ -46,12 +46,11 @@
                                 <td>
                                     <form action="{{ route('personals.destroy', $personal->id) }}" method="POST">
 
-                                        <a class="btn btn-sm btn-primary" href="{{ route('personals.show', $personal->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
-                                        <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="editPersonal({{ $personal->id }})"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                        <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="confirmEdit('{{ $personal->nombres }}', {{ $personal->id }}, '{{ $personal->a_paterno}}', '{{ $personal->a_materno}}' )"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
 
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $personal->nombres}}', '{{ $personal->a_paterno}}', '{{ $personal->a_materno}}')">
                                             <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                         </button>
                                     </form>
@@ -101,7 +100,7 @@
                                     <label for="nro_documento" class="block text-sm font-medium text-gray-700">{{ __('Número de documento') }}</label>
                                     <div class="relative">
 
-                                        <input type="text" name="nro_documento" id="nro_documento" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Nro Documento">
+                                        <input type="text" name="nro_documento" id="nro_documento" onkeypress='return validaNumericos(event)' class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Nro Documento">
 
                                         <button type="button" class="absolute inset-y-0 right-0 px-3 py-1 text-gray-500 hover:text-gray-700" id="buscar">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -168,16 +167,49 @@
 
 @stop
 
+
+
+@section('css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @vite('resources/css/app.css')
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@stop
+
+
+
 <!-- Scripts -->
 @section('js')
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
+    <script src="https://kit.fontawesome.com/89c262ed76.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script>
+    new DataTable('#personalsTable', {
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/2.1.4/i18n/es-MX.json',
+        },
+    });
+</script>
+
+
+
 
 <script>
     function validaNumericos(event) {
@@ -238,8 +270,6 @@
                         $("#a_materno").val(response.apellidoMaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
 
 
-                    } else {
-                        alert("No se encontraron datos para el DNI ingresado.");
                     }
                 },
                 error: function() {
@@ -253,7 +283,7 @@
                 url: `https://api.factiliza.com/pe/v1/cee/info/${cee}`,
                 method: 'GET',
                 headers: {
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MzciLCJuYW1lIjoiQ2FybG9zIENoZXJvIE1lbmRvemEiLCJlbWFpbCI6ImNhcmxvc2NoZXJvMTM0QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.v4e3xsg6OEhF2L9NAELlydgMnHONlnKlejh7IPzz9nA"
+                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MzciLCJuYW1lIjoiQ2FybG9zIENoZXJvIE1lbmRvemEiLCJlbWFpbCI6ImNhcmxvc2NoZXJvMTM0QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.v4e3xsg6OEhF2L9NAELlydgMnHONlnKlejh7IPzz9nA"
                 },
                 success: function(response) {
                     if (response.status === 200) {
@@ -277,6 +307,31 @@
         $("#tipodoc").trigger("change");
     });
 </script>
+
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: '¡Éxito!',
+        text: '{{ session('success') }}',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#66b366'
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    Swal.fire({
+        title: 'Error',
+        text: '{{ session('error') }}',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#66b366'
+    });
+</script>
+@endif
+
 
 
 <script>
@@ -338,60 +393,84 @@
 
 
 
+    function confirmEdit(nombre, id, a_paterno, a_materno) {
+        Swal.fire({
+            title: '¿Desea editarlo?',
+            html: 'A partir de ahora <b>"' + nombre + " " + a_paterno + " " + a_materno + '"</b> cambiará <i class="fa-regular fa-face-flushed"></i>.',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, ¡editarlo!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, llama a la función de edición
+                editPersonal(id);
+            }
+        });
+    }
+
+
+
+
+
+
+
+    function confirmDelete(e, form, nombre, a_paterno, a_materno) {
+        e.preventDefault(); 
+
+        Swal.fire({
+            title: "¿Está seguro que desea eliminarlo?",
+            html: '<b>"' + nombre + ' ' + a_paterno + ' ' + a_materno + '"</b> ya no volverá <i class="fa-regular fa-face-sad-tear"></i> ',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: '<i class="fa-regular fa-face-frown"></i> Sí, ¡elimínalo!',
+            cancelButtonText: '<i class="fa-regular fa-face-laugh-beam"></i> Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Realizar la solicitud AJAX
+                $.ajax({
+                    url: form.action,
+                    type: 'POST', // Cambiar a POST para enviar el CSRF token
+                    data: {
+                        _method: 'DELETE', // Esto es importante para que Laravel lo reconozca
+                        _token: $('meta[name="csrf-token"]').attr('content') // Obtener el token CSRF
+                    },
+                    success: function(response) {
+                        // Si se eliminó correctamente
+                        Swal.fire({
+                            title: "¡Eliminado!",
+                            text: "El personal ha sido eliminada.",
+                            icon: "success"
+                        }).then(() => {
+                            // Redireccionar o actualizar la página según lo necesites
+                            location.reload(); // Por ejemplo, recargar la página
+                        });
+                    },
+                    error: function(xhr) {
+                        // Si hay un error, mostrar la alerta de error
+                        let errorMessage = xhr.responseJSON.message || "Ocurrió un error inesperado.";
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: errorMessage, // Mensaje del servidor
+                            footer: '<p>¡Salvados por la alerta! <i class="fa-regular fa-face-grin-beam-sweat"></i></p>'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+
+
+
+
 
 </script>
  
 
-@stop
-@section('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    @vite('resources/css/app.css')
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-@stop
-
-@section('js')
-    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
-    <script>
-        new DataTable('#personalsTable', {
-            responsive: true,
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/2.1.4/i18n/es-MX.json',
-            },
-        });
-    </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    @vite('resources/css/app.css')
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 @stop
