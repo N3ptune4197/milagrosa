@@ -134,7 +134,7 @@ class PrestamoController extends Controller
         DB::commit();
 
         return Redirect::route('prestamos.index')
-            ->with('success', 'Préstamos creados exitosamente para todos los recursos seleccionados.');
+            ->with('success', 'Préstamo creado exitosamente.');
     } catch (\Exception $e) {
         // Revertir la transacción en caso de error
         DB::rollback();

@@ -122,9 +122,21 @@
                     @csrf
                     @method('PUT')
 
+                    <!-- Campo para mostrar el nombre del recurso (readonly) -->
+                    <div class="form-group">
+                        <label for="nombreRecurso-{{ $detalle->id }}">Nombre del recurso</label>
+                        <input type="text" class="form-control" id="nombreRecurso-{{ $detalle->id }}" value="{{ $detalle->recurso->nombre }}" readonly>
+                    </div>
+
+                    <!-- Campo para mostrar el número de serie (readonly) -->
+                    <div class="form-group">
+                        <label for="nroSerie-{{ $detalle->id }}">Número de serie</label>
+                        <input type="text" class="form-control" id="nroSerie-{{ $detalle->id }}" value="{{ $detalle->recurso->nro_serie }}" readonly>
+                    </div>
+
                     <div class="form-group">
                         <label for="estado-{{ $detalle->id }}">Estado del recurso</label>
-                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control">
+                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control" onchange="actualizarEstado({{ $detalle->id }})">
                             <option value="1">Disponible</option>
                             <option value="4">Dañado</option>
                         </select>
@@ -135,12 +147,14 @@
                         <textarea name="observacion" id="observacion-{{ $detalle->id }}" class="form-control" placeholder="Ingrese observación sobre el estado del recurso al devolverlo (por ejemplo, si está dañado)."></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-success">Confirmar devolución</button>
-                </form>
+                    <!-- Cambia el tipo de botón a "button" para evitar que el formulario se envíe directamente -->
+                    <button type="button" class="btn btn-success" onclick="confirmarDevolucion('{{ $detalle->id }}', '{{ $detalle->recurso->nombre }}', '{{ $detalle->recurso->nro_serie }}')">Confirmar devolución</button>
+                </form>                      
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -256,6 +270,7 @@
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap4.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         new DataTable('#prestamosTable', {
@@ -359,4 +374,42 @@ $('#recursos-container').on('click', '#add-resource', function() {
     });
 </script>
 
+<script>
+    // Verificar si hay un mensaje de éxito en la sesión
+    @if(Session::has('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: '{{ Session::get('success') }}',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    @endif
+</script>
 @stop
+<script>
+function confirmarDevolucion(detalleId, nombreRecurso, nroSerie) {
+    const estado = document.getElementById(`estado-${detalleId}`).value;
+    let estadoTexto = estado == 1 ? 'Disponible' : 'Dañado';
+
+    let mensaje = `<strong>Recurso:</strong> ${nombreRecurso} <br> <strong>Número de serie:</strong> ${nroSerie}`;
+
+    if (estado == 4) { // Si el estado es "Dañado"
+        mensaje += `<br><strong>¡Atención!</strong> Estás marcando este recurso como <strong>DAÑADO</strong>.`;
+    }
+
+    Swal.fire({
+        title: 'Confirmar devolución',
+        html: `${mensaje}`, // Muestra el nombre del recurso y el número de serie en negrita
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, envía el formulario
+            document.getElementById(`devolucionForm-${detalleId}`).submit();
+        }
+    });
+}
+</script>
