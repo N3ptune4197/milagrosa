@@ -51,9 +51,10 @@ class PrestamoController extends Controller
     $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
 
     $recursos = Recurso::where('estado', 1)->get();
+    $recursosDisponiblesCount = Recurso::where('estado', 1)->count();
 
     // Retornar la vista con los resultados filtrados y la lista de personal
-    return view('prestamo.index', compact('prestamos', 'personals','recursos'))
+    return view('prestamo.index', compact('prestamos', 'personals','recursos','recursosDisponiblesCount'))
         ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
 }
 
