@@ -41,6 +41,15 @@ class PrestamoController extends Controller
         $query->where('estado', $request->estado);
     }
 
+    //Filtrar por numero de serie
+    if ($request->filled('serial_number')) {
+        $query->whereHas('detalleprestamos', function ($q) use ($request) {
+            $q->whereHas('recurso', function ($q) use ($request) {
+                $q->where('nro_serie', 'like', '%' . $request->input('serial_number') . '%');
+            });
+        });
+    }
+
     // Ordenar los préstamos por estado, priorizando los 'activos' primero
     $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END");
 
@@ -51,9 +60,10 @@ class PrestamoController extends Controller
     $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
 
     $recursos = Recurso::where('estado', 1)->get();
+    $recursosDisponiblesCount = Recurso::where('estado', 1)->count();
 
     // Retornar la vista con los resultados filtrados y la lista de personal
-    return view('prestamo.index', compact('prestamos', 'personals','recursos'))
+    return view('prestamo.index', compact('prestamos', 'personals','recursos','recursosDisponiblesCount'))
         ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
 }
 
@@ -191,45 +201,47 @@ class PrestamoController extends Controller
             ->with('success', 'Préstamo eliminado exitosamente');
     }
     public function markAsReturned(Request $request, $id)
-{
-    // Encuentra el detalle del préstamo
-    $detallePrestamo = DetallePrestamo::find($id);
-
-    if (!$detallePrestamo) {
-        return redirect()->route('prestamos.index')->with('error', 'Detalle del préstamo no encontrado.');
-    }
-
-    // Encuentra el recurso relacionado
-    $recurso = Recurso::find($detallePrestamo->id_recurso);
-
-    if (!$recurso) {
-        return redirect()->route('prestamos.index')->with('error', 'Recurso no encontrado.');
-    }
-
-    // Actualizar la observación del préstamo
-    $observacion = $request->input('observacion', null); // Observación opcional
-    $prestamo = $detallePrestamo->prestamo;
-    $prestamo->observacion = $observacion;
-    $prestamo->save();
-
-    // Actualiza la fecha de devolución en el detalle del préstamo
-    $detallePrestamo->fecha_devolucion = now(); // Aquí estableces la fecha de devolución
-    $detallePrestamo->save();
-
-    // Cambiar el estado del recurso a "Disponible"
-    $recurso->estado = 1; // Estado 1 significa "Disponible"
-    $recurso->save();
-
-    // Verifica si todos los detalles del préstamo han sido devueltos
-    if ($prestamo->detalleprestamos()->whereNull('fecha_devolucion')->count() == 0) {
-        // Si todos los recursos han sido devueltos, cambia el estado del préstamo
-        $prestamo->estado = 'desactivo';
-        $prestamo->fecha_devolucion_real = now(); // Fecha de devolución real
+    {
+        // Encuentra el detalle del préstamo
+        $detallePrestamo = DetallePrestamo::find($id);
+    
+        if (!$detallePrestamo) {
+            return redirect()->route('prestamos.index')->with('error', 'Detalle del préstamo no encontrado.');
+        }
+    
+        // Encuentra el recurso relacionado
+        $recurso = Recurso::find($detallePrestamo->id_recurso);
+    
+        if (!$recurso) {
+            return redirect()->route('prestamos.index')->with('error', 'Recurso no encontrado.');
+        }
+    
+        // Actualizar la observación del préstamo
+        $observacion = $request->input('observacion', null); // Observación opcional
+        $prestamo = $detallePrestamo->prestamo;
+        $prestamo->observacion = $observacion;
         $prestamo->save();
+    
+        // Actualiza la fecha de devolución en el detalle del préstamo
+        $detallePrestamo->fecha_devolucion = now(); // Aquí estableces la fecha de devolución
+        $detallePrestamo->save();
+    
+        // Cambiar el estado del recurso según el valor del campo 'estado' del formulario
+        $nuevoEstado = $request->input('estado'); // Obtenemos el estado enviado desde el formulario
+        $recurso->estado = $nuevoEstado; // Actualizamos el estado del recurso
+        $recurso->save();
+    
+        // Verifica si todos los detalles del préstamo han sido devueltos
+        if ($prestamo->detalleprestamos()->whereNull('fecha_devolucion')->count() == 0) {
+            // Si todos los recursos han sido devueltos, cambia el estado del préstamo
+            $prestamo->estado = 'desactivo';
+            $prestamo->fecha_devolucion_real = now(); // Fecha de devolución real
+            $prestamo->save();
+        }
+    
+        return redirect()->route('prestamos.index')->with('success', 'Recurso marcado como devuelto.');
     }
-
-    return redirect()->route('prestamos.index')->with('success', 'Recurso marcado como devuelto.');
-}
+    
 
 
 
