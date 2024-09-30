@@ -28,5 +28,9 @@ class Categoria extends Model
      */
     protected $fillable = ['nombre', 'descripcion'];
 
+    public function recursos()
+{
+    return $this->hasMany(Recurso::class, 'id_categoria');
+}
 
 }

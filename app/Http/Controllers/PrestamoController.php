@@ -19,53 +19,53 @@ class PrestamoController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request): View
-{
-    // Inicia la consulta con los filtros
-    $query = Prestamo::with('detalleprestamos.recurso');
-    
-    // Filtrar por nombre del profesor (personal)
-    if ($request->filled('personal_name')) {
-        $query->whereHas('personal', function ($q) use ($request) {
-            $q->where('nombres', 'like', '%' . $request->personal_name . '%')
-              ->orWhere('a_paterno', 'like', '%' . $request->personal_name . '%');
-        });
-    }
-
-    // Filtrar por rango de fechas
-    if ($request->filled('start_date') && $request->filled('end_date')) {
-        $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
-    }
-
-    // Filtrar por estado
-    if ($request->filled('estado')) {
-        $query->where('estado', $request->estado);
-    }
-
-    //Filtrar por numero de serie
-    if ($request->filled('serial_number')) {
-        $query->whereHas('detalleprestamos', function ($q) use ($request) {
-            $q->whereHas('recurso', function ($q) use ($request) {
-                $q->where('nro_serie', 'like', '%' . $request->input('serial_number') . '%');
+    {
+        // Inicia la consulta con los filtros
+        $query = Prestamo::with('detalleprestamos.recurso');
+        
+        // Filtrar por nombre del profesor (personal)
+        if ($request->filled('personal_name')) {
+            $query->whereHas('personal', function ($q) use ($request) {
+                $q->where('nombres', 'like', '%' . $request->personal_name . '%')
+                  ->orWhere('a_paterno', 'like', '%' . $request->personal_name . '%');
             });
-        });
+        }
+    
+        // Filtrar por rango de fechas
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
+        }
+    
+        // Filtrar por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+    
+        // Filtrar por número de serie
+        if ($request->filled('serial_number')) {
+            $query->whereHas('detalleprestamos', function ($q) use ($request) {
+                $q->whereHas('recurso', function ($q) use ($request) {
+                    $q->where('nro_serie', 'like', '%' . $request->input('serial_number') . '%');
+                });
+            });
+        }
+    
+        // Ordenar los préstamos por estado, priorizando los 'activos' primero y luego por fecha en orden descendente
+        $prestamos = $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END")
+            ->orderBy('fecha_prestamo', 'desc')
+            ->paginate();
+    
+        // Obtener el listado de personal para el dropdown
+        $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
+    
+        $recursos = Recurso::where('estado', 1)->get();
+        $recursosDisponiblesCount = Recurso::where('estado', 1)->count();
+    
+        // Retornar la vista con los resultados filtrados y la lista de personal
+        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount'))
+            ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
-
-    // Ordenar los préstamos por estado, priorizando los 'activos' primero
-    $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END");
-
-    // Obtener los resultados paginados después de aplicar los filtros y la ordenación
-    $prestamos = $query->paginate();
-
-    // Obtener el listado de personal para el dropdown
-    $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
-
-    $recursos = Recurso::where('estado', 1)->get();
-    $recursosDisponiblesCount = Recurso::where('estado', 1)->count();
-
-    // Retornar la vista con los resultados filtrados y la lista de personal
-    return view('prestamo.index', compact('prestamos', 'personals','recursos','recursosDisponiblesCount'))
-        ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
-}
+    
 
     
     /**
