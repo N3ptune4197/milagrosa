@@ -22,11 +22,16 @@ class RecursoRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'nombre' => 'required|string|max:255',
-        'id_categoria' => 'required|exists:categorias,id', // Cambiado a id_categoria
-        'modelo' => 'nullable|string|max:255',
-        'nro_serie' => 'nullable|string|max:255',
-        'id_marca' => 'required|exists:marcas,id',
+            'id_categoria' => 'required|exists:categorias,id',
+            'nro_serie' => ['required', 'string', 'unique:recursos,nro_serie,' . $this->route('recurso')],
+            'id_marca' => 'required|exists:marcas,id',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'nro_serie.unique' => 'El número de serie ya existe. Por favor, use otro.',
         ];
     }
 }

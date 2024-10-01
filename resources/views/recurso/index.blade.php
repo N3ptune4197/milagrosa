@@ -22,12 +22,11 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Nombre</th>
+                            <th>Nro Serie</th>
                             <th>Categoría</th>
+                            <th>Marca</th>
                             <th>Estado</th>
                             <th>Fecha Registro</th>
-                            <th>Nro Serie</th>
-                            <th>Marca</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
@@ -35,12 +34,24 @@
                         @foreach ($recursos as $recurso)
                             <tr>
                                 <td>{{ ++$i }}</td>
-                                <td>{{ $recurso->nombre }}</td>
-                                <td>{{ $recurso->categoria->nombre ?? 'N/A' }}</td>
-                                <td>{{ $recurso->estadoDescripcion }}</td>
-                                <td>{{ $recurso->fecha_registro->format('d/m/Y') }}</td>
                                 <td>{{ $recurso->nro_serie }}</td>
+                                <td>{{ $recurso->categoria->nombre ?? 'N/A' }}</td>
                                 <td>{{ $recurso->marca->nombre ?? 'N/A' }}</td>
+                                <td>
+                                    @if($recurso->estado == 1)
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Disponible</span>
+                                    @elseif($recurso->estado == 2)
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">Prestado</span>
+                                    @elseif($recurso->estado == 3)
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-yellow-500 rounded-full">En Mantenimiento</span>
+                                    @elseif($recurso->estado == 4)
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Dañado</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-300 rounded-full">Desconocido</span>
+                                    @endif
+                                </td>
+                                
+                                <td>{{ $recurso->fecha_registro->format('d/m/Y') }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-success" onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }})">
                                         <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
@@ -61,68 +72,75 @@
             </div>
         </div>
     </div>
-<!--MODAL-->
-    <div class="modal fade" id="recursoModal" tabindex="-1" aria-labelledby="recursoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white text-center">
-                    <h5 class="modal-title" id="recursoModalLabel">{{ __('Agregar / Editar Recurso') }}</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="recursoForm" method="POST" action="{{ route('recursos.store') }}">
-                        @csrf
-                        <!-- Campo oculto para el ID del recurso -->
-                        <input type="hidden" id="recurso_id" name="recurso_id">
-                        <!-- Campo oculto para el método del formulario (PUT o POST) -->
-                        <input type="hidden" id="_method" name="_method" value="POST">
-    
-                        <!-- Fila para el campo Nombre centrado -->
-                        <div class="row mb-4 justify-content-center">
-                            <div class="col-md-6">
-                                <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
-                                <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre del recurso" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="nro_serie" class="form-label">{{ __('Nro de Serie') }}</label>
-                                <input type="text" class="form-control" name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
-                            </div>
+<!-- MODAL -->
+<div class="modal fade" id="recursoModal" tabindex="-1" aria-labelledby="recursoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!-- Header del modal con Tailwind -->
+            <div class="modal-header bg-primary text-white text-center">
+                <h5 class="modal-title" id="recursoModalLabel">{{ __('Agregar / Editar Recurso') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-6">
+                <form id="recursoForm" method="POST" action="{{ route('recursos.store') }}" class="space-y-4">
+                    @csrf
+                    <!-- Campo oculto para el ID del recurso -->
+                    <input type="hidden" id="recurso_id" name="recurso_id">
+                    <!-- Campo oculto para el método del formulario (PUT o POST) -->
+                    <input type="hidden" id="_method" name="_method" value="POST">
+
+                    <!-- Número de serie -->
+                    <div class="flex flex-col mb-4">
+                        <label for="nro_serie" class="font-semibold">{{ __('Numero de Serie') }}</label>
+                        <input type="text" class="form-input border border-gray-300 rounded-lg px-3 py-2" name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
+                        @if($errors->has('nro_serie'))
+                            <span class="text-red-500 text-sm">{{ $errors->first('nro_serie') }}</span>
+                        @endif
+                    </div>
+
+                    <!-- Categoría y Marca -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="categoria" class="font-semibold">{{ __('Categoría') }}</label>
+                            <select name="id_categoria" id="categoria" class="form-select border border-gray-300 rounded-lg px-3 py-2" required>
+                                <option value="">{{ __('Seleccione una categoría') }}</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                @endforeach
+                            </select>
                         </div>
-    
-                        <!-- Fila para los campos Desplegables (Categoría y Marca) -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="categoria" class="form-label">{{ __('Categoría') }}</label>
-                                <select name="id_categoria" id="categoria" class="form-select" required>
-                                    <option value="">{{ __('Seleccione una categoría') }}</option>
-                                    @foreach ($categorias as $categoria)
-                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="marca" class="form-label">{{ __('Marca') }}</label>
-                                <select name="id_marca" id="marca" class="form-select" required>
-                                    <option value="">{{ __('Seleccione una marca') }}</option>
-                                    @foreach ($marcas as $marca)
-                                        <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+
+                        <div>
+                            <label for="marca" class="font-semibold">{{ __('Marca') }}</label>
+                            <select name="id_marca" id="marca" class="form-select border border-gray-300 rounded-lg px-3 py-2" required>
+                                <option value="">{{ __('Seleccione una marca') }}</option>
+                                @foreach ($marcas as $marca)
+                                    <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+                                @endforeach
+                            </select>
                         </div>
-    
-                        <!-- Campo oculto para el estado -->
-                        <input type="hidden" name="estado" value="1">
-    
-                        <div class="d-flex justify-content-end mt-3">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
-                            <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Campo de estado (solo aparece al editar) -->
+                    <div id="estadoField" class="hidden">
+                        <label for="estado" class="font-semibold">{{ __('Estado del Recurso') }}</label>
+                        <select name="estado" id="estado" class="form-select border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="1">{{ __('Disponible') }}</option>
+                            <option value="3">{{ __('En Mantenimiento') }}</option>
+                            <option value="4">{{ __('Dañado') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end mt-4 space-x-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
         
 
 @stop
@@ -130,6 +148,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.bootstrap4.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -153,8 +173,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <script>
-
-       function editRecurso(id) {
+        function editRecurso(id) {
             $.ajax({
                 url: '/recursos/' + id + '/edit',
                 type: 'GET',
@@ -163,29 +182,31 @@
                     $('#recursoForm').attr('action', '/recursos/' + id);
                     $('#recursoForm').find('input[name="_method"]').remove(); // Eliminar cualquier campo _method existente
                     $('#recursoForm').append('<input type="hidden" name="_method" value="PUT">');
-
+    
                     // Llenar el formulario con los datos del recurso
                     $('#recurso_id').val(response.id);
-                    $('#nombre').val(response.nombre);
-                    $('#categoria').val(response.id_categoria);
-                    $('#estado').val(response.estado);
                     $('#nro_serie').val(response.nro_serie);
+                    $('#categoria').val(response.id_categoria);
                     $('#marca').val(response.id_marca);
-
-                        // Mostrar el modal
+                    $('#estado').val(response.estado);
+    
+                    // Mostrar el campo de estado solo al editar
+                    $('#estadoField').removeClass('hidden');
+    
+                    // Mostrar el modal
                     $('#recursoModal').modal('show');
                 },
-
                 error: function(xhr) {
                     console.error("Error al obtener los datos del recurso: ", xhr.responseText);
                 }
             });
         }
-
+    
         function clearForm() {
             $('#recursoForm')[0].reset();
             $('#recursoForm').attr('action', '{{ route("recursos.store") }}');
             $('#recursoForm').find('input[name="_method"]').remove(); // Asegurarse de que no haya campo _method
+            $('#estadoField').addClass('hidden'); // Ocultar el campo de estado al crear un nuevo recurso
         }
 
 
@@ -275,30 +296,46 @@
         
     </script>
     
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                title: '¡Éxito!',
-                text: '{{ session('success') }}',
-                icon: 'success',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#66b366'
-            });
-        </script>
-    @endif
+    <script>
+        $(document).ready(function() {
+            // Si hay un error en la validación de 'nro_serie'
+            @if ($errors->has('nro_serie'))
+                // Muestra el SweetAlert
+                Swal.fire({
+                    title: 'Error',
+                    text: 'El número de serie ya existe. Por favor, ingrese uno nuevo.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33'
+                }).then(() => {
+                    // Abrir el modal de nuevo
+                    $('#recursoModal').modal('show');
+                });
+            @endif
 
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                title: 'Error',
-                text: '{{ session('error') }}',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#66b366'
-            });
-        </script>
-    @endif
+            // Mostrar SweetAlert si hay un mensaje de éxito
+            @if (session('success'))
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: '{{ session('success') }}',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#66b366'
+                });
+            @endif
 
+            // Mostrar SweetAlert si hay un mensaje de error general
+            @if (session('error'))
+                Swal.fire({
+                    title: 'Error',
+                    text: '{{ session('error') }}',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33'
+                });
+            @endif
+        });
+    </script>
 
 
 @stop

@@ -32,15 +32,23 @@ class RecursoController extends Controller
      * Store a newly created resource in storage.
      */
     
-     public function store(RecursoRequest $request): RedirectResponse
-    {
-        // Validación y creación de la categoría
-        Recurso::create($request->validated());
+     public function store(RecursoRequest $request)
+{
+    try {
+        $validatedData = $request->validated();
+        $validatedData['estado'] = 1; // Estado por defecto 'disponible'
+        Recurso::create($validatedData);
 
-        // Redirigir de vuelta con un mensaje de éxito
         return redirect()->back()->with('success', 'Recurso creado exitosamente.');
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput(); // Aquí no es necesario agregar el mensaje de error genérico
     }
+}
 
+
+ 
 
 
     /**
@@ -48,29 +56,43 @@ class RecursoController extends Controller
      */
     public function edit($id)
     {
-        $recurso = Recurso::findOrFail($id);
-        $marcas = Marca::select('id', 'nombre')->get();
-        $categorias = Categoria::select('id', 'nombre')->get();
-    
-        // Devolver datos en formato JSON para la solicitud AJAX
+        $recurso = Recurso::find($id);
+
+    if ($recurso) {
         return response()->json($recurso);
+    } else {
+        return response()->json(['message' => 'Recurso no encontrado'], 404);
+    }
     }
     
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(RecursoRequest $request, $id): RedirectResponse
-    {
-        // Encontrar la categoría por su ID
-        $recurso = Recurso::findOrFail($id);
+    public function update(Request $request, $id)
+{
+    $recurso = Recurso::findOrFail($id);
 
-        // Actualizar los datos de la categoría
-        $recurso->update($request->validated());
+    // Validar la solicitud
+    $request->validate([
+        'nro_serie' => 'required|unique:recursos,nro_serie,' . $recurso->id,
+        'id_categoria' => 'required',
+        'id_marca' => 'required',
+        'estado' => 'required|in:1,2,3,4', // Añade aquí los valores permitidos para estado
+    ]);
 
-        // Redirigir de vuelta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Recurso actualizada exitosamente.');
-    }
+    // Actualizar los campos
+    $recurso->nro_serie = $request->nro_serie;
+    $recurso->id_categoria = $request->id_categoria;
+    $recurso->id_marca = $request->id_marca;
+    $recurso->estado = $request->estado; // Asegúrate de que estás asignando el valor de estado
+
+    $recurso->save();
+
+    return redirect()->route('recursos.index')->with('success', 'Recurso actualizado correctamente');
+}
+
+
 
     /**
      * Remove the specified resource from storage.
