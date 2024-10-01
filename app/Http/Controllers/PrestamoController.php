@@ -233,5 +233,77 @@ class PrestamoController extends Controller
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+
+
+ 
+
+    public function getDocentesConMasPrestamos()
+    {
+        $docentesConPrestamos = DB::table('prestamos')
+            ->select('personals.nombre', DB::raw('COUNT(prestamos.id) as total_prestamos'))
+            ->join('personals', 'prestamos.idPersonal', '=', 'personals.id')
+            ->groupBy('personals.nombre')
+            ->orderBy('total_prestamos', 'desc')
+            ->take(10)
+            ->get();
+
+        if ($docentesConPrestamos->isEmpty()) {
+            return response()->json(['message' => 'No hay datos disponibles'], 200);
+        }
+
+        return response()->json($docentesConPrestamos);
+    }
+
+
+
+
+
+
+
     
 }
+

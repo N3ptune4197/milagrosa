@@ -5,7 +5,9 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PrestamoController;
 use App\Http\Controllers\RecursoController;
+use App\Http\Controllers\ChartController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -29,3 +31,22 @@ Route::get('/recursos/{id}/edit', [RecursoController::class, 'edit'])->name('rec
 Route::resource('recursos', RecursoController::class)->middleware('auth');
 
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
+
+
+
+
+
+
+
+
+
+
+
+
+/*                                    echarts  */
+// web.php
+
+use Illuminate\Support\Facades\DB;
+
+Route::get('/prestamos-obtenerDocentesConMasPrestamos', [ChartController::class, 'getDocentesConPrestamos'])->middleware('auth');
+Route::get('/prestamos-obtenerDocentesConPrestamosActivos', [ChartController::class, 'getDocentesConPrestamosActivos'])->middleware('auth');
