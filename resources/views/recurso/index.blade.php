@@ -38,7 +38,7 @@
                             <div class="relative">
                                 <select id="serial_number" name="serial_number"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-width="100%">
+                                    data-live-search="true" data-width="100%" data-size="3">
                                     <option value="" disabled selected>Selecciona un número de serie</option>
                                     @foreach ($recursos as $recurso)
                                         <option value="{{ $recurso->nro_serie }}">{{ $recurso->nro_serie }}</option>
@@ -50,7 +50,7 @@
                             <div class="relative">
                                 <select name="categoria_id" id="categoria_id"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true">
+                                    data-live-search="true" data-size="3">
                                     <option value="">Seleccionar Categoría</option>
                                     @foreach ($categorias as $categoria)
                                         <option value="{{ $categoria->id }}"
@@ -65,7 +65,7 @@
                             <div class="relative">
                                 <select name="marca_id" id="marca_id"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true">
+                                    data-live-search="true" data-size="3">
                                     <option value="">Seleccionar Marca</option>
                                     @foreach ($marcas as $marca)
                                         <option value="{{ $marca->id }}"
@@ -78,9 +78,9 @@
 
                             <!-- Estado -->
                             <div class="relative">
-                                <select name="estado" id="estado"
+                                <select name="estado" id="estadoo"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true">
+                                    data-live-search="true" data-size="3">
                                     <option value="">Seleccionar Estado</option>
                                     <option value="1" {{ request('estado') == '1' ? 'selected' : '' }}>Disponible
                                     </option>
@@ -318,8 +318,7 @@
                     title: '¡Éxito!',
                     text: '{{ session('success') }}',
                     icon: 'success',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#66b366'
+                    timer: 2500,
                 });
             @endif
 
