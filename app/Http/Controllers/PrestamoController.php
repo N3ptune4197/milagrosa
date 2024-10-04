@@ -245,5 +245,54 @@ class PrestamoController extends Controller
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+    /*                                      RECHARTS - GRAFICOS  NO MOVER DE AQUI EN ADELANTE                                              */
+
+
+
+
     
 }
+

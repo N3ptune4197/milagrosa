@@ -34,78 +34,82 @@
 @section('content')
     <div class="mt-3">
 
-        <div class="section-one row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl">
-            <h2 class="text-2xl ml-3 md:ml-14 lg:text-3xl font-montserrat font-semibold underline underline-offset-2 mb-3">Inicio Rápido</h2>
-            
+        <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
-            <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('categorias.index') }}">
-                <div class="rounded-lg border-l-[5px] py-2 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
-                    <span class="bi bi-tags-fill text-4xl m-4 flex-shrink-0 text-blue-900"></span>
-                    <div class="flex-1 text-right p-4">
-                        <span class="block text-gray-800">Categorias</span>
-                        <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
-                    </div>
+
+            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[40%] xl:w-[55%]">
+                <div class="titulo mb-2">
+                    <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-semibold mb-3">Inicio Rápido</h2>
                 </div>
-            </a>
-            
 
-            
-            <a class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline" href="{{ route('personals.index') }}">
-                <div class="rounded-lg border-l-[5px] py-2 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
-                    <span class="bi bi-people-fill text-4xl m-4 flex-shrink-0 text-red-900 "></span>
-                    <div class="flex-1 text-right p-4">
-                        <span class="block text-gray-800">Personal</span>
-                        <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
+                <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%]">
+
+                    <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('categorias.index') }}">
+                        <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
+                            <span class="bi bi-tags-fill text-4xl m-3 flex-shrink-0 text-blue-900"></span>
+                            <div class="flex-1 text-right p-3">
+                                <span class="block text-gray-800">Categorias</span>
+                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
+                            </div>
+                        </div>
+                    </a>
+                    
+        
+                    
+                    <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('personals.index') }}">
+                        <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
+                            <span class="bi bi-people-fill text-4xl m-3 flex-shrink-0 text-red-900 "></span>
+                            <div class="flex-1 text-right p-3">
+                                <span class="block text-gray-800">Personal</span>
+                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
+                            </div>
+                        </div>
+                    </a>
+        
+        
+        
+                    <div class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+                        <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+                            <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
+                            <div class="flex-1 text-right p-3">
+                                <span class="block text-gray-800">Recursos</span>
+                                <span class="text-gray-800 text-3xl font-bold">85</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </a>
-
-
-
-            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
-                <div class="rounded-lg border-l-[5px] py-2 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
-                    <span class="bi bi-box-fill text-4xl m-4 flex-shrink-0 text-amber-900"></span>
-                    <div class="flex-1 text-right p-4">
-                        <span class="block text-gray-800">Recursos</span>
-                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
+        
+        
+        
+                    <div class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+                        <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
+                            <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
+                            <div class="flex-1 text-right p-3">
+                                <span class="block text-gray-800">Préstamos</span>
+                                <span class="text-gray-800 text-3xl font-bold">18</span>
+                            </div>
+                        </div>
                     </div>
+        
+        
+        
                 </div>
+
+    
             </div>
 
-
-
-            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
-                <div class="rounded-lg border-l-[5px] py-2 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
-                    <span class="bi bi-clock-fill text-4xl m-4 flex-shrink-0 text-green-900"></span>
-                    <div class="flex-1 text-right p-4">
-                        <span class="block text-gray-800">Préstamos</span>
-                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
-                    </div>
+            <div class="echarts w-[100%] lg:w-[60%] xl:w-[42%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
+                <div class="graficos w-[100%] mb-3">
+                    <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
                 </div>
             </div>
-
-
-
-            <div class="block w-full sm:w-1/2 md:1/3 lg:w-1/3 no-underline">
-                <div class="rounded-lg border-l-[5px] py-2 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
-                    <span class="bi bi-box-fill text-4xl m-4 flex-shrink-0 text-amber-900"></span>
-                    <div class="flex-1 text-right p-4">
-                        <span class="block text-gray-800">Cantidad total de Préstamos</span>
-                        <span class="text-gray-800 text-3xl font-bold">Total 18.85</span>
-                    </div>
-                </div>
-            </div>
-
-
-
 
         </div>
 
 
 
-        <div class="section-two">
+        <div class="section-two flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
-            <div id="root" class="root"></div>
+            <div id="barras2" class="w-[100%] min-h-[430px] items-start"></div>
         </div>
 
 
@@ -211,4 +215,20 @@
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 
-@stop
+
+
+
+
+
+    <!--    ECHARTS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.1-rc.1/echarts.min.js" integrity="sha512-RaatU6zYCjTIyGwrBVsUzvbkpZq/ECxa2oYoQ+16qhQDCX9xQUEAsm437n/6TNTes94flHU4cr+ur99FKM5Vog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!--    mI sCRIPT PARA LOS GRAFICOS    -->
+    @vite('resources/js/echartss.js')
+    
+
+    <script>
+        
+    </script>
+    
+    @stop

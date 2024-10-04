@@ -1,41 +1,20 @@
-import React from 'react'
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+/* import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const data = [
-    {name: "María", age: 10, weight: 60},
-    {name: 'Karina', age: 25, weight: 70},
-    {name: 'Susana', age: 15, weight: 65},
-    {name: 'Pedro', age: 35, weight: 85},
-    {name: 'Felipe', age: 12, weight: 48},
-    {name: 'Laura', age: 30, weight: 69},
-    {name: 'Adrián', age: 15, weight: 78},
-]
+import * as echarts from echarts;
 
-const SimpleBarCharts = () => {
-  return (
-    <ResponsiveContainer width="60%" aspect={2}>
-        <BarChart 
-            data={data}
-            width={500}
-            height={300}
-            margin={{
-                top:5,
-                right:30,
-                left:-15,
-                bottom:5
-            }}
-            layout='horizontal'
-        >
-        <CartesianGrid strokeDasharray="4 1 2" />    
-        <XAxis dataKey="name"/>
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="weight" fill="#6b48ff"/>
-        <Bar dataKey="age" fill="#1ee3cf"/>
-        </BarChart>
-    </ResponsiveContainer>
-  )
+const initEcharts = ()=> {
+  const chart1 = echarts.init(document.getElementById(chart1));
+  const chart2 = echarts.init(document.getElementById(chart2));
+
+  chart1.setoption();
+  chart2.setoption();
 }
 
-export default SimpleBarCharts
+export default function HomeEcharts() {
+
+  window.addEventListener('load', () => {
+    initEcharts();
+  })
+}
+ */
