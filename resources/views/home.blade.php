@@ -1,6 +1,8 @@
 <?php
     $conexion = new PDO("mysql:host=localhost;dbname=milagrosa","root","");
     $PDO = $conexion;
+
+
     $statement = $PDO->prepare("SELECT COUNT(*) FROM categorias");
     $statement->execute();
     $cantidadCategoria = $statement->fetch(PDO::FETCH_ASSOC);
@@ -10,7 +12,16 @@
     $statement2->execute();
     $cantidadPersonal = $statement2->fetch(PDO::FETCH_ASSOC);
 
+    
+    $statement3 = $PDO->prepare("SELECT COUNT(*) FROM recursos");
+    $statement3->execute();
+    $cantidadRecursos = $statement3->fetch(PDO::FETCH_ASSOC);
 
+    
+    $statement4 = $PDO->prepare("SELECT COUNT(*) FROM detalleprestamos AS dp INNER JOIN prestamos AS p ON p.id = dp.idprestamo WHERE p.estado = 'activo'");
+
+    $statement4->execute();
+    $cantidadPrestamos = $statement4->fetch(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -68,27 +79,27 @@
         
         
         
-                    <div class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+                    <a href="{{ route('recursos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
                         <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
                             <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
                             <div class="flex-1 text-right p-3">
                                 <span class="block text-gray-800">Recursos</span>
-                                <span class="text-gray-800 text-3xl font-bold">85</span>
+                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadRecursos['COUNT(*)'] ?></span>
                             </div>
                         </div>
-                    </div>
+                    </a>
         
         
         
-                    <div class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+                    <a href="{{ route('prestamos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
                         <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
                             <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
                             <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Préstamos</span>
-                                <span class="text-gray-800 text-3xl font-bold">18</span>
+                                <span class="block text-gray-800">Préstamos Activos</span>
+                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPrestamos['COUNT(*)'] ?></span>
                             </div>
                         </div>
-                    </div>
+                    </a>
         
         
         
@@ -169,6 +180,10 @@
         </script> --}}
         
 
+
+        <H3>hola</H3>
+        <input id="clockPicker" type="datetime-local" class="form-control" min="{{ now()->format('Y-m-d\TH:i') }} " />
+
     </div>
 
 
@@ -228,7 +243,9 @@
     
 
     <script>
-        
+        $('#clockPicker').timepicker({
+      'timeFormat':'H:i'
+  });
     </script>
     
     @stop
