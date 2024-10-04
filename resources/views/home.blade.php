@@ -37,8 +37,8 @@
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
 
-            <div class="flex flex-col g-3 pl-3 mb-7 lg:w-[40%] xl:w-[55%]">
-                <div class="titulo">
+            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[40%] xl:w-[55%]">
+                <div class="titulo mb-2">
                     <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-semibold mb-3">Inicio Rápido</h2>
                 </div>
 
@@ -97,22 +97,19 @@
     
             </div>
 
-            <div class="echarts w-[100%] lg:w-[60%] xl:w-[42%]">
+            <div class="echarts w-[100%] lg:w-[60%] xl:w-[42%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
                 <div class="graficos w-[100%] mb-3">
                     <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
                 </div>
-                <div id="barras2" class="w-[100%] min-h-[430px]"></div>
             </div>
-
-
 
         </div>
 
 
 
-        <div class="section-two">
+        <div class="section-two flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
-            <div id="root" class="root"></div>
+            <div id="barras2" class="w-[100%] min-h-[430px] items-start"></div>
         </div>
 
 

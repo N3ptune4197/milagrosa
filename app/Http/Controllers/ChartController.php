@@ -27,11 +27,10 @@ class ChartController extends Controller
     {
         $docentesActivos = DB::table('prestamos as pr')
             ->join('personals as p', 'pr.idPersonal', '=', 'p.id')
-            ->select('p.nombres', 'p.a_paterno', 'p.a_materno', DB::raw('COUNT(*) AS total_prestamos'))
+            ->select('p.nombres', 'p.a_paterno', 'p.a_materno', DB::raw('COUNT(*) AS prestamos_activos'))
             ->where('pr.estado', 'activo') // Condición para solo préstamos activos
             ->groupBy('p.id', 'p.nombres', 'p.a_paterno', 'p.a_materno')
-            ->orderBy('total_prestamos', 'DESC')
-            ->limit(5)
+            ->orderBy('prestamos_activos', 'DESC')
             ->get();
 
         return response()->json($docentesActivos);

@@ -3,7 +3,7 @@ import * as echarts from 'echarts';
 const getOptionsChar1 = (data) => {
   return {
     title: {
-      text: 'Personal con más recursos prestados',
+      text: 'Personal con Préstamos Activos',
       subtext: '',
       left: 'center'
     },
@@ -16,11 +16,11 @@ const getOptionsChar1 = (data) => {
     },
     series: [
       {
-        name: 'Total Préstamos',
+        name: 'Préstamos Activos',
         type: 'pie',
         radius: '50%',
         data: data.map(docente => ({
-          value: docente.total_prestamos,
+          value: docente.prestamos_activos,
           name: `${docente.nombres} ${docente.a_paterno} ${docente.a_materno}`
         })),
         emphasis: {
@@ -34,6 +34,48 @@ const getOptionsChar1 = (data) => {
     ]
   };
 };
+
+
+const getOptionsChar2 = (data2) => {
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: data2.map(docente => `${docente.a_paterno} ${docente.a_materno}`),
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: 'Préstamos totales',
+        type: 'bar',
+        barWidth: '55%',
+        data: data2.map(docente => docente.total_prestamos)
+      }
+    ]
+  };
+}
+
+
 
 const initCharts = () => {
   const barras1 = echarts.init(document.getElementById("barras1"));
@@ -56,7 +98,34 @@ const initCharts = () => {
     .catch(error => {
       console.error('Error al cargar los datos:', error);
     });
+
+
+
+    const barras2 = echarts.init(document.getElementById("barras2"));
+
+    fetch('/prestamos-obtenerDocentesConMasPrestamos') 
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data2 => {
+      // Verifica los datos obtenidos
+      console.log('Datos obtenidos:', data2); // Imprime los datos en la consola
+      
+      // Establece la opción de ECharts con los datos formateados
+      barras2.setOption(getOptionsChar2(data2));
+    })
+    .catch(error => {
+      console.error('Error al cargar los datos:', error);
+    });
+
 };
+
+
+
+
 
 window.addEventListener("load", () => {
   initCharts();
