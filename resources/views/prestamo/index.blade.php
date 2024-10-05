@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let recursosAgregados = 0;
     let recursosDisponibles = {{ $recursosDisponiblesCount }}; // Cantidad de recursos disponibles
     let selectedResources = new Set(); // Para almacenar los recursos seleccionados
-
+    
     addResourceButton.addEventListener('click', function() {
         if (recursosAgregados < recursosDisponibles) {
             recursosAgregados++;
@@ -355,12 +355,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="p-4 resource-content" id="resource-content-${recursosAgregados}" style="display: block;">
                     <div class="form-group">
                         <label for="idRecurso-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Seleccione un recurso') }}</label>
-                        <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" class="form-control select2 w-full mt-1" required>
+                        <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" 
+                                class="form-control selectpicker w-full mt-1" 
+                                data-live-search="true" 
+                                data-dropup-auto="false" 
+                                data-size="3" 
+                                required>
                             <option value="">{{ __('Seleccione un recurso') }}</option>
-                            @foreach($recursos as $recurso)
-                                @if($recurso->estado == 1)
-                                    <option value="{{ $recurso->id }}">{{ $recurso->nro_serie }}</option>
-                                @endif
+                            @foreach($categorias as $categoria)
+                                @foreach($recursos as $recurso)
+                                    @if($recurso->estado == 1 && $recurso->id_categoria == $categoria->id)
+                                        <option value="{{ $recurso->id }}" data-subtext="{{ $categoria->nombre }}">
+                                            {{ $recurso->nro_serie }}
+                                        </option>
+                                    @endif
+                                @endforeach
                             @endforeach
                         </select>
                     </div>
@@ -373,6 +382,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Añadir el nuevo campo al contenedor de recursos
             recursosContainer.appendChild(newField);
+
+            // Inicializar el selectpicker para el nuevo select agregado
+            $(`#idRecurso-${recursosAgregados}`).selectpicker('refresh');
 
             // Event Listener para el botón de colapsar/expandir
             const toggleButton = newField.querySelector(`#toggle-resource-${recursosAgregados}`);
@@ -451,9 +463,6 @@ document.addEventListener('DOMContentLoaded', function () {
         recursosAgregados = 0; // Restablecer contador de recursos
     });
 });
-
-
-
 </script>
 <script>
     // Verificar si hay un mensaje de éxito en la sesión
