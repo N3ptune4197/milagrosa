@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Detalleprestamo extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -28,7 +28,7 @@ class Detalleprestamo extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['idprestamo', 'id_recurso','fecha_devolucion'];
+    protected $fillable = ['idprestamo', 'id_recurso', 'fecha_devolucion'];
 
 
     /**
@@ -38,7 +38,7 @@ class Detalleprestamo extends Model
     {
         return $this->belongsTo(\App\Models\Prestamo::class, 'idprestamo', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -46,5 +46,5 @@ class Detalleprestamo extends Model
     {
         return $this->belongsTo(\App\Models\Recurso::class, 'id_recurso', 'id');
     }
-    
+
 }

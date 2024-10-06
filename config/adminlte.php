@@ -154,7 +154,7 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
+    'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => null,
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
@@ -191,16 +191,20 @@ return [
     */
 
     'classes_body' => '',
-    'classes_brand' => '',
-    'classes_brand_text' => '',
+    'classes_brand' => 'bg-indigo',
+    'classes_brand_text' => 'text-white',
     'classes_content_wrapper' => '',
-    'classes_content_header' => '',
-    'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
-    'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-white navbar-light',
+    'classes_content_header' => 'bg-gray-100',
+    'classes_content' => 'container-fluid',
+    'classes_sidebar' => 'sidebar-custom elevation-4',
+    'classes_sidebar_nav' => 'nav-flat',
+    'classes_topnav' => 'navbar-custom',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
+
+
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -300,7 +304,7 @@ return [
             'topnav_right' => true,
         ],
 
-        
+
 
         [
             'text' => 'blog',
@@ -315,7 +319,7 @@ return [
         ],
 
 
-        
+
         ['header' => 'DOCENTES'],
 
         [
@@ -330,7 +334,7 @@ return [
         [
             'text' => 'Prestamos',
             'url' => 'prestamos',
-            
+
             'icon' => 'bi bi-hourglass-split',
         ],
 
@@ -343,7 +347,7 @@ return [
             'url' => 'recursos',
             'icon' => 'bi bi-pc-display-horizontal',
         ],
-        
+
 
         [
             'text' => 'Marcas',
@@ -358,72 +362,6 @@ return [
             'icon' => 'bi bi-tags-fill',
         ],
 
-
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'bi-person-circle',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
-        ],
     ],
 
     /*

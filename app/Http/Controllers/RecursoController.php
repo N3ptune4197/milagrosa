@@ -18,7 +18,37 @@ class RecursoController extends Controller
      */
     public function index(Request $request): View
     {
-        $recursos = Recurso::with('categoria', 'marca')->paginate();
+        // Query base de los recursos con relaciones
+        $query = Recurso::with('categoria', 'marca');
+
+        // Filtrar por número de serie
+        if ($request->filled('serial_number')) {
+            $query->where('nro_serie', 'like', '%' . $request->serial_number . '%');
+        }
+
+        // Filtrar por categoría
+        if ($request->filled('categoria_id')) {
+            $query->where('id_categoria', $request->categoria_id);
+        }
+
+        // Filtrar por marca
+        if ($request->filled('marca_id')) {
+            $query->where('id_marca', $request->marca_id);
+        }
+
+        // Filtrar por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        // Filtrar por fecha de registro
+        if ($request->filled('fecha_registro')) {
+            $query->whereDate('fecha_registro', $request->fecha_registro);
+        }
+
+        // Paginación después de aplicar los filtros
+        $recursos = $query->paginate();
+
         $categorias = Categoria::select('id', 'nombre')->get();
         $marcas = Marca::select('id', 'nombre')->get();
 
@@ -26,20 +56,30 @@ class RecursoController extends Controller
             ->with('i', ($request->input('page', 1) - 1) * $recursos->perPage());
     }
 
-    
+
+
+
 
     /**
      * Store a newly created resource in storage.
      */
-    
-     public function store(RecursoRequest $request): RedirectResponse
-    {
-        // Validación y creación de la categoría
-        Recurso::create($request->validated());
 
-        // Redirigir de vuelta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Recurso creado exitosamente.');
+    public function store(RecursoRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            $validatedData['estado'] = 1; // Estado por defecto 'disponible'
+            Recurso::create($validatedData);
+
+            return redirect()->back()->with('success', 'Recurso creado exitosamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput(); // Aquí no es necesario agregar el mensaje de error genérico
+        }
     }
+
+
 
 
 
@@ -48,29 +88,36 @@ class RecursoController extends Controller
      */
     public function edit($id)
     {
-        $recurso = Recurso::findOrFail($id);
-        $marcas = Marca::select('id', 'nombre')->get();
-        $categorias = Categoria::select('id', 'nombre')->get();
-    
-        // Devolver datos en formato JSON para la solicitud AJAX
-        return response()->json($recurso);
+        $recurso = Recurso::find($id);
+
+        if ($recurso) {
+            return response()->json($recurso);
+        } else {
+            return response()->json(['message' => 'Recurso no encontrado'], 404);
+        }
     }
-    
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(RecursoRequest $request, $id): RedirectResponse
+    public function update(Request $request, $id)
     {
-        // Encontrar la categoría por su ID
-        $recurso = Recurso::findOrFail($id);
+        $recurso = Recurso::find($id);
 
-        // Actualizar los datos de la categoría
-        $recurso->update($request->validated());
+        $recurso->nro_serie = $request->nro_serie;
+        $recurso->id_categoria = $request->id_categoria;
+        $recurso->id_marca = $request->id_marca;
+        $recurso->estado = $request->estado;
 
-        // Redirigir de vuelta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Recurso actualizada exitosamente.');
+        // No actualizamos 'fecha_registro', solo los campos relevantes
+        $recurso->save();
+
+        return redirect()->route('recursos.index')->with('success', 'Recurso actualizado con éxito.');
     }
+
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -92,4 +139,6 @@ class RecursoController extends Controller
             return response()->json(['message' => 'Error al eliminar el recurso.'], 500);
         }
     }
+
+
 }

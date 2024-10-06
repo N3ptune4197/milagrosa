@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -38,20 +37,12 @@ class Recurso extends Model
         'estado',
         'nro_serie',
         'id_marca',
-        'fecha_registro',
+        // No incluir 'fecha_registro' aquí
     ];
 
     protected $casts = [
         'fecha_registro' => 'datetime',
     ];
-    
-
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -60,7 +51,7 @@ class Recurso extends Model
     {
         return $this->belongsTo(\App\Models\Categoria::class, 'id_categoria', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -90,11 +81,10 @@ class Recurso extends Model
      * @return void
      */
     protected static function booted()
-{
-    static::creating(function ($recurso) {
-        $recurso->estado = 1; // Disponible
-        $recurso->fecha_registro = now(); // Fecha de registro predeterminada
-    });
-}
-    
+    {
+        static::creating(function ($recurso) {
+            $recurso->estado = 1; // Disponible
+            $recurso->fecha_registro = now(); // Fecha de registro predeterminada
+        });
+    }
 }
