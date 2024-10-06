@@ -22,20 +22,27 @@ class PrestamoController extends Controller
      */
     public function index(Request $request): View
     {
+        // Mostrar los datos que se envían desde el formulario
+
+
         // Inicia la consulta con los filtros
         $query = Prestamo::with('detalleprestamos.recurso');
 
-        // Filtrar por nombre del profesor (personal)
+        // Filtrar por id del personal
         if ($request->filled('personal_name')) {
             $query->whereHas('personal', function ($q) use ($request) {
-                $q->where('nombres', 'like', '%' . $request->personal_name . '%')
-                    ->orWhere('a_paterno', 'like', '%' . $request->personal_name . '%');
+                $q->where('id', $request->personal_name);
             });
         }
 
         // Filtrar por rango de fechas
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
+        if ($request->filled('start_date')) {
+            if ($request->filled('end_date')) {
+                $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
+            } else {
+                // Si solo se selecciona la fecha de inicio, mostrar desde esa fecha en adelante
+                $query->where('fecha_prestamo', '>=', $request->start_date);
+            }
         }
 
         // Filtrar por estado
@@ -43,12 +50,9 @@ class PrestamoController extends Controller
             $query->where('estado', $request->estado);
         }
 
-        // Filtrar por número de serie
         if ($request->filled('serial_number')) {
-            $query->whereHas('detalleprestamos', function ($q) use ($request) {
-                $q->whereHas('recurso', function ($q) use ($request) {
-                    $q->where('nro_serie', 'like', '%' . $request->input('serial_number') . '%');
-                });
+            $query->whereHas('detalleprestamos.recurso', function ($q) use ($request) {
+                $q->where('nro_serie', 'like', '%' . $request->serial_number . '%');
             });
         }
 
@@ -59,14 +63,22 @@ class PrestamoController extends Controller
 
         // Obtener el listado de personal para el dropdown
         $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
-
         $recursos = Recurso::where('estado', 1)->get();
         $recursosDisponiblesCount = Recurso::where('estado', 1)->count();
         $categorias = Categoria::all();
+
+        // Extraer los números de serie únicos
+        $uniqueRecursos = $prestamos->pluck('detalleprestamos.*.recurso')
+            ->flatten()
+            ->unique('nro_serie')
+            ->filter() // Eliminar posibles nulos
+            ->values(); // Reindexar la colección
+
         // Retornar la vista con los resultados filtrados y la lista de personal
-        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias'))
+        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos'))
             ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
+
 
 
 

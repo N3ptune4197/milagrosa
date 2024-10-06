@@ -40,7 +40,18 @@
   --font-family-sans-serif: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
+:root {
+  --custom-color: #800909;
+}
 
+.navbar-custom {
+  background-color: var(--custom-color);
+  color: #fff;
+}
+
+.sidebar-custom {
+  background-color: var(--custom-color);
+}
 *,
 *::before,
 *::after {

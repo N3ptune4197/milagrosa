@@ -71,12 +71,29 @@
                                 <select id="serial_number" name="serial_number"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     data-live-search="true" data-width="100%" data-size="3">
-                                    <option value="" disabled selected>Seleccione un número de serie</option>
-                                    @foreach ($recursos as $recurso)
-                                        <option value="{{ $recurso->nro_serie }}">{{ $recurso->nro_serie }}</option>
+                                    <option value="" selected>Seleccione un número de serie</option>
+                            
+                                    @php
+                                        $nroSerieUnicos = [];
+                                    @endphp
+                            
+                                    @foreach ($prestamos as $prestamo)
+                                        @foreach ($prestamo->detalleprestamos as $detalle)
+                                            @php
+                                                $nroSerie = $detalle->recurso->nro_serie ?? null;
+                                            @endphp
+                            
+                                            @if ($nroSerie && !in_array($nroSerie, $nroSerieUnicos))
+                                                <option value="{{ $nroSerie }}">{{ $nroSerie }}</option>
+                                                @php
+                                                    $nroSerieUnicos[] = $nroSerie;
+                                                @endphp
+                                            @endif
+                                        @endforeach
                                     @endforeach
                                 </select>
                             </div>
+                            
             
                         </div>
             
@@ -127,7 +144,12 @@
                                     <td>{{ $detalle->fecha_devolucion }}</td>
                                     <td>{{ $prestamo->fecha_devolucion_real }}</td>
                                     <td>{{ $prestamo->observacion }}</td>
-                                    <td>{{ $detalle->recurso->nro_serie ?? 'N/A' }}</td>
+                                    <td>
+                                        {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                        @if($detalle->recurso->categoria)
+                                            ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                        @endif
+                                    </td>
                                     <td>
                                         <!-- Mostrar el estado (activo o desactivo) -->
                                         @if ($prestamo->estado == 'activo')

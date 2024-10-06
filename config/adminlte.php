@@ -191,16 +191,20 @@ return [
     */
 
     'classes_body' => '',
-    'classes_brand' => '',
-    'classes_brand_text' => '',
+    'classes_brand' => 'bg-indigo',
+    'classes_brand_text' => 'text-white',
     'classes_content_wrapper' => '',
-    'classes_content_header' => '',
-    'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
-    'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-white navbar-light',
+    'classes_content_header' => 'bg-gray-100',
+    'classes_content' => 'container-fluid',
+    'classes_sidebar' => 'sidebar-custom elevation-4',
+    'classes_sidebar_nav' => 'nav-flat',
+    'classes_topnav' => 'navbar-custom',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
+
+
+
+
 
     /*
     |--------------------------------------------------------------------------
