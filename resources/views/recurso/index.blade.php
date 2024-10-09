@@ -159,7 +159,7 @@
                                 <td>{{ $recurso->fecha_registro->format('d/m/Y') }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-success"
-                                        onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }})">
+                                        onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }}, {{ $recurso->estado }})">
                                         <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
                                     </button>
                                     <form action="{{ route('recursos.destroy', $recurso->id) }}" method="POST"
@@ -383,37 +383,38 @@
         }
 
 
-        // Función para limpiar el formulario
-        function clearForm() {
-            $('#recursoForm')[0].reset();
-            $('#recursoForm').attr('action', '{{ route('recursos.store') }}');
-            $('#recursoForm').find('input[name="_method"]').remove();
-            $('#estadoField').addClass('hidden');
-
-            // Limpiar y refrescar los selects de Bootstrap Select
-            $('#id_categoria').val('').change();
-            $('#id_marca').val('').change();
-            $('.selectpicker').selectpicker('refresh');
-        }
-
+        
         // Función para confirmar la edición
-        function confirmEdit(categoria, id) {
-            Swal.fire({
-                title: '¿Desea editarlo?',
-                html: 'A partir de ahora este registro cambiará.',
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Sí, ¡editarlo!",
-                cancelButtonText: "Cancelar"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Si el usuario confirma, llama a la función de edición
-                    editRecurso(id);
-                }
-            });
+function confirmEdit(nombreRecurso, id, estado) {
+    // Verifica si el recurso está prestado
+    if (estado === 2) {
+        // Mostrar SweetAlert si el estado es "Prestado"
+        Swal.fire({
+            icon: 'warning',
+            title: 'Recurso Prestado',
+            text: 'El recurso está prestado y no se puede editar.',
+            confirmButtonText: 'Aceptar'
+        });
+        return; // Detiene la ejecución si el recurso está prestado
+    }
+
+    // Si el recurso no está prestado, continuar con la confirmación de edición
+    Swal.fire({
+        title: '¿Desea editarlo?',
+        html: 'A partir de ahora este registro cambiará.',
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, ¡editarlo!",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, llama a la función de edición
+            editRecurso(id);
         }
+    });
+}
 
         // Función para confirmar la eliminación
         function confirmDelete(e, form, nombre) {
@@ -487,6 +488,18 @@
                     filtersContainer.classList.add('hidden');
                 }, 500); // Tiempo igual a la duración de la transición
             }
+        }
+        // Función para limpiar el formulario
+        function clearForm() {
+            $('#recursoForm')[0].reset();
+            $('#recursoForm').attr('action', '{{ route('recursos.store') }}');
+            $('#recursoForm').find('input[name="_method"]').remove();
+            $('#estadoField').addClass('hidden');
+
+            // Limpiar y refrescar los selects de Bootstrap Select
+            $('#id_categoria').val('').change();
+            $('#id_marca').val('').change();
+            $('.selectpicker').selectpicker('refresh');
         }
     </script>
 @stop
