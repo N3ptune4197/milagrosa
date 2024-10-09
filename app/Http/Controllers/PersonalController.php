@@ -9,8 +9,8 @@ use App\Http\Requests\PersonalRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Database\QueryException; 
-
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\Rule;
 class PersonalController extends Controller
 {
     /**
@@ -19,8 +19,8 @@ class PersonalController extends Controller
     public function index(Request $request): View
     {
         $personals = Personal::paginate();
-            return view('personal.index', compact('personals'))
-                ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
+        return view('personal.index', compact('personals'))
+            ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());
     }
 
     /**
@@ -40,24 +40,40 @@ class PersonalController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PersonalRequest $request): RedirectResponse 
+    public function store(PersonalRequest $request): RedirectResponse
     {
+        // Validación
+        $request->validate([
+            'nro_documento' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('personals')->ignore($request->input('personal_id')) // Ignorar en actualizaciones
+            ],
+        ]);
+
+        // Verifica si el número de documento ya existe
+        if (Personal::where('nro_documento', $request->nro_documento)->exists()) {
+            return redirect()->back()->with('error', 'El documento ya existe. Por favor, ingrese uno nuevo.');
+        }
+
+        // Crear el nuevo personal
         Personal::create($request->validated());
+
         return redirect()->back()->with('success', 'Personal creado exitosamente.');
     }
-
 
     /**
      * Display the specified resource.
      */
-    
-    
-     /* public function show($id): View
-    {
-        $personal = Personal::find($id);
 
-        return view('personal.show', compact('personal'));
-    } */
+
+    /* public function show($id): View
+   {
+       $personal = Personal::find($id);
+
+       return view('personal.show', compact('personal'));
+   } */
 
 
     /**
@@ -72,10 +88,19 @@ class PersonalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     //  public function update(PersonalRequest $request, Personal $personal): RedirectResponse
     public function update(PersonalRequest $request, $id): RedirectResponse
     {
+        // Validación
+        $request->validate([
+            'nro_documento' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('personals')->ignore($id) // Ignorar el personal actual
+            ],
+        ]);
         // Encontrar la categoría por su ID
         $personal = Personal::findOrFail($id);
 
@@ -86,7 +111,7 @@ class PersonalController extends Controller
         return redirect()->back()->with('success', 'Personal actualizada exitosamente.');
     }
 
-    
+
     public function destroy($id)
     {
         try {

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Marca;
 use App\Models\Categoria;
+use Illuminate\Validation\Rule;
 
 class RecursoController extends Controller
 {
@@ -66,6 +67,14 @@ class RecursoController extends Controller
 
     public function store(RecursoRequest $request)
     {
+        $request->validate([
+            'nro_serie' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('recursos')->ignore($request->input('recurso_id')) // Ignorar en actualizaciones
+            ],
+        ]);
         try {
             $validatedData = $request->validated();
             $validatedData['estado'] = 1; // Estado por defecto 'disponible'
@@ -103,6 +112,14 @@ class RecursoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'nro_serie' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('recursos')->ignore($id) // Ignorar el recurso actual
+            ],
+        ]);
         $recurso = Recurso::find($id);
 
         $recurso->nro_serie = $request->nro_serie;

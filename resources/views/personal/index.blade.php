@@ -323,15 +323,17 @@
 @if (session('error'))
 <script>
     Swal.fire({
+        icon: 'warning',
         title: 'Error',
         text: '{{ session('error') }}',
-        icon: 'error',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#66b366'
+    }).then(() => {
+        // Reabre el modal si hay un error
+        $('#personalModal').modal('show');
     });
 </script>
 @endif
-
 
 
 <script>
