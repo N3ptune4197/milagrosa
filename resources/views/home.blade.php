@@ -122,78 +122,143 @@
 
             <div id="barras2" class="w-[100%] min-h-[430px] items-start"></div>
         </div>
+@stop
 
-
-
-
-        {{-- <div class="container mx-auto">
-            <div class="relative">
-                <input id="searchInput" type="text" placeholder="Search..." 
-                       class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <ul id="suggestions" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-auto z-10 hidden">
-                    <!-- Suggestions will be inserted here -->
-                </ul>
+@section('content_top_nav_right')
+<li class="nav-item dropdown">
+    <li class="relative">
+        <a class="nav-link cursor-pointer" id="notificationDropdown">
+            <i class="far fa-bell"></i>
+            <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-white text-center text-xs">
+                {{ $totalNotificaciones }} 
+            </span>
+        </a>
+        <div class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50" id="notificationMenu">
+            <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                {{ $totalNotificaciones }} Notificaciones
+            </div>
+    
+            <div class="overflow-y-auto max-h-64">
+                <!-- Notificaciones de hoy -->
+                @foreach ($notificacionesHoy as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">{{ $notificacion->fecha_devolucion }}</span>
+                    </a>
+                @endforeach
+    
+                <!-- Notificaciones atrasadas -->
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">{{ $notificacion->fecha_devolucion }}</span>
+                    </a>
+                @endforeach
+            </div>
+    
+            <div class="px-4 py-2 border-t">
+                <button class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openModal()">Ver todas las notificaciones</button>
             </div>
         </div>
+    </li>
     
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const searchInput = document.getElementById('searchInput');
-                const suggestionsBox = document.getElementById('suggestions');
-                const options = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape', 'Honeydew'];
-    
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.toLowerCase();
-                    suggestionsBox.innerHTML = '';
-    
-                    if (query) {
-                        const filteredOptions = options.filter(option => 
-                            option.toLowerCase().includes(query)
-                        );
-    
-                        if (filteredOptions.length > 0) {
-                            suggestionsBox.classList.remove('hidden');
-                            filteredOptions.forEach(option => {
-                                const li = document.createElement('li');
-                                li.textContent = option;
-                                li.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
-                                li.addEventListener('click', () => {
-                                    searchInput.value = option;
-                                    suggestionsBox.classList.add('hidden');
-                                });
-                                suggestionsBox.appendChild(li);
-                            });
-                        } else {
-                            suggestionsBox.classList.add('hidden');
-                        }
-                    } else {
-                        suggestionsBox.classList.add('hidden');
-                    }
-                });
-    
-                document.addEventListener('click', (e) => {
-                    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                        suggestionsBox.classList.add('hidden');
-                    }
-                });
-            });
-        </script> --}}
-        
 
-
-        <H3>hola</H3>
-        <input id="clockPicker" type="datetime-local" class="form-control" min="{{ now()->format('Y-m-d\TH:i') }} " />
-
+<!-- Modal para ver todas las notificaciones -->
+<div class="fixed inset-0 hidden bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" id="allNotificationsModal">
+    <div class="bg-white rounded-lg shadow-lg max-w-lg w-full">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h5 class="text-lg font-semibold">Todas las Notificaciones</h5>
+            <button class="text-gray-600 hover:text-gray-900" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="p-4 overflow-y-auto max-h-96">
+            <ul class="space-y-4">
+                <!-- Notificaciones de hoy -->
+                @if(isset($notificacionesHoy) && count($notificacionesHoy))
+                @foreach($notificacionesHoy as $notificacion)
+                    <li class="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
+                        <span>{{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.</span>
+                @endforeach
+            @else
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+            @endif
+            
+            <!-- Notificaciones atrasadas -->
+            @if(isset($notificacionesAtrasadas) && count($notificacionesAtrasadas))
+                @foreach($notificacionesAtrasadas as $notificacion)
+                    <li id="notification-{{ $notificacion->id }}" class="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
+                        <span>{{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}). Se encuentra atrasado por {{ $notificacion->dias_atraso }} {{ Str::plural('día', $notificacion->dias_atraso) }}.</span>
+                    </li>
+                @endforeach
+            @else
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+            @endif
+            </ul>
+        </div>
+        <div class="p-4 border-t text-right">
+            <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" onclick="closeModal()">Cerrar</button>
+        </div>
     </div>
+</div>
+
+<!-- Script para el comportamiento del modal -->
+<script>
+// Abre o cierra el menú de notificaciones
+document.getElementById('notificationDropdown').addEventListener('click', function() {
+    const menu = document.getElementById('notificationMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Abre el modal de notificaciones
+function openModal() {
+    document.getElementById('allNotificationsModal').classList.remove('hidden');
+    document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+}
+
+// Cierra el modal de notificaciones
+function closeModal() {
+    document.getElementById('allNotificationsModal').classList.add('hidden');
+}
+
+// Cerrar el menú de notificaciones si se hace clic fuera de él
+window.addEventListener('click', function(e) {
+    const menu = document.getElementById('notificationMenu');
+    if (!document.getElementById('notificationDropdown').contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+</script>
 
 
+<script>
+   function deleteNotification(notificationId) {
+    $.ajax({
+        url: `/notificaciones/${notificationId}`,
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Asegúrate de que la meta etiqueta del CSRF esté en tu layout
+        },
+        success: function(response) {
+            if (response.success) {
+                // Eliminamos el elemento visualmente
+                $(`#notification-${notificationId}`).remove();
+            } else {
+                console.error(response.message);
+            }
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+        }
+    });
+}
 
+</script>
 
-
-
-
-    
 @stop
+
 
 
 
