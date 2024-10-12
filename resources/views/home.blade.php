@@ -50,7 +50,7 @@
 
             <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[40%] xl:w-[55%]">
                 <div class="titulo mb-2">
-                    <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-semibold mb-3">Inicio Rápido</h2>
+                    <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
                 </div>
 
                 <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%]">
@@ -105,6 +105,11 @@
         
                 </div>
 
+                
+
+                <h2 class="text-2xl mt-5 font-montserrat font-bold text-center text-gray-500 mb-3">Préstamos Totales</h2>
+                <div id="barras2" class="w-[100%] min-h-[430px] items-start "></div>
+
     
             </div>
 
@@ -118,66 +123,10 @@
 
 
 
-        <div class="section-two flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
-
-            <div id="barras2" class="w-[100%] min-h-[430px] items-start"></div>
-        </div>
 
 
 
 
-        {{-- <div class="container mx-auto">
-            <div class="relative">
-                <input id="searchInput" type="text" placeholder="Search..." 
-                       class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <ul id="suggestions" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-auto z-10 hidden">
-                    <!-- Suggestions will be inserted here -->
-                </ul>
-            </div>
-        </div>
-    
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const searchInput = document.getElementById('searchInput');
-                const suggestionsBox = document.getElementById('suggestions');
-                const options = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape', 'Honeydew'];
-    
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.toLowerCase();
-                    suggestionsBox.innerHTML = '';
-    
-                    if (query) {
-                        const filteredOptions = options.filter(option => 
-                            option.toLowerCase().includes(query)
-                        );
-    
-                        if (filteredOptions.length > 0) {
-                            suggestionsBox.classList.remove('hidden');
-                            filteredOptions.forEach(option => {
-                                const li = document.createElement('li');
-                                li.textContent = option;
-                                li.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
-                                li.addEventListener('click', () => {
-                                    searchInput.value = option;
-                                    suggestionsBox.classList.add('hidden');
-                                });
-                                suggestionsBox.appendChild(li);
-                            });
-                        } else {
-                            suggestionsBox.classList.add('hidden');
-                        }
-                    } else {
-                        suggestionsBox.classList.add('hidden');
-                    }
-                });
-    
-                document.addEventListener('click', (e) => {
-                    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                        suggestionsBox.classList.add('hidden');
-                    }
-                });
-            });
-        </script> --}}
         
 
 

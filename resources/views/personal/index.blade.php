@@ -6,8 +6,8 @@
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-person"></i> Personal</h1>
         <!-- Botón para abrir el modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#personalModal" onclick="clearForm()">
-            {{ __('Crear Nuevo Personal') }}
+        <button type="button" class="btn btn-primary py-3" data-bs-toggle="modal" data-bs-target="#personalModal" onclick="clearForm()">
+            {{ __('Crear Nuevo') }}
         </button>
     </div>
 @stop
@@ -283,7 +283,7 @@
                 url: `https://api.factiliza.com/pe/v1/cee/info/${cee}`,
                 method: 'GET',
                 headers: {
-                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MzciLCJuYW1lIjoiQ2FybG9zIENoZXJvIE1lbmRvemEiLCJlbWFpbCI6ImNhcmxvc2NoZXJvMTM0QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.v4e3xsg6OEhF2L9NAELlydgMnHONlnKlejh7IPzz9nA"
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNzg1MSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.aUC04TeTppjiWLTK0a62C5SbMcGgP_ZpGZzRt0rea74"
                 },
                 success: function(response) {
                     if (response.status === 200) {
