@@ -22,8 +22,6 @@ class PrestamoController extends Controller
      */
     public function index(Request $request): View
     {
-        // Mostrar los datos que se envían desde el formulario
-
 
         // Inicia la consulta con los filtros
         $query = Prestamo::with('detalleprestamos.recurso');
@@ -74,8 +72,10 @@ class PrestamoController extends Controller
             ->filter() // Eliminar posibles nulos
             ->values(); // Reindexar la colección
 
+        $highlightId = $request->get('highlight'); // Obtener el ID a resaltar
+
         // Retornar la vista con los resultados filtrados y la lista de personal
-        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos'))
+        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos', 'highlightId'))
             ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
 

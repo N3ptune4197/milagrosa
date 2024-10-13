@@ -135,21 +135,31 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            use Carbon\Carbon;
+                            $fechaActual = Carbon::now();
+                        @endphp
+                        @php
+                            // Convertir la fecha_devolucion a un objeto Carbon
+                            $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                            // Verificar si la fecha actual es mayor que la fecha de devolución
+                            $atrasado = $fechaActual->gt($fechaDevolucion);
+                        @endphp
                         @foreach ($prestamos as $prestamo)
-                            @foreach ($prestamo->detalleprestamos as $detalle)
-                                <tr>
-                                    <td>{{ ++$i }}</td>
-                                    <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                                    <td>{{ $prestamo->fecha_prestamo }}</td>
-                                    <td>{{ $detalle->fecha_devolucion }}</td>
-                                    <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                                    <td>{{ $prestamo->observacion }}</td>
-                                    <td>
-                                        {{ $detalle->recurso->nro_serie ?? 'N/A' }}
-                                        @if($detalle->recurso->categoria)
-                                            ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
-                                        @endif
-                                    </td>
+                        @foreach ($prestamo->detalleprestamos as $detalle)
+                            <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}"> <!-- Asignando ID único -->
+                                <td>{{ ++$i }}</td>
+                                <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                                <td>{{ $prestamo->fecha_prestamo }}</td>
+                                <td>{{ $detalle->fecha_devolucion }}</td>
+                                <td>{{ $prestamo->fecha_devolucion_real }}</td>
+                                <td>{{ $prestamo->observacion }}</td>
+                                <td>
+                                    {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                    @if($detalle->recurso->categoria)
+                                        ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                    @endif
+                                </td>
                                     <td>
                                         <!-- Mostrar el estado (activo o desactivo) -->
                                         @if ($prestamo->estado == 'activo')
@@ -171,7 +181,7 @@
                                             <span class="badge badge-secondary">Devuelto</span>
                                         @endif
                                     </td>
-                                </tr>
+                            </tr>
                                 
 <!-- Modal para marcar como devuelto -->
 <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
@@ -397,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="form-group mt-4">
                         <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
-                        <input type="date" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" min="{{ now()->format('Y-m-d') }}" required>
+                        <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
                     </div>
                 </div>
             `;
@@ -547,3 +557,59 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
         }
     }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Verificar si la URL contiene un parámetro de ID de préstamo
+        const urlParams = new URLSearchParams(window.location.search);
+        const loanId = urlParams.get('highlight');
+    
+        if (loanId) {
+            // Seleccionar la fila que tiene el ID del préstamo que se pasó
+            const loanRow = document.getElementById(loanId);
+    
+            if (loanRow) {
+                // Añadir una clase para resaltar la fila
+                loanRow.classList.add('bg-yellow-300');
+    
+                // Eliminar la clase de resaltado después de unos segundos (opcional)
+                setTimeout(() => {
+                    loanRow.classList.remove('bg-yellow-300');
+                }, 3000); // 3 segundos
+            }
+        }
+    });
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('fecha_devolucion-${recursosAgregados}');
+        
+        function updateMinDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Mes en formato de 2 dígitos
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            
+            // Establecer el valor mínimo de fecha y hora como el actual
+            const minDateTime = `${year}-${month}-${day}T${hour}:${minute}`;
+            input.min = minDateTime;
+            
+            // Si la fecha seleccionada es hoy, ajustar la hora mínima
+            input.addEventListener('input', function() {
+                const selectedDateTime = new Date(input.value);
+                const today = new Date(year, now.getMonth(), now.getDate());
+                
+                if (selectedDateTime >= today && selectedDateTime < now) {
+                    // Si el usuario selecciona una hora anterior a la actual en el mismo día
+                    input.value = minDateTime; // Ajustar a la hora mínima permitida
+                }
+            });
+        }
+
+        updateMinDateTime();
+    });
+</script>
+    
