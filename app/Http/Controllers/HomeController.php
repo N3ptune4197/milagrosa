@@ -140,12 +140,6 @@ class HomeController extends Controller
         return view('home', compact('loans', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'));
     }
 
-
-
-
-
-
-
     public function deleteNotification($id)
     {
         // Usar el modelo de notificaciones por defecto

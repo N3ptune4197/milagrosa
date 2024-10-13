@@ -176,8 +176,6 @@
     </li>
 </li>
 
-    
-
 <!-- Modal para ver todas las notificaciones -->
 <div class="fixed inset-0 hidden bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" id="allNotificationsModal">
     <div class="bg-white rounded-lg shadow-lg max-w-lg w-full">
@@ -233,6 +231,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
 function mostrarResumen(mensaje) {
