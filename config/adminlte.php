@@ -342,24 +342,45 @@ return [
         ['header' => 'RECURSOS'],
 
 
+
         [
             'text' => 'Recursos',
-            'url' => 'recursos',
             'icon' => 'bi bi-pc-display-horizontal',
+            'submenu' => [
+                [
+                    'text' => 'Recursos',
+                    'url' => 'recursos',
+                ],
+                [
+                    'text' => 'Marcas',
+                    'url' => 'marcas',
+                ],
+                
+                [
+                    'text' => 'Categorias',
+                    'url' => 'categorias',
+                ],
+            ],
         ],
 
 
+
+
+
+
+
+
+
+        ['header' => 'CONFIGURAR CUENTA'],
         [
-            'text' => 'Marcas',
-            'url' => 'marcas',
-            'icon' => 'bi bi-journal-album',
+            'text' => 'profile',
+            'url' => 'admin/settings',
+            'icon' => 'bi-person-circle',
         ],
-
-
         [
-            'text' => 'Categorias',
-            'url' => 'categorias',
-            'icon' => 'bi bi-tags-fill',
+            'text' => 'change_password',
+            'url' => 'admin/settings',
+            'icon' => 'fas fa-fw fa-lock',
         ],
 
     ],
