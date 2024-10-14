@@ -122,33 +122,35 @@ function mostrarResumen(mensaje) {
     });
 }
 </script>
+
+
 <!-- Script para el comportamiento del modal -->
 <script>
-    // Abre o cierra el menú de notificaciones
-    document.getElementById('notificationDropdown').addEventListener('click', function() {
-        const menu = document.getElementById('notificationMenu');
-        menu.classList.toggle('hidden');
-    });
-    
-    // Abre el modal de notificaciones
-    function openModal() {
-        document.getElementById('allNotificationsModal').classList.remove('hidden');
-        document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+// Abre o cierra el menú de notificaciones
+document.getElementById('notificationDropdown').addEventListener('click', function() {
+    const menu = document.getElementById('notificationMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Abre el modal de notificaciones
+function openModal() {
+    document.getElementById('allNotificationsModal').classList.remove('hidden');
+    document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+}
+
+// Cierra el modal de notificaciones
+function closeModal() {
+    document.getElementById('allNotificationsModal').classList.add('hidden');
+}
+
+// Cerrar el menú de notificaciones si se hace clic fuera de él
+window.addEventListener('click', function(e) {
+    const menu = document.getElementById('notificationMenu');
+    if (!document.getElementById('notificationDropdown').contains(e.target)) {
+        menu.classList.add('hidden');
     }
-    
-    // Cierra el modal de notificaciones
-    function closeModal() {
-        document.getElementById('allNotificationsModal').classList.add('hidden');
-    }
-    
-    // Cerrar el menú de notificaciones si se hace clic fuera de él
-    window.addEventListener('click', function(e) {
-        const menu = document.getElementById('notificationMenu');
-        if (!document.getElementById('notificationDropdown').contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
+});
+</script>
 @stop
 @section('content')
     @if ($message = Session::get('success'))
@@ -290,49 +292,43 @@ function mostrarResumen(mensaje) {
                             // Verificar si la fecha actual es mayor que la fecha de devolución
                             $atrasado = $fechaActual->gt($fechaDevolucion);
                         @endphp
-                      @foreach ($prestamos as $prestamo)
-                      @foreach ($prestamo->detalleprestamos as $detalle)
-                      <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}" 
-                        class="{{ isset($highlight) && $highlight == $detalle->id ? 'bg-yellow-200' : '' }}">                    
-                              <td>{{ ++$i }}</td>
-                              <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                              <td>{{ $prestamo->fecha_prestamo }}</td>
-                              <td>{{ $detalle->fecha_devolucion }}</td>
-                              <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                              <td>{{ $prestamo->observacion }}</td>
-                              <td>
-                                  {{ $detalle->recurso->nro_serie ?? 'N/A' }}
-                                  @if($detalle->recurso->categoria)
-                                      ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
-                                  @endif
-                              </td>
-                              <td>
-                                  <!-- Mostrar el estado (activo o desactivo) -->
-                                  @if ($prestamo->estado == 'activo')
-                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
-                                  @else
-                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
-                                  @endif
-                              </td>
-                              <td>
-                                  <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
-                                  @if ($prestamo->estado == 'activo')
-                                      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
-                                          Marcar como devuelto
-                                      </button>
-                                  @else
-                                      <span class="badge badge-secondary">Devuelto</span>
-                                  @endif
-                              </td>
-                          </tr>
-                      @endforeach
-                  @endforeach
-                  
-                  @if(isset($highlight))
-                  <script>
-                      console.log('Highlight recibido: {{ $highlight }}');
-                  </script>
-              @endif
+                        @foreach ($prestamos as $prestamo)
+                        @foreach ($prestamo->detalleprestamos as $detalle)
+                            <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}"> <!-- Asignando ID único -->
+                                <td>{{ ++$i }}</td>
+                                <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                                <td>{{ $prestamo->fecha_prestamo }}</td>
+                                <td>{{ $detalle->fecha_devolucion }}</td>
+                                <td>{{ $prestamo->fecha_devolucion_real }}</td>
+                                <td>{{ $prestamo->observacion }}</td>
+                                <td>
+                                    {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                    @if($detalle->recurso->categoria)
+                                        ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                    @endif
+                                </td>
+                                    <td>
+                                        <!-- Mostrar el estado (activo o desactivo) -->
+                                        @if ($prestamo->estado == 'activo')
+                                        <span
+                                        class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
+                                        @else
+                                            <span
+                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
+                                        @if ($prestamo->estado == 'activo')
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
+                                            Marcar como devuelto
+                                        </button>
+                                        
+                                        @else
+                                            <span class="badge badge-secondary">Devuelto</span>
+                                        @endif
+                                    </td>
+                            </tr>
                                 
 <!-- Modal para marcar como devuelto -->
 <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
@@ -389,6 +385,13 @@ function mostrarResumen(mensaje) {
         </div>
     </div>
 </div>
+
+
+
+
+
+                            @endforeach
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -756,25 +759,4 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
         updateMinDateTime();
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Obtener el parámetro 'highlight' de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const highlightId = urlParams.get('highlight');
-
-        // Si existe el parámetro 'highlight', desplazarse al elemento correspondiente
-        if (highlightId) {
-            const element = document.getElementById(`loan-${highlightId}`);
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "center" });
-                // Opcional: Resaltar brevemente el elemento al que se ha hecho scroll
-                element.style.backgroundColor = "#fff3cd"; // Color de resalte
-                setTimeout(() => {
-                    element.style.backgroundColor = ""; // Volver a color original
-                }, 2000); // Duración del resalte en milisegundos
-            }
-        }
-    });
-</script>
-
     

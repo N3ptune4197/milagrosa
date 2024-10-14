@@ -13,12 +13,9 @@ use App\Models\Detalleprestamo;
 use App\Models\Recurso;
 use Illuminate\Support\Facades\DB;
 use App\Models\Categoria;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Notifications\LoanDueNotification;
-use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade as PDF;
-use Barryvdh\DomPDF\Facade;
-use Maatwebsite\Excel\Facades\Excel;
 
 class PrestamoController extends Controller
 {
@@ -27,6 +24,7 @@ class PrestamoController extends Controller
      */
     public function index(Request $request): View
     {
+
         // Inicia la consulta con los filtros
         $query = Prestamo::with('detalleprestamos.recurso');
 
@@ -52,7 +50,6 @@ class PrestamoController extends Controller
             $query->where('estado', $request->estado);
         }
 
-        // Filtrar por número de serie
         if ($request->filled('serial_number')) {
             $query->whereHas('detalleprestamos.recurso', function ($q) use ($request) {
                 $q->where('nro_serie', 'like', '%' . $request->serial_number . '%');
@@ -62,7 +59,7 @@ class PrestamoController extends Controller
         // Ordenar los préstamos por estado, priorizando los 'activos' primero y luego por fecha en orden descendente
         $prestamos = $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END")
             ->orderBy('fecha_prestamo', 'desc')
-            ->paginate(); // Esto ahora es una paginación
+            ->paginate();
 
         // Obtener el listado de personal para el dropdown
         $personals = Personal::select('id', 'nombres', 'a_paterno')->get();
@@ -77,8 +74,7 @@ class PrestamoController extends Controller
             ->filter() // Eliminar posibles nulos
             ->values(); // Reindexar la colección
 
-        $highlight = $request->input('highlight');
-
+        $highlightId = $request->get('highlight'); // Obtener el ID a resaltar
         $hoy = Carbon::now(); // Obtiene la fecha y hora actual
 
         // Obtener préstamos activos con detalles cuyo recurso está por vencer o ya venció
@@ -197,11 +193,9 @@ class PrestamoController extends Controller
         $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
 
         // Pasar las notificaciones a la vista
-        return view('prestamo.index', compact('loans', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones', 'prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos', 'highlight'))
-            ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage()); // Esto ahora es válido
+        return view('prestamo.index', compact('loans', 'prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos', 'highlightId', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
+            ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
-
-
 
 
 
@@ -392,19 +386,7 @@ class PrestamoController extends Controller
     }
 
 
-    public function generarPDF()
-    {
-        $prestamos = Prestamo::with('detalleprestamos.recurso.categoria', 'personal')->get();
-        $pdf = PDF::loadView('reporte-prestamos', compact('prestamos'));
 
-        return $pdf->download('reporte-prestamos.pdf');
-    }
-
-    // Método para exportar a Excel
-    public function exportarExcel()
-    {
-        return Excel::download(new PrestamosExport, 'reporte-prestamos.xlsx');
-    }
 
 
 
