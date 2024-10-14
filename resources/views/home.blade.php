@@ -120,17 +120,9 @@
             </div>
 
         </div>
-
-
-
-<<<<<<< HEAD
-        <div class="section-two flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
-
-            <div id="barras2" class="w-[100%] min-h-[430px] items-start"></div>
-        </div>
+    </div>
 @stop
-=======
->>>>>>> 7a86e02f79737f7dad22ca43570f3b2c52726f7f
+
 
 @section('content_top_nav_right')
 <!-- Dropdown de notificaciones -->
@@ -165,7 +157,6 @@
                     </a>
                 @endforeach
 
-<<<<<<< HEAD
                 <!-- Notificaciones atrasadas -->
                 @foreach ($notificacionesAtrasadas as $notificacion)
                 <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
@@ -182,16 +173,6 @@
                 <button class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openModal()">Ver todas las notificaciones</button>
             </div>
         </div>
-=======
-
-
-        
-
-
-        <H3>hola</H3>
-        <input id="clockPicker" type="datetime-local" class="form-control" min="{{ now()->format('Y-m-d\TH:i') }} " />
-
->>>>>>> 7a86e02f79737f7dad22ca43570f3b2c52726f7f
     </div>
 </li>
 
