@@ -16,6 +16,9 @@ use App\Models\Categoria;
 use Carbon\Carbon;
 use App\Notifications\LoanDueNotification;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PrestamoController extends Controller
 {
@@ -389,7 +392,19 @@ class PrestamoController extends Controller
     }
 
 
+    public function generarPDF()
+    {
+        $prestamos = Prestamo::with('detalleprestamos.recurso.categoria', 'personal')->get();
+        $pdf = PDF::loadView('reporte-prestamos', compact('prestamos'));
 
+        return $pdf->download('reporte-prestamos.pdf');
+    }
+
+    // Método para exportar a Excel
+    public function exportarExcel()
+    {
+        return Excel::download(new PrestamosExport, 'reporte-prestamos.xlsx');
+    }
 
 
 
