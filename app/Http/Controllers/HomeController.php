@@ -25,9 +25,6 @@ class HomeController extends Controller
                     ->orWhere('fecha_devolucion', '<', $hoy);
             })
             ->with([
-                'detalleprestamos' => function ($query) {
-                    $query->select('idprestamo', 'fecha_devolucion', 'id_recurso');
-                },
                 'detalleprestamos.recurso.categoria',
                 'personal'
             ])
@@ -139,6 +136,7 @@ class HomeController extends Controller
         // Pasar las notificaciones a la vista
         return view('home', compact('loans', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'));
     }
+
 
     public function deleteNotification($id)
     {

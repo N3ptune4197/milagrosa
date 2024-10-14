@@ -28,8 +28,9 @@ Route::get('/buscar-dni/{dni}', [PersonalController::class, 'buscarDni']);
 Route::get('/recursos/{id}/edit', [RecursoController::class, 'edit'])->name(name: 'recursos.edit');
 Route::delete('/notificaciones/{id}', [HomeController::class, 'deleteNotification']);
 Route::resource('recursos', RecursoController::class)->middleware('auth');
-
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
+Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
+
 
 
 
