@@ -13,6 +13,7 @@
 @stop
 @section('content_top_nav_right')
 <!-- Dropdown de notificaciones -->
+<!-- Dropdown de notificaciones -->
 <li class="nav-item dropdown">
     <div class="relative">
         <a class="nav-link cursor-pointer" id="notificationDropdown">
@@ -26,34 +27,46 @@
                 {{ $totalNotificaciones }} Notificaciones
             </div>
             <div class="overflow-y-auto max-h-64">
-                <!-- Notificaciones de hoy -->
+               <!-- Notificaciones para hoy -->
                 @foreach ($notificacionesHoy as $notificacion)
+                @php
+                    // Definimos las clases de color para el tiempo restante
+                    $timeClass = 'text-green-500'; // Verde (sin atraso)
+                    
+                    if (isset($notificacion->minutos_atraso) || isset($notificacion->horas_atraso)) {
+                        $timeClass = 'text-red-500'; // Rojo (atrasado)
+                    } elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30) {
+                        $timeClass = 'text-yellow-500'; // Amarillo (menos de 30 minutos)
+                    }
+                @endphp
+
                 <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} debe devolver el recurso 
-                            @if(isset($notificacion->minutos_atraso))
-                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
-                            @endif
-                            @if(isset($notificacion->horas_restantes))
-                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
-                            @endif
-                            @if(isset($notificacion->dias_restantes))
-                                (Faltan {{ $notificacion->dias_restantes }} días)
-                            @endif
-                        </div>
-                    </a>
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }})
+                        @if(isset($notificacion->horas_atraso) && $notificacion->horas_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->horas_atraso }} horas y {{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_atraso) && $notificacion->minutos_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->dias_restantes) && $notificacion->dias_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->dias_restantes }} días y {{ $notificacion->horas_restantes }} horas</span>)</span>
+                        @elseif(isset($notificacion->horas_restantes) && $notificacion->horas_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @else
+                            <span>(Tiempo restante hoy)</span>
+                        @endif
+                    </div>
+                </a>
                 @endforeach
 
                 <!-- Notificaciones atrasadas -->
                 @foreach ($notificacionesAtrasadas as $notificacion)
-                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                        </div>
-                        <span class="text-xs text-red-500 float-right">
-                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
-                        </span>
-                    </a>
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                    </div>
+                </a>
                 @endforeach
             </div>
             <div class="px-4 py-2 border-t">
@@ -72,42 +85,52 @@
         </div>
         <div class="p-4 overflow-y-auto max-h-96">
             <ul class="space-y-4">
-                <!-- Título para Notificaciones de Hoy -->
+               <!-- Título para Notificaciones de Hoy -->
                 @if(count($notificacionesHoy))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
-                    @foreach ($notificacionesHoy as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
-                            </div>
-                            <span class="text-xs text-gray-500 float-right">
-                                @if (isset($notificacion->minutos_atraso))
-                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
-                                @else
-                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
-                                @endif
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                @foreach ($notificacionesHoy as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">
+                            @if (isset($notificacion->minutos_atraso))
+                                Debía devolver hace 
+                                <span class="text-red-500">{{ $notificacion->horas_atraso }} horas</span> y 
+                                <span class="text-red-500">{{ $notificacion->minutos_atraso }} minutos</span>.
+                            @elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30 && $notificacion->horas_restantes == 0)
+                                Faltan 
+                                <span class="text-yellow-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @elseif ($notificacion->horas_restantes == 0 && isset($notificacion->minutos_restantes))
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @else
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->horas_restantes }} horas</span> y 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @endif
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
                 @endif
-
+                
                 <!-- Título para Notificaciones Atrasadas -->
                 @if(count($notificacionesAtrasadas))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
-                    @foreach ($notificacionesAtrasadas as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                            </div>
-                            <span class="text-xs text-red-500 float-right">
-                                Atrasado por {{ $notificacion->dias_atraso }} días.
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
                 @endif
             </ul>
         </div>
@@ -116,6 +139,7 @@
         </div>
     </div>
 </div>
+
 
 
 
