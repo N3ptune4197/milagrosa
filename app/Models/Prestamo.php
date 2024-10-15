@@ -88,4 +88,19 @@ class Prestamo extends Model
         return $this->hasMany(Detalleprestamo::class, 'idprestamo');
     }
 
+
+
+    
+    use HasFactory;
+
+    public function detalles()
+    {
+        return $this->hasMany(DetallePrestamo::class);
+    }
+
+    public function personal2()
+    {
+        return $this->belongsTo(Personal::class, 'idPersonal');
+    }
+
 }

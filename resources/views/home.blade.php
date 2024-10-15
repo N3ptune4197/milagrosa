@@ -48,7 +48,7 @@
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
 
-            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[40%] xl:w-[55%]">
+            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[45%] xl:w-[55%]">
                 <div class="titulo mb-2">
                     <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
                 </div>
@@ -113,7 +113,9 @@
     
             </div>
 
-            <div class="echarts w-[100%] lg:w-[60%] xl:w-[42%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
+            <div class="echarts w-[100%] lg:w-[55%] xl:w-[42%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
+                
+
                 <div class="graficos w-[100%] mb-3">
                     <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
                 </div>
@@ -125,13 +127,14 @@
 
 
 
+        <div class="calendario mb-5">
+            <div id="calendar"></div>
+        </div>
 
 
         
 
-
-        <H3>hola</H3>
-        <input id="clockPicker" type="datetime-local" class="form-control" min="{{ now()->format('Y-m-d\TH:i') }} " />
+        
 
     </div>
 
@@ -180,6 +183,10 @@
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 
 
+<!--    // Calendario           -->
+    <script src=" https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js "></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
 
 
 
@@ -193,8 +200,22 @@
 
     <script>
         $('#clockPicker').timepicker({
-      'timeFormat':'H:i'
-  });
+            'timeFormat':'H:i'
+        });
     </script>
     
-    @stop
+
+
+    <!--  CALENDARIOOOOOOOOOOOOOOOOOOOOOOOOOOOO           -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+
+    </script>
+
+@stop

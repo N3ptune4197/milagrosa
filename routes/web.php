@@ -32,13 +32,7 @@ Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middl
 
 
 
-
-
-
-
-
-
-
+Route::get('/api/prestamos-activos', [PrestamoController::class, 'obtenerPrestamosActivos'])->middleware('auth');
 
 
 /*                                    echarts  */

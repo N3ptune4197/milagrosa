@@ -1,15 +1,14 @@
 // resources/js/App.jsx
 import React from 'react';
 import HomeEcharts from './HomeRechart';
+import { Calendar } from 'fullcalendar/index.js';
+
 
 
 function App() {
   return (
     <>
-
-      <div id="chart1"></div>
-      <div id="chart2"></div>
-      <HomeEcharts />
+        <Calendar />
     </>
   );
 }
