@@ -8,6 +8,7 @@ use App\Http\Controllers\RecursoController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', function () {
@@ -15,7 +16,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
+Route::get('prestamos/export-pdf', [PrestamoController::class, 'exportPdf'])->name('prestamos.exportPdf');
 Route::resource('categorias', App\Http\Controllers\CategoriaController::class)->middleware('auth');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth');
 Route::resource('personals', PersonalController::class)->middleware('auth');
@@ -30,6 +31,8 @@ Route::delete('/notificaciones/{id}', [HomeController::class, 'deleteNotificatio
 Route::resource('recursos', RecursoController::class)->middleware('auth');
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
+
+
 
 
 

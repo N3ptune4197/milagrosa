@@ -204,6 +204,49 @@ class PrestamoController extends Controller
             ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
 
+    public function exportPdf(Request $request)
+    {
+        // Inicia la consulta con los préstamos y sus relaciones
+        $query = Prestamo::with('detalleprestamos.recurso', 'personal');
+
+        // Aplica los mismos filtros que en el método index
+        if ($request->filled('personal_name')) {
+            $query->whereHas('personal', function ($q) use ($request) {
+                $q->where('id', $request->personal_name);
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            if ($request->filled('end_date')) {
+                $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
+            } else {
+                $query->where('fecha_prestamo', '>=', $request->start_date);
+            }
+        }
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('serial_number')) {
+            $query->whereHas('detalleprestamos.recurso', function ($q) use ($request) {
+                $q->where('nro_serie', 'like', '%' . $request->serial_number . '%');
+            });
+        }
+
+        // Ordenar los préstamos por estado y fecha
+        $prestamos = $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END")
+            ->orderBy('fecha_prestamo', 'desc')
+            ->get(); // Usa get() para obtener todos los resultados sin paginación
+
+        // Genera el PDF
+        $pdf = PDF::loadView('prestamo.pdf', compact('prestamos'));
+
+        // Descarga el archivo PDF
+        return $pdf->download('Reporte de prestamos.pdf');
+    }
+
+
 
 
 
@@ -301,7 +344,7 @@ class PrestamoController extends Controller
     {
         $prestamo = Prestamo::find($id);
 
-        return view('prestamo.show', compact('prestamo'));
+        return view('prestamo.index', compact('prestamo'));
     }
 
     /**
@@ -392,7 +435,18 @@ class PrestamoController extends Controller
         return redirect()->route('prestamos.index')->with('success', 'Recurso marcado como devuelto.');
     }
 
+    private function filtrarPrestamos($request)
+    {
+        // Filtra los préstamos según los filtros del request
+        $query = Prestamo::with('detalleprestamos.recurso.categoria', 'personal');
 
+        // Ejemplo de filtro por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        return $query->get();
+    }
 
 
 

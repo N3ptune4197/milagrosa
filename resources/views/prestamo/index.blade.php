@@ -107,7 +107,7 @@
                 @else
                 <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
                 @endif
-                
+
                 <!-- Título para Notificaciones Atrasadas -->
                 @if(count($notificacionesAtrasadas))
                 <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
@@ -282,12 +282,27 @@ window.addEventListener('click', function(e) {
                       {{ __('Crear Nuevo Préstamo') }}
           </a>
               </div>
+
             
             </div>         
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Exportar
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ route('prestamos.exportPdf', request()->query()) }}">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </a>
+                    <a class="dropdown-item" href="{{ route('prestamos.exportExcel', request()->query()) }}">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </a>
+                </div>
+            </div>
             
+
             <!-- Separador -->
             <hr class="my-6 border-t-2 border-gray-200">
-    
+            
             <!-- Tabla de Préstamos -->
             <div class="table-responsive">
                 <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
