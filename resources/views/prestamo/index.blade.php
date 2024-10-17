@@ -542,132 +542,165 @@ document.addEventListener('DOMContentLoaded', function () {
     const addResourceButton = document.getElementById('add-resource');
     const modalCloseButton = document.getElementById('modal-close'); // Asegúrate de tener un botón para cerrar el modal
     let recursosAgregados = 0;
-    let recursosDisponibles = {{ $recursosDisponiblesCount }}; // Cantidad de recursos disponibles
-    let selectedResources = new Set(); // Para almacenar los recursos seleccionados
-    
-    addResourceButton.addEventListener('click', function() {
-        if (recursosAgregados < recursosDisponibles) {
-            recursosAgregados++;
+let recursosDisponibles = {{ $recursosDisponiblesCount }};
+let selectedResources = new Set(); // Para almacenar los recursos seleccionados
 
-            const newField = document.createElement('div');
-            newField.classList.add('border', 'border-gray-300', 'rounded-lg', 'shadow-sm', 'overflow-hidden', 'mb-4');
-            newField.innerHTML = `
-                <div class="p-4 bg-gray-100 cursor-pointer flex justify-between items-center" id="resource-header-${recursosAgregados}">
-                    <h3 class="font-medium text-gray-700">{{ __('Recurso') }} ${recursosAgregados}</h3>
-                    <div class="flex space-x-2">
-                        <button type="button" class="text-blue-600 hover:text-blue-800 toggle-resource" id="toggle-resource-${recursosAgregados}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                            </svg>
-                        </button>
-                        <button type="button" class="flex items-center text-red-600 hover:text-red-800 remove-resource" id="remove-resource-${recursosAgregados}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+// Añadir evento para añadir un recurso
+addResourceButton.addEventListener('click', function() {
+    if (recursosAgregados < recursosDisponibles) {
+        recursosAgregados++;
+
+        const newField = document.createElement('div');
+        newField.classList.add('border', 'border-gray-300', 'rounded-lg', 'shadow-sm', 'overflow-hidden', 'mb-4');
+        newField.innerHTML = `
+            <div class="p-4 bg-gray-100 cursor-pointer flex justify-between items-center" id="resource-header-${recursosAgregados}">
+                <h3 class="font-medium text-gray-700">{{ __('Recurso') }} ${recursosAgregados}</h3>
+                <div class="flex space-x-2">
+                    <button type="button" class="text-blue-600 hover:text-blue-800 toggle-resource" id="toggle-resource-${recursosAgregados}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </button>
+                    <button type="button" class="flex items-center text-red-600 hover:text-red-800 remove-resource" id="remove-resource-${recursosAgregados}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="p-4 resource-content" id="resource-content-${recursosAgregados}" style="display: block;">
-                    <div class="form-group">
-                        <label for="idRecurso-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Seleccione un recurso') }}</label>
-                        <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" 
-                                class="form-control selectpicker w-full mt-1" 
-                                data-live-search="true" 
-                                data-dropup-auto="false" 
-                                data-size="3" 
-                                required>
-                            <option value="">{{ __('Seleccione un recurso') }}</option>
-                            @foreach($categorias as $categoria)
-                                @foreach($recursos as $recurso)
-                                    @if($recurso->estado == 1 && $recurso->id_categoria == $categoria->id)
-                                        <option value="{{ $recurso->id }}" data-subtext="{{ $categoria->nombre }}">
-                                            {{ $recurso->nro_serie }}
-                                        </option>
-                                    @endif
-                                @endforeach
+            </div>
+            <div class="p-4 resource-content" id="resource-content-${recursosAgregados}" style="display: block;">
+                <div class="form-group">
+                    <label for="idRecurso-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Seleccione un recurso') }}</label>
+                    <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" 
+                            class="form-control selectpicker w-full mt-1" 
+                            data-live-search="true" 
+                            data-dropup-auto="false" 
+                            data-size="3" 
+                            required>
+                        <option value="">{{ __('Seleccione un recurso') }}</option>
+                        @foreach($categorias as $categoria)
+                            @foreach($recursos as $recurso)
+                                @if($recurso->estado == 1 && $recurso->id_categoria == $categoria->id)
+                                    <option value="{{ $recurso->id }}" data-subtext="{{ $categoria->nombre }}">
+                                        {{ $recurso->nro_serie }}
+                                    </option>
+                                @endif
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
-                        <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
-                    </div>
+                        @endforeach
+                    </select>
                 </div>
-            `;
+                <div class="form-group mt-4">
+                    <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
+                    <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
+                </div>
+            </div>
+        `;
 
-            // Añadir el nuevo campo al contenedor de recursos
-            recursosContainer.appendChild(newField);
+        // Añadir el nuevo campo al contenedor de recursos
+        recursosContainer.appendChild(newField);
 
-            // Inicializar el selectpicker para el nuevo select agregado
-            $(`#idRecurso-${recursosAgregados}`).selectpicker('refresh');
-
-            // Event Listener para el botón de colapsar/expandir
-            const toggleButton = newField.querySelector(`#toggle-resource-${recursosAgregados}`);
-            const resourceContent = newField.querySelector(`#resource-content-${recursosAgregados}`);
-
-            toggleButton.addEventListener('click', function () {
-                resourceContent.style.display = resourceContent.style.display === "block" ? "none" : "block";
-            });
-
-            // Event Listener para el botón de eliminar recurso
-            const removeButton = newField.querySelector(`#remove-resource-${recursosAgregados}`);
-            removeButton.addEventListener('click', function () {
-                const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
-                // Eliminar el recurso de la lista de recursos seleccionados
-                selectedResources.delete(selectElement.value);
-                newField.remove();
-                recursosAgregados--;
-                // Actualizar opciones en otros selects
-                updateResourceOptions();
-            });
-
-            // Event Listener para el cambio en el select de recursos
-            const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
-            selectElement.addEventListener('change', function () {
-                const selectedValue = this.value;
-                if (selectedValue) {
-                    selectedResources.add(selectedValue); // Agregar el recurso a la lista de seleccionados
-                    updateResourceOptions(); // Actualizar las opciones en los otros selects
-                }
-            });
-
-            // Actualizar las opciones en los selects al eliminar un recurso
-            updateResourceOptions();
-
-        } else {
-            // Mensaje si no hay más recursos disponibles
-            Swal.fire({
-                icon: 'warning',
-                title: 'Recursos no disponibles',
-                text: 'No se pueden agregar más recursos, no hay disponibles.',
-                timer: 2500,
-                showConfirmButton: false
-            });
-        }
-    });
-
-    // Función para actualizar las opciones en los selects de recursos
-    function updateResourceOptions() {
-        const allSelects = recursosContainer.querySelectorAll('select[id^="idRecurso-"]');
-
-        // Primero, habilitar todas las opciones
-        allSelects.forEach(select => {
-            const options = select.querySelectorAll('option');
-            options.forEach(option => {
-                option.style.display = 'block'; // Mostrar todas las opciones inicialmente
-            });
+        // Inicializar el selectpicker para el nuevo select agregado
+        $(`#idRecurso-${recursosAgregados}`).selectpicker({
+            liveSearch: true,
+            dropupAuto: false,
+            size: 5,
+            mobile: false 
         });
 
-        // Deshabilitar opciones que ya están seleccionadas en otros selects
-        selectedResources.forEach(resourceId => {
-            allSelects.forEach(select => {
-                const optionToHide = Array.from(select.options).find(option => option.value === resourceId);
-                if (optionToHide) {
-                    optionToHide.style.display = 'none'; // Ocultar opciones ya seleccionadas
+        // Event Listener para el botón de colapsar/expandir
+        const toggleButton = newField.querySelector(`#toggle-resource-${recursosAgregados}`);
+        const resourceContent = newField.querySelector(`#resource-content-${recursosAgregados}`);
+
+        toggleButton.addEventListener('click', function () {
+            resourceContent.style.display = resourceContent.style.display === "block" ? "none" : "block";
+        });
+
+        // Event Listener para el botón de eliminar recurso
+        const removeButton = newField.querySelector(`#remove-resource-${recursosAgregados}`);
+        removeButton.addEventListener('click', function () {
+            const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
+            selectedResources.delete(selectElement.value);
+            newField.remove();
+            recursosAgregados--;
+            updateResourceOptions(); // Actualizar opciones al eliminar
+        });
+
+        // Event Listener para el cambio en el select de recursos
+        const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
+        selectElement.addEventListener('change', function () {
+            const previousValue = [...selectedResources].find(resource => resource === this.getAttribute('data-previous-value'));
+            const selectedValue = this.value;
+
+            // Verificar si el recurso ya está seleccionado
+            if (selectedResources.has(selectedValue)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Recurso ya seleccionado',
+                    text: 'Este recurso ya ha sido agregado.',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+                // Restablecer el select al valor anterior
+                this.value = this.getAttribute('data-previous-value');
+                $(this).selectpicker('refresh');
+            } else {
+                // Si hay un recurso previamente seleccionado, eliminarlo del conjunto
+                if (previousValue) {
+                    selectedResources.delete(previousValue);
                 }
-            });
+
+                // Agregar el nuevo valor seleccionado al conjunto
+                if (selectedValue) {
+                    selectedResources.add(selectedValue);
+                    this.setAttribute('data-previous-value', selectedValue);
+                }
+
+                updateResourceOptions(); // Actualizar las opciones en otros selects
+            }
+        });
+
+        // Actualizar las opciones en los selects cuando se agrega un recurso
+        updateResourceOptions();
+
+    } else {
+        // Mensaje si no hay más recursos disponibles
+        Swal.fire({
+            icon: 'warning',
+            title: 'Recursos no disponibles',
+            text: 'No se pueden agregar más recursos, no hay disponibles.',
+            timer: 2500,
+            showConfirmButton: false
         });
     }
+});
+
+// Función para actualizar las opciones de recursos en todos los selects
+function updateResourceOptions() {
+    // Obtener todos los selects de recursos
+    const resourceSelects = document.querySelectorAll('select[name="idRecurso[]"]');
+
+    // Recorrer cada select
+    resourceSelects.forEach(function(select) {
+        const currentValue = select.value; // Guardar valor actual seleccionado
+        const options = select.querySelectorAll('option'); // Obtener todas las opciones
+
+        // Recorrer opciones y deshabilitar las seleccionadas en otros selects
+        options.forEach(function(option) {
+            if (selectedResources.has(option.value) && option.value !== currentValue) {
+                option.disabled = true; // Deshabilitar opciones seleccionadas en otros selects
+            } else {
+                option.disabled = false; // Habilitar opciones no seleccionadas
+            }
+        });
+
+        // Refrescar selectpicker para aplicar los cambios
+        $(select).selectpicker('refresh');
+    });
+}
+
+
+
 
     // Event Listener para cerrar el modal
     modalCloseButton.addEventListener('click', function () {
