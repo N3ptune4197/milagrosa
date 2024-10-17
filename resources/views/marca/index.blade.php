@@ -11,7 +11,154 @@
         </button>
     </div>
 @stop
+@section('content_top_nav_right')
+<!-- Dropdown de notificaciones -->
+<li class="nav-item dropdown">
+    <div class="relative">
+        <a class="nav-link cursor-pointer" id="notificationDropdown">
+            <i class="far fa-bell"></i>
+            <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-white text-center text-xs">
+                {{ $totalNotificaciones }} 
+            </span>
+        </a>
+        <div class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50" id="notificationMenu">
+            <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                {{ $totalNotificaciones }} Notificaciones
+            </div>
+            <div class="overflow-y-auto max-h-64">
+                <!-- Notificaciones de hoy -->
+                @foreach ($notificacionesHoy as $notificacion)
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso 
+                            @if(isset($notificacion->minutos_atraso))
+                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
+                            @endif
+                            @if(isset($notificacion->horas_restantes))
+                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
+                            @endif
+                            @if(isset($notificacion->dias_restantes))
+                                (Faltan {{ $notificacion->dias_restantes }} días)
+                            @endif
+                        </div>
+                    </a>
+                @endforeach
 
+                <!-- Notificaciones atrasadas -->
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+            <div class="px-4 py-2 border-t">
+                <button class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openModal()">Ver todas las notificaciones</button>
+            </div>
+        </div>
+    </div>
+</li>
+
+<!-- Modal para ver todas las notificaciones -->
+<div class="fixed inset-0 hidden bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" id="allNotificationsModal">
+    <div class="bg-white rounded-lg shadow-lg max-w-lg w-full">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h5 class="text-lg font-semibold">Todas las Notificaciones</h5>
+            <button class="text-gray-600 hover:text-gray-900" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="p-4 overflow-y-auto max-h-96">
+            <ul class="space-y-4">
+                <!-- Título para Notificaciones de Hoy -->
+                @if(count($notificacionesHoy))
+                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                    @foreach ($notificacionesHoy as $notificacion)
+                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                            <div class="text-sm">
+                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                            </div>
+                            <span class="text-xs text-gray-500 float-right">
+                                @if (isset($notificacion->minutos_atraso))
+                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
+                                @else
+                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
+                                @endif
+                            </span>
+                        </a>
+                    @endforeach
+                @else
+                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                @endif
+
+                <!-- Título para Notificaciones Atrasadas -->
+                @if(count($notificacionesAtrasadas))
+                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                    @foreach ($notificacionesAtrasadas as $notificacion)
+                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                            <div class="text-sm">
+                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                            </div>
+                            <span class="text-xs text-red-500 float-right">
+                                Atrasado por {{ $notificacion->dias_atraso }} días.
+                            </span>
+                        </a>
+                    @endforeach
+                @else
+                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                @endif
+            </ul>
+        </div>
+        <div class="p-4 border-t text-right">
+            <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+function mostrarResumen(mensaje) {
+    Swal.fire({
+        title: 'Resumen de Notificación',
+        text: mensaje,
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+</script>
+
+
+<!-- Script para el comportamiento del modal -->
+<script>
+// Abre o cierra el menú de notificaciones
+document.getElementById('notificationDropdown').addEventListener('click', function() {
+    const menu = document.getElementById('notificationMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Abre el modal de notificaciones
+function openModal() {
+    document.getElementById('allNotificationsModal').classList.remove('hidden');
+    document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+}
+
+// Cierra el modal de notificaciones
+function closeModal() {
+    document.getElementById('allNotificationsModal').classList.add('hidden');
+}
+
+// Cerrar el menú de notificaciones si se hace clic fuera de él
+window.addEventListener('click', function(e) {
+    const menu = document.getElementById('notificationMenu');
+    if (!document.getElementById('notificationDropdown').contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+</script>
+@stop
 @section('content')
 
 

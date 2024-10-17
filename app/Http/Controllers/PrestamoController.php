@@ -272,6 +272,28 @@ class PrestamoController extends Controller
 
 
 
+    public function obtenerPrestamosActivos()
+    {
+        $prestamos = Prestamo::where('estado', 'activo') // Cambia 'activo' por el estado que utilizas para los préstamos activos
+            ->with('personal') // Asegúrate de que la relación esté definida en tu modelo
+            ->get();
+
+        $eventos = $prestamos->map(function ($prestamo) {
+            return [
+                'id' => $prestamo->id,
+                'eventTitle' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Puedes personalizar el título
+                'eventStartDate' => $prestamo->fecha_prestamo, // Asigna la fecha de inicio
+                'eventEndDate' => $prestamo->fecha_devolucion_real, // Asigna la fecha de finalización
+                'eventDecription' => $prestamo->observacion // Agrega la descripción si es necesario
+            ];
+        });
+
+        return response()->json($eventos);
+    }
+
+
+
+
 
 
 

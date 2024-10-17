@@ -4,7 +4,152 @@
 
 @section('content_header')
 @stop
+@section('content_top_nav_right')
+<!-- Dropdown de notificaciones -->
+<li class="nav-item dropdown">
+    <div class="relative">
+        <a class="nav-link cursor-pointer" id="notificationDropdown">
+            <i class="far fa-bell"></i>
+            <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-white text-center text-xs">
+                {{ $totalNotificaciones }} 
+            </span>
+        </a>
+        <div class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50" id="notificationMenu">
+            <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                {{ $totalNotificaciones }} Notificaciones
+            </div>
+            <div class="overflow-y-auto max-h-64">
+                <!-- Notificaciones de hoy -->
+                @foreach ($notificacionesHoy as $notificacion)
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso 
+                            @if(isset($notificacion->minutos_atraso))
+                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
+                            @endif
+                            @if(isset($notificacion->horas_restantes))
+                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
+                            @endif
+                            @if(isset($notificacion->dias_restantes))
+                                (Faltan {{ $notificacion->dias_restantes }} días)
+                            @endif
+                        </div>
+                    </a>
+                @endforeach
 
+                <!-- Notificaciones atrasadas -->
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+            <div class="px-4 py-2 border-t">
+                <button class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openModal()">Ver todas las notificaciones</button>
+            </div>
+        </div>
+    </div>
+</li>
+
+<!-- Modal para ver todas las notificaciones -->
+<div class="fixed inset-0 hidden bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" id="allNotificationsModal">
+    <div class="bg-white rounded-lg shadow-lg max-w-lg w-full">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h5 class="text-lg font-semibold">Todas las Notificaciones</h5>
+            <button class="text-gray-600 hover:text-gray-900" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="p-4 overflow-y-auto max-h-96">
+            <ul class="space-y-4">
+                <!-- Título para Notificaciones de Hoy -->
+                @if(count($notificacionesHoy))
+                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                    @foreach ($notificacionesHoy as $notificacion)
+                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                            <div class="text-sm">
+                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                            </div>
+                            <span class="text-xs text-gray-500 float-right">
+                                @if (isset($notificacion->minutos_atraso))
+                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
+                                @else
+                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
+                                @endif
+                            </span>
+                        </a>
+                    @endforeach
+                @else
+                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                @endif
+
+                <!-- Título para Notificaciones Atrasadas -->
+                @if(count($notificacionesAtrasadas))
+                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                    @foreach ($notificacionesAtrasadas as $notificacion)
+                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                            <div class="text-sm">
+                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                            </div>
+                            <span class="text-xs text-red-500 float-right">
+                                Atrasado por {{ $notificacion->dias_atraso }} días.
+                            </span>
+                        </a>
+                    @endforeach
+                @else
+                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                @endif
+            </ul>
+        </div>
+        <div class="p-4 border-t text-right">
+            <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+function mostrarResumen(mensaje) {
+    Swal.fire({
+        title: 'Resumen de Notificación',
+        text: mensaje,
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+}
+</script>
+<!-- Script para el comportamiento del modal -->
+<script>
+    // Abre o cierra el menú de notificaciones
+    document.getElementById('notificationDropdown').addEventListener('click', function() {
+        const menu = document.getElementById('notificationMenu');
+        menu.classList.toggle('hidden');
+    });
+    
+    // Abre el modal de notificaciones
+    function openModal() {
+        document.getElementById('allNotificationsModal').classList.remove('hidden');
+        document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+    }
+    
+    // Cierra el modal de notificaciones
+    function closeModal() {
+        document.getElementById('allNotificationsModal').classList.add('hidden');
+    }
+    
+    // Cerrar el menú de notificaciones si se hace clic fuera de él
+    window.addEventListener('click', function(e) {
+        const menu = document.getElementById('notificationMenu');
+        if (!document.getElementById('notificationDropdown').contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
+@stop
 @section('content')
     @if ($message = Session::get('success'))
         <div class="alert alert-success mb-4">
@@ -135,43 +280,59 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($prestamos as $prestamo)
-                            @foreach ($prestamo->detalleprestamos as $detalle)
-                                <tr>
-                                    <td>{{ ++$i }}</td>
-                                    <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                                    <td>{{ $prestamo->fecha_prestamo }}</td>
-                                    <td>{{ $detalle->fecha_devolucion }}</td>
-                                    <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                                    <td>{{ $prestamo->observacion }}</td>
-                                    <td>
-                                        {{ $detalle->recurso->nro_serie ?? 'N/A' }}
-                                        @if($detalle->recurso->categoria)
-                                            ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <!-- Mostrar el estado (activo o desactivo) -->
-                                        @if ($prestamo->estado == 'activo')
-                                        <span
-                                        class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
-                                        @else
-                                            <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
-                                        @if ($prestamo->estado == 'activo')
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
-                                            Marcar como devuelto
-                                        </button>
-                                        
-                                        @else
-                                            <span class="badge badge-secondary">Devuelto</span>
-                                        @endif
-                                    </td>
-                                </tr>
+                        @php
+                            use Carbon\Carbon;
+                            $fechaActual = Carbon::now();
+                        @endphp
+                        @php
+                            // Convertir la fecha_devolucion a un objeto Carbon
+                            $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                            // Verificar si la fecha actual es mayor que la fecha de devolución
+                            $atrasado = $fechaActual->gt($fechaDevolucion);
+                        @endphp
+                      @foreach ($prestamos as $prestamo)
+                      @foreach ($prestamo->detalleprestamos as $detalle)
+                      <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}" 
+                        class="{{ isset($highlight) && $highlight == $detalle->id ? 'bg-yellow-200' : '' }}">                    
+                              <td>{{ ++$i }}</td>
+                              <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                              <td>{{ $prestamo->fecha_prestamo }}</td>
+                              <td>{{ $detalle->fecha_devolucion }}</td>
+                              <td>{{ $prestamo->fecha_devolucion_real }}</td>
+                              <td>{{ $prestamo->observacion }}</td>
+                              <td>
+                                  {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                  @if($detalle->recurso->categoria)
+                                      ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                  @endif
+                              </td>
+                              <td>
+                                  <!-- Mostrar el estado (activo o desactivo) -->
+                                  @if ($prestamo->estado == 'activo')
+                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
+                                  @else
+                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
+                                  @endif
+                              </td>
+                              <td>
+                                  <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
+                                  @if ($prestamo->estado == 'activo')
+                                      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
+                                          Marcar como devuelto
+                                      </button>
+                                  @else
+                                      <span class="badge badge-secondary">Devuelto</span>
+                                  @endif
+                              </td>
+                          </tr>
+                      @endforeach
+                  @endforeach
+                  
+                  @if(isset($highlight))
+                  <script>
+                      console.log('Highlight recibido: {{ $highlight }}');
+                  </script>
+              @endif
                                 
 <!-- Modal para marcar como devuelto -->
 <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
@@ -228,13 +389,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-                            @endforeach
-                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -397,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="form-group mt-4">
                         <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
-                        <input type="date" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" min="{{ now()->format('Y-m-d') }}" required>
+                        <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
                     </div>
                 </div>
             `;
@@ -547,3 +701,80 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
         }
     }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Verificar si la URL contiene un parámetro de ID de préstamo
+        const urlParams = new URLSearchParams(window.location.search);
+        const loanId = urlParams.get('highlight');
+    
+        if (loanId) {
+            // Seleccionar la fila que tiene el ID del préstamo que se pasó
+            const loanRow = document.getElementById(loanId);
+    
+            if (loanRow) {
+                // Añadir una clase para resaltar la fila
+                loanRow.classList.add('bg-yellow-300');
+    
+                // Eliminar la clase de resaltado después de unos segundos (opcional)
+                setTimeout(() => {
+                    loanRow.classList.remove('bg-yellow-300');
+                }, 3000); // 3 segundos
+            }
+        }
+    });
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('fecha_devolucion-${recursosAgregados}');
+        
+        function updateMinDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Mes en formato de 2 dígitos
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            
+            // Establecer el valor mínimo de fecha y hora como el actual
+            const minDateTime = `${year}-${month}-${day}T${hour}:${minute}`;
+            input.min = minDateTime;
+            
+            // Si la fecha seleccionada es hoy, ajustar la hora mínima
+            input.addEventListener('input', function() {
+                const selectedDateTime = new Date(input.value);
+                const today = new Date(year, now.getMonth(), now.getDate());
+                
+                if (selectedDateTime >= today && selectedDateTime < now) {
+                    // Si el usuario selecciona una hora anterior a la actual en el mismo día
+                    input.value = minDateTime; // Ajustar a la hora mínima permitida
+                }
+            });
+        }
+
+        updateMinDateTime();
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Obtener el parámetro 'highlight' de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightId = urlParams.get('highlight');
+
+        // Si existe el parámetro 'highlight', desplazarse al elemento correspondiente
+        if (highlightId) {
+            const element = document.getElementById(`loan-${highlightId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
+                // Opcional: Resaltar brevemente el elemento al que se ha hecho scroll
+                element.style.backgroundColor = "#fff3cd"; // Color de resalte
+                setTimeout(() => {
+                    element.style.backgroundColor = ""; // Volver a color original
+                }, 2000); // Duración del resalte en milisegundos
+            }
+        }
+    });
+</script>
+
+    

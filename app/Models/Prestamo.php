@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DetallePrestamo;
 
 /**
  * Class Prestamo
@@ -90,7 +91,7 @@ class Prestamo extends Model
 
 
 
-    
+    /*
     use HasFactory;
 
     public function detalles()
@@ -102,5 +103,5 @@ class Prestamo extends Model
     {
         return $this->belongsTo(Personal::class, 'idPersonal');
     }
-
+    */
 }

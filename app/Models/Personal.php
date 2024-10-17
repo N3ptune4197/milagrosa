@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Personal
@@ -24,7 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Personal extends Model
 {
-    
+    use Notifiable;
+
     protected $perPage = 20;
 
     /**
@@ -42,5 +44,5 @@ class Personal extends Model
     {
         return $this->belongsTo(\App\Models\Tipodoc::class, 'id_tipodocs', 'id');
     }
-    
+
 }
