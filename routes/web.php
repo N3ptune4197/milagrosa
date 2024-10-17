@@ -47,6 +47,8 @@ Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.
 
 
 
+
+
 /*                                    echarts  */
 // web.php
 

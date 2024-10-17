@@ -293,11 +293,9 @@ window.addEventListener('click', function(e) {
                     <a class="dropdown-item" href="{{ route('prestamos.exportPdf', request()->query()) }}">
                         <i class="fas fa-file-pdf"></i> Exportar PDF
                     </a>
-                    <a class="dropdown-item" href="{{ route('prestamos.exportExcel', request()->query()) }}">
-                        <i class="fas fa-file-excel"></i> Exportar Excel
-                    </a>
                 </div>
             </div>
+            
             
 
             <!-- Separador -->

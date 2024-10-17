@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Notifications\LoanDueNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class PrestamoController extends Controller
@@ -384,7 +385,6 @@ class PrestamoController extends Controller
     }
     public function markAsReturned(Request $request, $id)
     {
-
         // Encuentra el detalle del préstamo
         $detallePrestamo = DetallePrestamo::with('prestamo', 'recurso')->find($id);
 
@@ -399,41 +399,34 @@ class PrestamoController extends Controller
             return redirect()->route('prestamos.index')->with('error', 'Recurso no encontrado.');
         }
 
-        // Guarda la observación en el préstamo (no en detalleprestamos)
+        // Guarda la observación en el préstamo
         $prestamo = $detallePrestamo->prestamo;
-        $prestamo->observacion = $request->input('observacion', null); // El campo está en 'prestamos'
+        $prestamo->observacion = $request->input('observacion', null);
         $prestamo->save();
 
-        // Actualiza la fecha de devolución en el detalle del préstamo
-        $detallePrestamo->fecha_devolucion = now();
-        $detallePrestamo->save();
+        // Solo actualiza la fecha_devolucion si está vacía
+        if (!$detallePrestamo->fecha_devolucion) {
+            $detallePrestamo->fecha_devolucion = now();
+            $detallePrestamo->save();
+        }
 
-        // Cambia el estado del recurso según el valor del campo 'estado'
+        // Cambia el estado del recurso
         $nuevoEstado = $request->input('estado');
-
-        // Verificamos si el estado es diferente de 1
         if ($nuevoEstado !== null) {
-            if ($nuevoEstado != 1) {
-                // Si no es 1 (disponible), entonces se marca como dañado (estado 4)
-                $recurso->estado = 4; // Dañado
-            } else {
-                // Si es 1, se marca como disponible
-                $recurso->estado = 1; // Disponible
-            }
-
-            // Guarda el estado del recurso
+            $recurso->estado = $nuevoEstado != 1 ? 4 : 1;
             $recurso->save();
         }
 
-        // Verifica si todos los detalles del préstamo han sido devueltos
+        // Verifica si todos los detalles han sido devueltos
         if ($prestamo->detalleprestamos()->whereNull('fecha_devolucion')->count() == 0) {
             $prestamo->estado = 'desactivo';
-            $prestamo->fecha_devolucion_real = now(); // Fecha de devolución real
+            $prestamo->fecha_devolucion_real = now();
             $prestamo->save();
         }
 
         return redirect()->route('prestamos.index')->with('success', 'Recurso marcado como devuelto.');
     }
+
 
     private function filtrarPrestamos($request)
     {
