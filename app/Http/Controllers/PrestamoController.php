@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+use Carbon\Carbon;
 use App\Models\Prestamo;
 use App\Models\Personal;
 use Illuminate\Http\RedirectResponse;
@@ -214,6 +216,7 @@ class PrestamoController extends Controller
         return Redirect::route('prestamos.index')
             ->with('success', 'Préstamo eliminado exitosamente');
     }
+
     public function markAsReturned(Request $request, $id)
     {
 
@@ -272,25 +275,34 @@ class PrestamoController extends Controller
 
 
 
-    public function obtenerPrestamosActivos()
-    {
-        $prestamos = Prestamo::where('estado', 'activo') // Cambia 'activo' por el estado que utilizas para los préstamos activos
-            ->with('personal') // Asegúrate de que la relación esté definida en tu modelo
-            ->get();
 
-        $eventos = $prestamos->map(function ($prestamo) {
-            return [
-                'id' => $prestamo->id,
-                'eventTitle' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Puedes personalizar el título
-                'eventStartDate' => $prestamo->fecha_prestamo, // Asigna la fecha de inicio
-                'eventEndDate' => $prestamo->fecha_devolucion_real, // Asigna la fecha de finalización
-                'eventDecription' => $prestamo->observacion // Agrega la descripción si es necesario
-            ];
-        });
 
-        return response()->json($eventos);
-    }
 
+
+    public function obtenerPrestamosActivosCalendario()
+{
+
+    $prestamos = Prestamo::where('estado', 'activo')
+        ->with(['personal', 'detalleprestamos.recurso.categoria'])  // Asegúrate de que la relación personal esté definida en el modelo Prestamo
+        ->get();
+
+    $eventos = $prestamos->map(function ($prestamo) {
+        $detalle = $prestamo->detalleprestamos->first(); // Obtener el primer detalle de préstamo
+        $recurso = $detalle ? $detalle->recurso : null; // Obtener el recurso si existe en el detalle del préstamo
+        $categoria = $recurso ? $recurso->categoria:null;
+        return [
+            'id' => $prestamo->id,
+            'title' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Título personalizado
+            'start' => $detalle->fecha_devolucion, // Fecha de inicio
+            'end' => $detalle->fecha_devolucion, // Fecha de finalización
+            'description' => $prestamo->observacion . ($recurso ? '' . $recurso->nro_serie : ''), // Descripción opcional
+            'recurso_categoria' => $categoria->nombre,
+            'fechaInicio' => Carbon::parse($prestamo->fecha_prestamo)->format('d/m/y') ,
+        ];
+    });
+
+    return response()->json($eventos);
+}
 
 
 

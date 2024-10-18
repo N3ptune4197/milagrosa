@@ -8,7 +8,7 @@ use App\Http\Controllers\RecursoController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
-
+Use App\Http\Controllers\PrestamoCalendarController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -34,8 +34,7 @@ Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.
 
 
 
-Route::get('/api/prestamos-activos', [PrestamoController::class, 'obtenerPrestamosActivos'])->middleware('auth');
-
+Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosActivosCalendario']);
 
 /*                                    echarts  */
 // web.php

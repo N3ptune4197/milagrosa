@@ -46,5 +46,8 @@ class Detalleprestamo extends Model
     {
         return $this->belongsTo(\App\Models\Recurso::class, 'id_recurso', 'id');
     }
+    
+
+    
 
 }
