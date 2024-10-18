@@ -363,26 +363,6 @@ return [
             ],
         ],
 
-
-
-
-
-
-
-
-
-        ['header' => 'CONFIGURAR CUENTA'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'bi-person-circle',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-
     ],
 
     /*

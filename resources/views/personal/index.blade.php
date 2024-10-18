@@ -190,7 +190,7 @@ window.addEventListener('click', function(e) {
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="personalsTable" class="table table-striped table-hover mt-2 mb-3" style="width:100%">
+                <table id="personalsTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
                     <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
@@ -238,7 +238,7 @@ window.addEventListener('click', function(e) {
     </div>
 
 
-   <!-- Modal de Creación y Edición -->
+ 
 <!-- Modal de Creación y Edición -->
 <div class="modal fade" id="personalModal" tabindex="-1" aria-labelledby="personalModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">

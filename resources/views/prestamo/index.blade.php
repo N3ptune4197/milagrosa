@@ -3,6 +3,9 @@
 @section('title', 'Gestión de Préstamos')
 
 @section('content_header')
+<div class="d-flex justify-content-between mb-2">
+    <h1><i class="bi bi-hourglass-split"></i> Prestamos</h1>
+</div>
 @stop
 @section('content_top_nav_right')
 <!-- Dropdown de notificaciones -->
@@ -175,6 +178,7 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
+<p class="mb-0">Aquí puedes agregar y ver la información sobre los Prestamos.</p>
     @if ($message = Session::get('success'))
         <div class="alert alert-success mb-4">
             <p>{{ $message }}</p>
@@ -183,50 +187,84 @@ window.addEventListener('click', function(e) {
 
     <div class="card">
         <div class="card-body">
-            <div class="bg-white shadow-lg rounded-lg p-6 mb-6 sticky top-0 z-50">
+            <div class="flex justify-between items-center mb-6">
+                <!-- Botón Exportar a la izquierda -->
+                <div class="relative inline-block text-left">
+                    <button type="button" class="btn btn-secondary font-semibold px-5 py-2 text-white dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Exportar
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ route('prestamos.exportPdf', request()->query()) }}">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </a>
+                    </div>
+                </div>
+            
+                <!-- Botón Crear Nuevo Préstamo a la derecha -->
+                <a href="#" class="btn btn-primary text-white font-semibold px-5 py-2"
+                    data-bs-toggle="modal" data-bs-target="#prestamoModal" data-placement="right">
+                    Crear Nuevo Préstamo
+                </a>
+            </div>
+            
+           <!-- Botón para abrir los filtros flotantes -->
+            <div class="fixed top-11 right-4 z-50">
+                <button id="openFilters" onclick="toggleFilters()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenedor de filtros flotantes -->
+            <div id="filtersContainer" class="fixed top-11 right-0 w-80 h-screen bg-white shadow-xl transform transition-transform translate-x-full z-50 overflow-y-auto p-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-gray-700">Filtros</h2>
-                    <!-- Ícono para desplegar los filtros -->
-                    <button id="filterToggle" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
+                    <!-- Botón para cerrar los filtros -->
+                    <button id="closeFilters" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-            
-                <!-- Contenedor de los filtros que será mostrado/ocultado con animación -->
-                <div id="filtersContainer" class="hidden transition-all duration-500 ease-in-out transform scale-y-0 opacity-0 origin-top overflow-visible">
+
+                <!-- Filtros desplegables -->
+                <div>
                     <form method="GET" action="{{ route('prestamos.index') }}">
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 gap-4 items-end">
                             
-                            <!-- Nombre del Personal -->
-                            <div class="relative">
-                                <select id="personal_name" name="personal_name"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-width="100%" data-size="3">
-                                    <option value="" disabled selected>Seleccione un personal</option>
-                                    @foreach ($personals as $personal)
-                                    <option value="{{ $personal->id }}">{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
-                                @endforeach
-                                </select>
-                            </div>
-            
+                           <!-- Nombre del Personal -->
+                    <select id="personal_name" name="personal_name"
+                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                    data-live-search="true" data-width="100%" data-size="3">
+                    <option value="" disabled {{ request('personal_name') ? '' : 'selected' }}>Seleccione un personal</option>
+                    @foreach ($personals as $personal)
+                    <option value="{{ $personal->id }}" {{ request('personal_name') == $personal->id ? 'selected' : '' }}>
+                        {{ $personal->nombres }} {{ $personal->a_paterno }}
+                    </option>
+                    @endforeach
+                    </select>
+
                             <!-- Fecha Desde -->
                             <div class="relative">
+                                <label for="start_date" class="block text-sm text-gray-600 mb-1">Desde</label>
                                 <input type="date" name="start_date" id="start_date"
                                     class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     value="{{ request('start_date') }}">
                             </div>
-            
+
                             <!-- Fecha Hasta -->
                             <div class="relative">
+                                <label for="end_date" class="block text-sm text-gray-600 mb-1">Hasta</label>
                                 <input type="date" name="end_date" id="end_date"
                                     class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     value="{{ request('end_date') }}">
                             </div>
-            
+
                             <!-- Estado -->
                             <div class="relative">
+                                <label for="estado" class="block text-sm text-gray-600 mb-1">Estado</label>
                                 <select name="estado" id="estado" class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     data-live-search="true" data-size="3">
                                     <option value="">Seleccionar Estado</option>
@@ -234,24 +272,22 @@ window.addEventListener('click', function(e) {
                                     <option value="desactivo" {{ request('estado') == 'desactivo' ? 'selected' : '' }}>Desactivo</option>
                                 </select>
                             </div>
-            
+
                             <!-- Número de Serie -->
                             <div class="relative">
+                                <label for="serial_number" class="block text-sm text-gray-600 mb-1">Número de Serie</label>
                                 <select id="serial_number" name="serial_number"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     data-live-search="true" data-width="100%" data-size="3">
                                     <option value="" selected>Seleccione un número de serie</option>
-                            
                                     @php
                                         $nroSerieUnicos = [];
                                     @endphp
-                            
                                     @foreach ($prestamos as $prestamo)
                                         @foreach ($prestamo->detalleprestamos as $detalle)
                                             @php
                                                 $nroSerie = $detalle->recurso->nro_serie ?? null;
                                             @endphp
-                            
                                             @if ($nroSerie && !in_array($nroSerie, $nroSerieUnicos))
                                                 <option value="{{ $nroSerie }}">{{ $nroSerie }}</option>
                                                 @php
@@ -262,10 +298,10 @@ window.addEventListener('click', function(e) {
                                     @endforeach
                                 </select>
                             </div>
-                            
-            
+
                         </div>
-            
+
+                        <!-- Botones de acción dentro de los filtros -->
                         <div class="mt-6 flex justify-center space-x-4">
                             <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
                                 Buscar
@@ -276,27 +312,7 @@ window.addEventListener('click', function(e) {
                         </div>
                     </form>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <!-- Botón para abrir el modal -->
-                  <a href="#" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#prestamoModal" data-placement='right'>
-                      {{ __('Crear Nuevo Préstamo') }}
-          </a>
-              </div>
-
-            
-            </div>         
-            <div class="btn-group">
-                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Exportar
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ route('prestamos.exportPdf', request()->query()) }}">
-                        <i class="fas fa-file-pdf"></i> Exportar PDF
-                    </a>
-                </div>
             </div>
-            
-            
 
             <!-- Separador -->
             <hr class="my-6 border-t-2 border-gray-200">
@@ -304,7 +320,7 @@ window.addEventListener('click', function(e) {
             <!-- Tabla de Préstamos -->
             <div class="table-responsive">
                 <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
-                    <thead>
+                    <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
                             <th>Personal</th>
@@ -322,55 +338,55 @@ window.addEventListener('click', function(e) {
                             use Carbon\Carbon;
                             $fechaActual = Carbon::now();
                         @endphp
-                        @php
-                            // Convertir la fecha_devolucion a un objeto Carbon
-                            $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
-                            // Verificar si la fecha actual es mayor que la fecha de devolución
-                            $atrasado = $fechaActual->gt($fechaDevolucion);
-                        @endphp
+                    
                         @foreach ($prestamos as $prestamo)
-                        @foreach ($prestamo->detalleprestamos as $detalle)
-                            <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}"> <!-- Asignando ID único -->
-                                <td>{{ ++$i }}</td>
-                                <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                                <td>{{ $prestamo->fecha_prestamo }}</td>
-                                <td>{{ $detalle->fecha_devolucion }}</td>
-                                <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                                <td>{{ $prestamo->observacion }}</td>
-                                <td>
-                                    {{ $detalle->recurso->nro_serie ?? 'N/A' }}
-                                    @if($detalle->recurso->categoria)
-                                        ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
-                                    @endif
-                                </td>
+                            @foreach ($prestamo->detalleprestamos as $detalle)
+                                @php
+                                    // Convertir la fecha_devolucion a un objeto Carbon
+                                    $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                                    // Verificar si la fecha actual es mayor que la fecha de devolución
+                                    $atrasado = $fechaActual->gt($fechaDevolucion);
+                                @endphp
+                    
+                                <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}"> <!-- Asignando ID único -->
+                                    <td>{{ ++$i }}</td>
+                                    <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                                    <td>{{ $prestamo->fecha_prestamo }}</td>
+                                    <td>{{ $detalle->fecha_devolucion }}</td>
+                                    <td>{{ $prestamo->fecha_devolucion_real }}</td>
+                                    <td>{{ $prestamo->observacion }}</td>
+                                    <td>
+                                        {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                        @if($detalle->recurso->categoria)
+                                            ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                        @endif
+                                    </td>
                                     <td>
                                         <!-- Mostrar el estado (activo o desactivo) -->
                                         @if ($prestamo->estado == 'activo')
-                                        <span
-                                        class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
                                         @else
-                                            <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
                                         @endif
                                     </td>
                                     <td>
                                         <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
                                         @if ($prestamo->estado == 'activo')
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
-                                            Marcar como devuelto
-                                        </button>
-                                        
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
+                                                Marcar como devuelto
+                                            </button>
                                         @else
                                             <span class="badge badge-secondary">Devuelto</span>
                                         @endif
                                     </td>
-                            </tr>
+                                </tr>
+                    
                                 
 <!-- Modal para marcar como devuelto -->
 <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center min-h-screen">
         <div class="modal-content bg-white rounded-lg shadow-lg border border-gray-300">
-            <div class="modal-header bg-blue-600 text-white flex justify-between items-center p-4 rounded-t-lg">
+            <div class="modal-header bg-vino text-white flex justify-between items-center p-4 rounded-t-lg">
                 <h5 class="modal-title font-semibold" id="devolucionModalLabel-{{ $detalle->id }}">{{ __('Marcar como devuelto') }}</h5>
                 <button type="button" class="text-white hover:text-gray-200" data-bs-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -378,12 +394,12 @@ window.addEventListener('click', function(e) {
                     </svg>
                 </button>
             </div>
-            <div class="modal-body p-6">
+            <div class="modal-body p-6 bg-crema">
                 <form id="devolucionForm-{{ $detalle->id }}" action="{{ route('prestamos.markAsReturned', $detalle->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Categoria del recurso -->
+                    <!-- Categoría del recurso -->
                     <div class="form-group mb-4">
                         <label for="categoríaRecurso-{{ $detalle->id }}" class="block text-gray-700 font-medium">{{ __('Categoría del recurso') }}</label>
                         <input type="text" id="categoríaRecurso-{{ $detalle->id }}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" value="{{ $detalle->recurso->categoria->nombre }}" readonly>
@@ -395,12 +411,12 @@ window.addEventListener('click', function(e) {
                         <input type="text" id="nroSerie-{{ $detalle->id }}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" value="{{ $detalle->recurso->nro_serie }}" readonly>
                     </div>
 
-                   <!-- Estado del recurso -->
+                    <!-- Estado del recurso -->
                     <div class="form-group mb-4">
                         <label for="estado-{{ $detalle->id }}" class="block text-gray-700 font-medium">{{ __('Estado del recurso') }}</label>
-                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg" data-live-search="false" data-width="100%" required>
-                            <option value="1"  {{ $detalle->recurso->estado == 1 ? 'selected' : '' }}>{{ __('Disponible') }}</option>
-                            <option value="4"  {{ $detalle->recurso->estado == 4 ? 'selected' : '' }}>{{ __('Dañado') }}</option>
+                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg" required>
+                            <option value="1" {{ $detalle->recurso->estado == 1 ? 'selected' : '' }}>{{ __('Disponible') }}</option>
+                            <option value="4" {{ $detalle->recurso->estado == 4 ? 'selected' : '' }}>{{ __('Dañado') }}</option>
                         </select>
                     </div>
 
@@ -422,10 +438,6 @@ window.addEventListener('click', function(e) {
     </div>
 </div>
 
-
-
-
-
                             @endforeach
                         @endforeach
                     </tbody>
@@ -437,16 +449,16 @@ window.addEventListener('click', function(e) {
 <!-- Modal de Creación/Edición de Préstamos -->
 <div class="modal fade" id="prestamoModal" tabindex="-1" aria-labelledby="prestamoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg flex items-center justify-center min-h-screen">
-        <div class="modal-content bg-white rounded-lg shadow-lg border border-gray-300">
-            <div class="modal-header bg-blue-600 text-white flex justify-between items-center p-4 rounded-t-lg">
-                <h5 class="modal-title font-semibold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
+        <div class="modal-content border-2 border-maroon rounded-lg">
+            <div class="modal-header bg-vino text-white">
+                <h5 class="modal-title w-100 text-center font-semibold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
                 <button type="button" class="text-white hover:text-gray-200" data-bs-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div class="modal-body p-6">
+            <div class="modal-body bg-crema p-6">
                 <!-- Inicio del formulario -->
                 <form action="{{ route('prestamos.store') }}" method="POST">
                     @csrf
@@ -482,7 +494,7 @@ window.addEventListener('click', function(e) {
                         <!-- Botones -->
                         <div class="flex justify-end space-x-2">
                             <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">{{ __('Guardar') }}</button>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700">{{ __('Guardar') }}</button>
                         </div>
                     </div>
                 </form>
@@ -758,19 +770,9 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
 
 </script>
 <script>
-    function toggleFilters() {
-        const container = document.getElementById('filtersContainer');
-        if (container.classList.contains('hidden')) {
-            container.classList.remove('hidden');
-            setTimeout(() => {
-                container.classList.remove('scale-y-0', 'opacity-0');
-            }, 10); 
-        } else {
-            container.classList.add('scale-y-0', 'opacity-0');
-            setTimeout(() => {
-                container.classList.add('hidden');
-            }, 500); 
-        }
+     function toggleFilters() {
+        const filtersContainer = document.getElementById('filtersContainer');
+        filtersContainer.classList.toggle('translate-x-full');
     }
 </script>
 
@@ -828,4 +830,30 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
         updateMinDateTime();
     });
 </script>
+<style>
+    .bg-crema {
+        background-color: #e3dbc8;
+    }
+    .bg-vino {
+        background-color: #9c1515;
+    }
+    .text-vino {
+        color: #9c1515;
+    }
+    .btn-vino {
+        background-color: #9c1515;
+        border-color: #9c1515;
+    }
+    .btn-vino:hover {
+        background-color: #7a1212;
+        border-color: #7a1212;
+    }
+    .btn-crema {
+        background-color: #e3dbc8;
+        color: #9c1515;
+    }
+    .hover\:bg-crema:hover {
+    background-color: #f5f5dc; /* Color crema al pasar el mouse */
+}
+</style>
     
