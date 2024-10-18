@@ -3,16 +3,12 @@
 @section('title', 'Recursos')
 
 @section('content_header')
-    <div class="d-flex justify-content-between mb-2">
-        <h1><i class="bi bi-pc-display-horizontal"></i> Recursos</h1>
-        <!-- Botón para abrir el modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recursoModal"
-            onclick="clearForm()">
-            {{ __('Crear Nuevo') }}
-        </button>
-    </div>
+<div class="d-flex justify-content-between mb-2">
+    <h1><i class="bi bi-pc-display-horizontal"></i> Recursos</h1>
+</div>
 @stop
 @section('content_top_nav_right')
+<!-- Dropdown de notificaciones -->
 <!-- Dropdown de notificaciones -->
 <li class="nav-item dropdown">
     <div class="relative">
@@ -27,34 +23,46 @@
                 {{ $totalNotificaciones }} Notificaciones
             </div>
             <div class="overflow-y-auto max-h-64">
-                <!-- Notificaciones de hoy -->
+               <!-- Notificaciones para hoy -->
                 @foreach ($notificacionesHoy as $notificacion)
+                @php
+                    // Definimos las clases de color para el tiempo restante
+                    $timeClass = 'text-green-500'; // Verde (sin atraso)
+                    
+                    if (isset($notificacion->minutos_atraso) || isset($notificacion->horas_atraso)) {
+                        $timeClass = 'text-red-500'; // Rojo (atrasado)
+                    } elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30) {
+                        $timeClass = 'text-yellow-500'; // Amarillo (menos de 30 minutos)
+                    }
+                @endphp
+
                 <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} debe devolver el recurso 
-                            @if(isset($notificacion->minutos_atraso))
-                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
-                            @endif
-                            @if(isset($notificacion->horas_restantes))
-                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
-                            @endif
-                            @if(isset($notificacion->dias_restantes))
-                                (Faltan {{ $notificacion->dias_restantes }} días)
-                            @endif
-                        </div>
-                    </a>
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }})
+                        @if(isset($notificacion->horas_atraso) && $notificacion->horas_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->horas_atraso }} horas y {{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_atraso) && $notificacion->minutos_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->dias_restantes) && $notificacion->dias_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->dias_restantes }} días y {{ $notificacion->horas_restantes }} horas</span>)</span>
+                        @elseif(isset($notificacion->horas_restantes) && $notificacion->horas_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @else
+                            <span>(Tiempo restante hoy)</span>
+                        @endif
+                    </div>
+                </a>
                 @endforeach
 
                 <!-- Notificaciones atrasadas -->
                 @foreach ($notificacionesAtrasadas as $notificacion)
-                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                        </div>
-                        <span class="text-xs text-red-500 float-right">
-                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
-                        </span>
-                    </a>
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                    </div>
+                </a>
                 @endforeach
             </div>
             <div class="px-4 py-2 border-t">
@@ -73,42 +81,52 @@
         </div>
         <div class="p-4 overflow-y-auto max-h-96">
             <ul class="space-y-4">
-                <!-- Título para Notificaciones de Hoy -->
+               <!-- Título para Notificaciones de Hoy -->
                 @if(count($notificacionesHoy))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
-                    @foreach ($notificacionesHoy as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
-                            </div>
-                            <span class="text-xs text-gray-500 float-right">
-                                @if (isset($notificacion->minutos_atraso))
-                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
-                                @else
-                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
-                                @endif
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                @foreach ($notificacionesHoy as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">
+                            @if (isset($notificacion->minutos_atraso))
+                                Debía devolver hace 
+                                <span class="text-red-500">{{ $notificacion->horas_atraso }} horas</span> y 
+                                <span class="text-red-500">{{ $notificacion->minutos_atraso }} minutos</span>.
+                            @elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30 && $notificacion->horas_restantes == 0)
+                                Faltan 
+                                <span class="text-yellow-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @elseif ($notificacion->horas_restantes == 0 && isset($notificacion->minutos_restantes))
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @else
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->horas_restantes }} horas</span> y 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @endif
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
                 @endif
-
+                
                 <!-- Título para Notificaciones Atrasadas -->
                 @if(count($notificacionesAtrasadas))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
-                    @foreach ($notificacionesAtrasadas as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                            </div>
-                            <span class="text-xs text-red-500 float-right">
-                                Atrasado por {{ $notificacion->dias_atraso }} días.
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
                 @endif
             </ul>
         </div>
@@ -117,6 +135,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -161,111 +180,17 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
-    <p class="mb-4">Aquí puedes gestionar los recursos registrados.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre los Recursos.</p>
+    <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#recursoModal" onclick="clearForm()">
+        {{ __('Crear Nuevo') }}
+    </button>
+</div>
     <div class="card">
         <div class="card-body">
-            <div class="bg-white shadow-lg rounded-lg p-6 mb-6 sticky top-0 z-50">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-700">Filtros</h2>
-                    <!-- Ícono para desplegar los filtros -->
-                    <button id="filterToggle" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Contenedor de los filtros que será mostrado/ocultado con animación -->
-                <div id="filtersContainer"
-                    class="hidden transition-all duration-500 ease-in-out transform scale-y-0 opacity-0 origin-top overflow-visible">
-                    <form method="GET" action="{{ route('recursos.index') }}">
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <!-- Número de Serie -->
-                            <div class="relative">
-                                <select id="serial_number" name="serial_number"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-width="100%" data-size="3">
-                                    <option value="" disabled selected>Selecciona un número de serie</option>
-                                    @foreach ($recursos as $recurso)
-                                        <option value="{{ $recurso->nro_serie }}">{{ $recurso->nro_serie }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Categoría -->
-                            <div class="relative">
-                                <select name="categoria_id" id="categoria_id"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-size="3">
-                                    <option value="">Seleccionar Categoría</option>
-                                    @foreach ($categorias as $categoria)
-                                        <option value="{{ $categoria->id }}"
-                                            {{ request('categoria_id') == $categoria->id ? 'selected' : '' }}>
-                                            {{ $categoria->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Marca -->
-                            <div class="relative">
-                                <select name="marca_id" id="marca_id"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-size="3">
-                                    <option value="">Seleccionar Marca</option>
-                                    @foreach ($marcas as $marca)
-                                        <option value="{{ $marca->id }}"
-                                            {{ request('marca_id') == $marca->id ? 'selected' : '' }}>
-                                            {{ $marca->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Estado -->
-                            <div class="relative">
-                                <select name="estado" id="estadoo"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-size="3">
-                                    <option value="">Seleccionar Estado</option>
-                                    <option value="1" {{ request('estado') == '1' ? 'selected' : '' }}>Disponible
-                                    </option>
-                                    <option value="2" {{ request('estado') == '2' ? 'selected' : '' }}>Prestado
-                                    </option>
-                                    <option value="3" {{ request('estado') == '3' ? 'selected' : '' }}>En
-                                        mantenimiento</option>
-                                    <option value="4" {{ request('estado') == '4' ? 'selected' : '' }}>Dañado</option>
-                                </select>
-                            </div>
-
-                            <!-- Fecha de Registro -->
-                            <div class="relative">
-                                <input type="date" name="fecha_registro" id="fecha_registro"
-                                    class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    value="{{ request('fecha_registro') }}">
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-center space-x-4">
-                            <button type="submit"
-                                class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-                                Buscar
-                            </button>
-                            <a href="{{ route('recursos.index') }}"
-                                class="px-5 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-colors">
-                                Limpiar Filtros
-                            </a>
-                        </div>
-                    </form>
-                </div>
-
-
-            </div>
-
             <div class="table-responsive">
                 <table id="recursosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
-                    <thead>
+                    <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
                             <th>Nro Serie</th>
@@ -305,7 +230,7 @@ window.addEventListener('click', function(e) {
 
                                 <td>{{ $recurso->fecha_registro->format('d/m/Y') }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-success"
+                                    <button class="btn btn-sm btn-outline-primary"
                                         onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }}, {{ $recurso->estado }})">
                                         <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
                                     </button>
@@ -313,7 +238,7 @@ window.addEventListener('click', function(e) {
                                         style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
                                             onclick="confirmDelete(event, this.form, '{{ $recurso->nombre }}')">
                                             <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                         </button>
@@ -327,81 +252,90 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal fade" id="recursoModal" tabindex="-1" aria-labelledby="recursoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <!-- Header del modal con Tailwind -->
-                <div class="modal-header bg-primary text-white text-center">
-                    <h5 class="modal-title" id="recursoModalLabel">{{ __('Agregar / Editar Recurso') }}</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
+    <!-- MODAL DE RECURSOS -->
+<div class="modal fade" id="recursoModal" tabindex="-1" aria-labelledby="recursoModalLabel" aria-hidden="true">
+    <div class="modal-dialog flex items-center justify-center" role="document">
+        <div class="modal-content border-2 border-maroon rounded-lg">
+            <div class="modal-header bg-vino text-white">
+                <h5 class="modal-title w-100 text-center" id="modalTitleRecurso">{{ __('Agregar / Editar Recurso') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-crema">
+                <form id="recursoForm" method="POST" action="{{ route('recursos.store') }}">
+                    @csrf
+                    <!-- Campo oculto para el ID del recurso -->
+                    <input type="hidden" id="recurso_id" name="recurso_id">
+                    <!-- Campo oculto para el método del formulario (PUT o POST) -->
+                    <input type="hidden" id="_method" name="_method" value="POST">
 
-                <div class="modal-body p-6">
-                    <form id="recursoForm" method="POST" action="{{ route('recursos.store') }}" class="space-y-4">
-                        @csrf
-                        <!-- Campo oculto para el ID del recurso -->
-                        <input type="hidden" id="recurso_id" name="recurso_id">
-                        <!-- Campo oculto para el método del formulario (PUT o POST) -->
-                        <input type="hidden" id="_method" name="_method" value="POST">
+                    <!-- Número de serie -->
+                    <div class="mb-4">
+                        <label for="nro_serie" class="block text-sm font-medium text-gray-700">{{ __('Número de Serie') }}</label>
+                        <input type="text" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm" name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
+                        @if ($errors->has('nro_serie'))
+                            <span class="text-red-500 text-sm">{{ $errors->first('nro_serie') }}</span>
+                        @endif
+                    </div>
 
-                        <!-- Número de serie -->
-                        <div class="flex flex-col mb-4">
-                            <label for="nro_serie" class="font-semibold">{{ __('Numero de Serie') }}</label>
-                            <input type="text" class="form-input border border-gray-300 rounded-lg px-3 py-2"
-                                name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
-                            @if ($errors->has('nro_serie'))
-                                <span class="text-red-500 text-sm">{{ $errors->first('nro_serie') }}</span>
-                            @endif
-                        </div>
-
-                        <!-- Categoría y Marca -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="categoria" class="font-semibold">{{ __('Categoría') }}</label>
-                                <select name="id_categoria" id="categoria" class="selectpicker" required
-                                    data-live-search="true" required>
-                                    <option value="">{{ __('Seleccione una categoría') }}</option>
-                                    @foreach ($categorias as $categoria)
-                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="marca" class="font-semibold">{{ __('Marca') }}</label>
-                                <select name="id_marca" id="marca" class="selectpicker" required
-                                    data-live-search="true" required>
-                                    <option value="">{{ __('Seleccione una marca') }}</option>
-                                    @foreach ($marcas as $marca)
-                                        <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Campo de estado (solo aparece al editar) -->
-                        <div id="estadoField" class="hidden">
-                            <label for="estado" class="font-semibold">{{ __('Estado del Recurso') }}</label>
-                            <select name="estado" id="estado"
-                                class="selectpicker form-select border border-gray-300 rounded-lg px-3 py-2">
-                                <option value="1">{{ __('Disponible') }}</option>
-                                <option value="3">{{ __('En Mantenimiento') }}</option>
-                                <option value="4">{{ __('Dañado') }}</option>
+                    <!-- Categoría y Marca -->
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <label for="categoria" class="block text-sm font-medium text-gray-700">{{ __('Categoría') }}</label>
+                            <select name="id_categoria" id="categoria" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
+                                <option value="">{{ __('Seleccione una categoría') }}</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                @endforeach
                             </select>
                         </div>
 
-                        <div class="flex justify-end mt-4 space-x-2">
-                            <button type="button" class="btn btn-secondary"
-                                data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
-                            <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
+                        <div class="flex-1">
+                            <label for="marca" class="block text-sm font-medium text-gray-700">{{ __('Marca') }}</label>
+                            <select name="id_marca" id="marca" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
+                                <option value="">{{ __('Seleccione una marca') }}</option>
+                                @foreach ($marcas as $marca)
+                                    <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Campo de estado (solo aparece al editar) -->
+                    <div id="estadoField" class="hidden mb-4">
+                        <label for="estado" class="block text-sm font-medium text-gray-700">{{ __('Estado del Recurso') }}</label>
+                        <select name="estado" id="estado" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm">
+                            <option value="1">{{ __('Disponible') }}</option>
+                            <option value="3">{{ __('En Mantenimiento') }}</option>
+                            <option value="4">{{ __('Dañado') }}</option>
+                        </select>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="flex justify-end mt-4 space-x-4">
+                        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">{{ __('Guardar') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Script para cambiar el título del modal y mostrar el campo de estado -->
+<script>
+    document.getElementById('recursoModal').addEventListener('show.bs.modal', function (event) {
+    var modalTitle = document.getElementById('modalTitleRecurso');
+    var recurso_id = document.getElementById('recurso_id').value; 
+
+    if (recurso_id && recurso_id !== '') {
+        modalTitle.textContent = 'Editar Recurso';
+    } else {
+        modalTitle.textContent = 'Agregar Recurso';
+    }
+});
+
+</script>
+
 
 
 @stop
@@ -601,7 +535,7 @@ function confirmEdit(nombreRecurso, id, estado) {
                             Swal.fire({
                                 icon: "error",
                                 title: "Oops...",
-                                text: errorMessage,
+                                text: "No se puede eliminar este recurso porque esta relacionado con otros registros",
                                 footer: '<p>¡Salvados por la alerta!</p>'
                             });
                         }
@@ -649,4 +583,30 @@ function confirmEdit(nombreRecurso, id, estado) {
             $('.selectpicker').selectpicker('refresh');
         }
     </script>
+    <style>
+        .bg-crema {
+            background-color: #e3dbc8;
+        }
+        .bg-vino {
+            background-color: #9c1515;
+        }
+        .text-vino {
+            color: #9c1515;
+        }
+        .btn-vino {
+            background-color: #9c1515;
+            border-color: #9c1515;
+        }
+        .btn-vino:hover {
+            background-color: #7a1212;
+            border-color: #7a1212;
+        }
+        .btn-crema {
+            background-color: #e3dbc8;
+            color: #9c1515;
+        }
+        .hover\:bg-crema:hover {
+        background-color: #f5f5dc; /* Color crema al pasar el mouse */
+    }
+    </style>
 @stop

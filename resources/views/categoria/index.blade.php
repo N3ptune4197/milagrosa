@@ -5,13 +5,10 @@
 @section('content_header')
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-tags-fill"></i> <span class="font-semibold">Categorías</span></h1>
-        <!-- Botón para abrir el modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoriaModal" onclick="clearForm()"><i class="fa-solid fa-plus fa-shake"></i>
-            {{ __('Crear Nuevo') }}
-        </button>
     </div>
 @stop
 @section('content_top_nav_right')
+<!-- Dropdown de notificaciones -->
 <!-- Dropdown de notificaciones -->
 <li class="nav-item dropdown">
     <div class="relative">
@@ -26,34 +23,46 @@
                 {{ $totalNotificaciones }} Notificaciones
             </div>
             <div class="overflow-y-auto max-h-64">
-                <!-- Notificaciones de hoy -->
+               <!-- Notificaciones para hoy -->
                 @foreach ($notificacionesHoy as $notificacion)
+                @php
+                    // Definimos las clases de color para el tiempo restante
+                    $timeClass = 'text-green-500'; // Verde (sin atraso)
+                    
+                    if (isset($notificacion->minutos_atraso) || isset($notificacion->horas_atraso)) {
+                        $timeClass = 'text-red-500'; // Rojo (atrasado)
+                    } elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30) {
+                        $timeClass = 'text-yellow-500'; // Amarillo (menos de 30 minutos)
+                    }
+                @endphp
+
                 <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} debe devolver el recurso 
-                            @if(isset($notificacion->minutos_atraso))
-                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
-                            @endif
-                            @if(isset($notificacion->horas_restantes))
-                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
-                            @endif
-                            @if(isset($notificacion->dias_restantes))
-                                (Faltan {{ $notificacion->dias_restantes }} días)
-                            @endif
-                        </div>
-                    </a>
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }})
+                        @if(isset($notificacion->horas_atraso) && $notificacion->horas_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->horas_atraso }} horas y {{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_atraso) && $notificacion->minutos_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->dias_restantes) && $notificacion->dias_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->dias_restantes }} días y {{ $notificacion->horas_restantes }} horas</span>)</span>
+                        @elseif(isset($notificacion->horas_restantes) && $notificacion->horas_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @else
+                            <span>(Tiempo restante hoy)</span>
+                        @endif
+                    </div>
+                </a>
                 @endforeach
 
                 <!-- Notificaciones atrasadas -->
                 @foreach ($notificacionesAtrasadas as $notificacion)
-                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                        </div>
-                        <span class="text-xs text-red-500 float-right">
-                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
-                        </span>
-                    </a>
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                    </div>
+                </a>
                 @endforeach
             </div>
             <div class="px-4 py-2 border-t">
@@ -72,42 +81,52 @@
         </div>
         <div class="p-4 overflow-y-auto max-h-96">
             <ul class="space-y-4">
-                <!-- Título para Notificaciones de Hoy -->
+               <!-- Título para Notificaciones de Hoy -->
                 @if(count($notificacionesHoy))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
-                    @foreach ($notificacionesHoy as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
-                            </div>
-                            <span class="text-xs text-gray-500 float-right">
-                                @if (isset($notificacion->minutos_atraso))
-                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
-                                @else
-                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
-                                @endif
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                @foreach ($notificacionesHoy as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">
+                            @if (isset($notificacion->minutos_atraso))
+                                Debía devolver hace 
+                                <span class="text-red-500">{{ $notificacion->horas_atraso }} horas</span> y 
+                                <span class="text-red-500">{{ $notificacion->minutos_atraso }} minutos</span>.
+                            @elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30 && $notificacion->horas_restantes == 0)
+                                Faltan 
+                                <span class="text-yellow-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @elseif ($notificacion->horas_restantes == 0 && isset($notificacion->minutos_restantes))
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @else
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->horas_restantes }} horas</span> y 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @endif
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
                 @endif
-
+                
                 <!-- Título para Notificaciones Atrasadas -->
                 @if(count($notificacionesAtrasadas))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
-                    @foreach ($notificacionesAtrasadas as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                            </div>
-                            <span class="text-xs text-red-500 float-right">
-                                Atrasado por {{ $notificacion->dias_atraso }} días.
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
                 @endif
             </ul>
         </div>
@@ -116,6 +135,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -161,13 +181,18 @@ window.addEventListener('click', function(e) {
 @stop
 @section('content')
 
-    <p class="mb-4">Aquí se mostrarán las categorías que tendrán los recursos</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre las Categorias.</p>
+    <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#categoriaModal" onclick="clearForm()">
+        {{ __('Crear Nuevo') }}
+    </button>
+</div>
 
     <div class="card">
         <div class="card-body">
             <div class="table-responsive mt-4">
                 <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-3" style="width:100%">
-                    <thead>
+                    <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>Id</th>
                             <th>Nombre</th>
@@ -183,10 +208,10 @@ window.addEventListener('click', function(e) {
                                 <td>{{ $categoria->descripcion }}</td>
                                 <td>
                                     <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST">
-                                        <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="confirmEdit('{{ $categoria->nombre }}', {{ $categoria->id }})"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" onclick="confirmEdit('{{ $categoria->nombre }}', {{ $categoria->id }})"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $categoria->nombre}}')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $categoria->nombre}}')">
                                             <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                         </button>
                                     </form>
@@ -199,18 +224,19 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 
-    <!-- Modal de Creación/Edición de Categorías -->
+   <!-- Modal de Creación/Edición de Categorías -->
 <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">
-        <div class="modal-content rounded-xl border-4 border-black">
+        <div class="modal-content rounded-lg border-2 border-maroon"> <!-- Bordes redondeados y borde color vino -->
+            
             <!-- Cabecera del modal -->
-            <div class="modal-header bg-blue-500 text-white flex justify-between items-center p-4 border-b-10 border-blue-800">
-                <h5 class="modal-title text-center flex-1 font-bold text-lg" id="categoriaModalLabel">{{ __('Agregar / Editar Categoría') }}</h5>
+            <div class="modal-header bg-vino text-white flex justify-between items-center p-4 border-b-10 border-blue-800"> <!-- Fondo vino y texto blanco -->
+                <h5 class="modal-title w-100 text-center" id="modalTitleCategoria">{{ __('Agregar / Editar Categoría') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <!-- Cuerpo del modal -->
-            <div class="modal-body">
+            <div class="modal-body bg-crema"> <!-- Fondo crema -->
                 <form id="categoriaForm" class="formulario-agregar" method="POST" action="{{ route('categorias.store') }}">
                     @csrf
                     <div class="mb-4">
@@ -234,7 +260,19 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 </div>
+<script>
+    // Cambiar el título del modal según si se va a crear o editar
+    document.getElementById('categoriaModal').addEventListener('show.bs.modal', function (event) {
+        var modalTitle = document.getElementById('modalTitleCategoria');
+        var categoria_id = document.getElementById('categoria_id').value; // Verificar si hay un ID de categoría
 
+        if (categoria_id) {
+            modalTitle.textContent = 'Editar Categoría'; // Cambiar el título a "Editar Categoría"
+        } else {
+            modalTitle.textContent = 'Agregar Categoría'; // Cambiar el título a "Agregar Categoría"
+        }
+    });
+</script>
 
 @stop
 
@@ -424,7 +462,32 @@ window.addEventListener('click', function(e) {
 </script>
 
 
+<style>
+    .bg-crema {
+        background-color: #e3dbc8;
+    }
+    .bg-vino {
+        background-color: #9c1515;
+    }
+    .text-vino {
+        color: #9c1515;
+    }
+    .btn-vino {
+        background-color: #9c1515;
+        border-color: #9c1515;
+    }
+    .btn-vino:hover {
+        background-color: #7a1212;
+        border-color: #7a1212;
+    }
+    .btn-crema {
+        background-color: #e3dbc8;
+        color: #9c1515;
+    }
+    .hover\:bg-crema:hover {
+    background-color: #f5f5dc; /* Color crema al pasar el mouse */
+}
+</style>
 
 
 @stop
-

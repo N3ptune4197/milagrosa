@@ -3,6 +3,9 @@
 @section('title', 'Gestión de Préstamos')
 
 @section('content_header')
+<div class="d-flex justify-content-between mb-2">
+    <h1><i class="bi bi-hourglass-split"></i> Prestamos</h1>
+</div>
 @stop
 @section('content_top_nav_right')
 <!-- Dropdown de notificaciones -->
@@ -19,34 +22,46 @@
                 {{ $totalNotificaciones }} Notificaciones
             </div>
             <div class="overflow-y-auto max-h-64">
-                <!-- Notificaciones de hoy -->
+               <!-- Notificaciones para hoy -->
                 @foreach ($notificacionesHoy as $notificacion)
+                @php
+                    // Definimos las clases de color para el tiempo restante
+                    $timeClass = 'text-green-500'; // Verde (sin atraso)
+                    
+                    if (isset($notificacion->minutos_atraso) || isset($notificacion->horas_atraso)) {
+                        $timeClass = 'text-red-500'; // Rojo (atrasado)
+                    } elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30) {
+                        $timeClass = 'text-yellow-500'; // Amarillo (menos de 30 minutos)
+                    }
+                @endphp
+
                 <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} debe devolver el recurso 
-                            @if(isset($notificacion->minutos_atraso))
-                                (Atraso de {{ $notificacion->minutos_atraso }} minutos)
-                            @endif
-                            @if(isset($notificacion->horas_restantes))
-                                (Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos)
-                            @endif
-                            @if(isset($notificacion->dias_restantes))
-                                (Faltan {{ $notificacion->dias_restantes }} días)
-                            @endif
-                        </div>
-                    </a>
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }})
+                        @if(isset($notificacion->horas_atraso) && $notificacion->horas_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->horas_atraso }} horas y {{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_atraso) && $notificacion->minutos_atraso > 0)
+                            <span>(Atraso de <span class="{{ $timeClass }}">{{ $notificacion->minutos_atraso }} minutos</span>)</span>
+                        @elseif(isset($notificacion->dias_restantes) && $notificacion->dias_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->dias_restantes }} días y {{ $notificacion->horas_restantes }} horas</span>)</span>
+                        @elseif(isset($notificacion->horas_restantes) && $notificacion->horas_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @elseif(isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes > 0)
+                            <span>(Faltan <span class="{{ $timeClass }}">{{ $notificacion->minutos_restantes }} minutos</span>)</span>
+                        @else
+                            <span>(Tiempo restante hoy)</span>
+                        @endif
+                    </div>
+                </a>
                 @endforeach
 
                 <!-- Notificaciones atrasadas -->
                 @foreach ($notificacionesAtrasadas as $notificacion)
-                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id_recurso]) }}" class="block px-4 py-2 text-gray-700 break-words">
-                        <div class="text-sm">
-                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                        </div>
-                        <span class="text-xs text-red-500 float-right">
-                            Se encuentra atrasado por {{ $notificacion->dias_atraso }} días.
-                        </span>
-                    </a>
+                <a href="{{ route('prestamos.index', ['highlight' => $notificacion->id]) }}" class="block px-4 py-2 text-gray-700 break-words">
+                    <div class="text-sm">
+                        {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                    </div>
+                </a>
                 @endforeach
             </div>
             <div class="px-4 py-2 border-t">
@@ -65,42 +80,52 @@
         </div>
         <div class="p-4 overflow-y-auto max-h-96">
             <ul class="space-y-4">
-                <!-- Título para Notificaciones de Hoy -->
+               <!-- Título para Notificaciones de Hoy -->
                 @if(count($notificacionesHoy))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
-                    @foreach ($notificacionesHoy as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
-                            </div>
-                            <span class="text-xs text-gray-500 float-right">
-                                @if (isset($notificacion->minutos_atraso))
-                                    Debía devolver hace {{ $notificacion->minutos_atraso }} minutos.
-                                @else
-                                    Faltan {{ $notificacion->horas_restantes }} horas y {{ $notificacion->minutos_restantes }} minutos.
-                                @endif
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2">Notificaciones de Hoy</h6>
+                @foreach ($notificacionesHoy as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} debe devolver el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}) hoy.
+                        </div>
+                        <span class="text-xs text-gray-500 float-right">
+                            @if (isset($notificacion->minutos_atraso))
+                                Debía devolver hace 
+                                <span class="text-red-500">{{ $notificacion->horas_atraso }} horas</span> y 
+                                <span class="text-red-500">{{ $notificacion->minutos_atraso }} minutos</span>.
+                            @elseif (isset($notificacion->minutos_restantes) && $notificacion->minutos_restantes <= 30 && $notificacion->horas_restantes == 0)
+                                Faltan 
+                                <span class="text-yellow-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @elseif ($notificacion->horas_restantes == 0 && isset($notificacion->minutos_restantes))
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @else
+                                Faltan 
+                                <span class="text-green-500">{{ $notificacion->horas_restantes }} horas</span> y 
+                                <span class="text-green-500">{{ $notificacion->minutos_restantes }} minutos</span>.
+                            @endif
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones para hoy.</li>
                 @endif
 
                 <!-- Título para Notificaciones Atrasadas -->
                 @if(count($notificacionesAtrasadas))
-                    <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
-                    @foreach ($notificacionesAtrasadas as $notificacion)
-                        <a href="#" class="block px-4 py-2 text-gray-700 break-words">
-                            <div class="text-sm">
-                                {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
-                            </div>
-                            <span class="text-xs text-red-500 float-right">
-                                Atrasado por {{ $notificacion->dias_atraso }} días.
-                            </span>
-                        </a>
-                    @endforeach
+                <h6 class="text-md font-semibold text-gray-700 mb-2 mt-4">Notificaciones Atrasadas</h6>
+                @foreach ($notificacionesAtrasadas as $notificacion)
+                    <a href="#" class="block px-4 py-2 text-gray-700 break-words">
+                        <div class="text-sm">
+                            {{ $notificacion->a_paterno }} no ha devuelto el recurso {{ $notificacion->categoria }} ({{ $notificacion->nro_serie }}).
+                        </div>
+                        <span class="text-xs text-red-500 float-right">
+                            Atrasado por <span class="text-red-500">{{ $notificacion->dias_atraso }} días</span>.
+                        </span>
+                    </a>
+                @endforeach
                 @else
-                    <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
+                <li class="bg-gray-100 p-3 rounded-lg">No hay notificaciones atrasadas.</li>
                 @endif
             </ul>
         </div>
@@ -122,35 +147,38 @@ function mostrarResumen(mensaje) {
     });
 }
 </script>
+
+
 <!-- Script para el comportamiento del modal -->
 <script>
-    // Abre o cierra el menú de notificaciones
-    document.getElementById('notificationDropdown').addEventListener('click', function() {
-        const menu = document.getElementById('notificationMenu');
-        menu.classList.toggle('hidden');
-    });
-    
-    // Abre el modal de notificaciones
-    function openModal() {
-        document.getElementById('allNotificationsModal').classList.remove('hidden');
-        document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+// Abre o cierra el menú de notificaciones
+document.getElementById('notificationDropdown').addEventListener('click', function() {
+    const menu = document.getElementById('notificationMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Abre el modal de notificaciones
+function openModal() {
+    document.getElementById('allNotificationsModal').classList.remove('hidden');
+    document.getElementById('notificationMenu').classList.add('hidden'); // Cierra el menú al abrir el modal
+}
+
+// Cierra el modal de notificaciones
+function closeModal() {
+    document.getElementById('allNotificationsModal').classList.add('hidden');
+}
+
+// Cerrar el menú de notificaciones si se hace clic fuera de él
+window.addEventListener('click', function(e) {
+    const menu = document.getElementById('notificationMenu');
+    if (!document.getElementById('notificationDropdown').contains(e.target)) {
+        menu.classList.add('hidden');
     }
-    
-    // Cierra el modal de notificaciones
-    function closeModal() {
-        document.getElementById('allNotificationsModal').classList.add('hidden');
-    }
-    
-    // Cerrar el menú de notificaciones si se hace clic fuera de él
-    window.addEventListener('click', function(e) {
-        const menu = document.getElementById('notificationMenu');
-        if (!document.getElementById('notificationDropdown').contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
+});
+</script>
 @stop
 @section('content')
+<p class="mb-0">Aquí puedes agregar y ver la información sobre los Prestamos.</p>
     @if ($message = Session::get('success'))
         <div class="alert alert-success mb-4">
             <p>{{ $message }}</p>
@@ -159,50 +187,84 @@ function mostrarResumen(mensaje) {
 
     <div class="card">
         <div class="card-body">
-            <div class="bg-white shadow-lg rounded-lg p-6 mb-6 sticky top-0 z-50">
+            <div class="flex justify-between items-center mb-6">
+                <!-- Botón Exportar a la izquierda -->
+                <div class="relative inline-block text-left">
+                    <button type="button" class="btn btn-secondary font-semibold px-5 py-2 text-white dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Exportar
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ route('prestamos.exportPdf', request()->query()) }}">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </a>
+                    </div>
+                </div>
+            
+                <!-- Botón Crear Nuevo Préstamo a la derecha -->
+                <a href="#" class="btn btn-primary text-white font-semibold px-5 py-2"
+                    data-bs-toggle="modal" data-bs-target="#prestamoModal" data-placement="right">
+                    Crear Nuevo Préstamo
+                </a>
+            </div>
+            
+           <!-- Botón para abrir los filtros flotantes -->
+            <div class="fixed top-11 right-4 z-50">
+                <button id="openFilters" onclick="toggleFilters()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenedor de filtros flotantes -->
+            <div id="filtersContainer" class="fixed top-11 right-0 w-80 h-screen bg-white shadow-xl transform transition-transform translate-x-full z-50 overflow-y-auto p-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-gray-700">Filtros</h2>
-                    <!-- Ícono para desplegar los filtros -->
-                    <button id="filterToggle" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
+                    <!-- Botón para cerrar los filtros -->
+                    <button id="closeFilters" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-            
-                <!-- Contenedor de los filtros que será mostrado/ocultado con animación -->
-                <div id="filtersContainer" class="hidden transition-all duration-500 ease-in-out transform scale-y-0 opacity-0 origin-top overflow-visible">
+
+                <!-- Filtros desplegables -->
+                <div>
                     <form method="GET" action="{{ route('prestamos.index') }}">
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 gap-4 items-end">
                             
-                            <!-- Nombre del Personal -->
-                            <div class="relative">
-                                <select id="personal_name" name="personal_name"
-                                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                                    data-live-search="true" data-width="100%" data-size="3">
-                                    <option value="" disabled selected>Seleccione un personal</option>
-                                    @foreach ($personals as $personal)
-                                    <option value="{{ $personal->id }}">{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
-                                @endforeach
-                                </select>
-                            </div>
-            
+                           <!-- Nombre del Personal -->
+                    <select id="personal_name" name="personal_name"
+                    class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                    data-live-search="true" data-width="100%" data-size="3">
+                    <option value="" disabled {{ request('personal_name') ? '' : 'selected' }}>Seleccione un personal</option>
+                    @foreach ($personals as $personal)
+                    <option value="{{ $personal->id }}" {{ request('personal_name') == $personal->id ? 'selected' : '' }}>
+                        {{ $personal->nombres }} {{ $personal->a_paterno }}
+                    </option>
+                    @endforeach
+                    </select>
+
                             <!-- Fecha Desde -->
                             <div class="relative">
+                                <label for="start_date" class="block text-sm text-gray-600 mb-1">Desde</label>
                                 <input type="date" name="start_date" id="start_date"
                                     class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     value="{{ request('start_date') }}">
                             </div>
-            
+
                             <!-- Fecha Hasta -->
                             <div class="relative">
+                                <label for="end_date" class="block text-sm text-gray-600 mb-1">Hasta</label>
                                 <input type="date" name="end_date" id="end_date"
                                     class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     value="{{ request('end_date') }}">
                             </div>
-            
+
                             <!-- Estado -->
                             <div class="relative">
+                                <label for="estado" class="block text-sm text-gray-600 mb-1">Estado</label>
                                 <select name="estado" id="estado" class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     data-live-search="true" data-size="3">
                                     <option value="">Seleccionar Estado</option>
@@ -210,24 +272,22 @@ function mostrarResumen(mensaje) {
                                     <option value="desactivo" {{ request('estado') == 'desactivo' ? 'selected' : '' }}>Desactivo</option>
                                 </select>
                             </div>
-            
+
                             <!-- Número de Serie -->
                             <div class="relative">
+                                <label for="serial_number" class="block text-sm text-gray-600 mb-1">Número de Serie</label>
                                 <select id="serial_number" name="serial_number"
                                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
                                     data-live-search="true" data-width="100%" data-size="3">
                                     <option value="" selected>Seleccione un número de serie</option>
-                            
                                     @php
                                         $nroSerieUnicos = [];
                                     @endphp
-                            
                                     @foreach ($prestamos as $prestamo)
                                         @foreach ($prestamo->detalleprestamos as $detalle)
                                             @php
                                                 $nroSerie = $detalle->recurso->nro_serie ?? null;
                                             @endphp
-                            
                                             @if ($nroSerie && !in_array($nroSerie, $nroSerieUnicos))
                                                 <option value="{{ $nroSerie }}">{{ $nroSerie }}</option>
                                                 @php
@@ -238,10 +298,10 @@ function mostrarResumen(mensaje) {
                                     @endforeach
                                 </select>
                             </div>
-                            
-            
+
                         </div>
-            
+
+                        <!-- Botones de acción dentro de los filtros -->
                         <div class="mt-6 flex justify-center space-x-4">
                             <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
                                 Buscar
@@ -252,21 +312,15 @@ function mostrarResumen(mensaje) {
                         </div>
                     </form>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <!-- Botón para abrir el modal -->
-                  <a href="#" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#prestamoModal" data-placement='right'>
-                      {{ __('Crear Nuevo Préstamo') }}
-          </a>
-              </div>
-            </div>         
-            
+            </div>
+
             <!-- Separador -->
             <hr class="my-6 border-t-2 border-gray-200">
-    
+            
             <!-- Tabla de Préstamos -->
             <div class="table-responsive">
                 <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
-                    <thead>
+                    <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
                             <th>Personal</th>
@@ -284,61 +338,55 @@ function mostrarResumen(mensaje) {
                             use Carbon\Carbon;
                             $fechaActual = Carbon::now();
                         @endphp
-                        @php
-                            // Convertir la fecha_devolucion a un objeto Carbon
-                            $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
-                            // Verificar si la fecha actual es mayor que la fecha de devolución
-                            $atrasado = $fechaActual->gt($fechaDevolucion);
-                        @endphp
-                      @foreach ($prestamos as $prestamo)
-                      @foreach ($prestamo->detalleprestamos as $detalle)
-                      <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}" 
-                        class="{{ isset($highlight) && $highlight == $detalle->id ? 'bg-yellow-200' : '' }}">                    
-                              <td>{{ ++$i }}</td>
-                              <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
-                              <td>{{ $prestamo->fecha_prestamo }}</td>
-                              <td>{{ $detalle->fecha_devolucion }}</td>
-                              <td>{{ $prestamo->fecha_devolucion_real }}</td>
-                              <td>{{ $prestamo->observacion }}</td>
-                              <td>
-                                  {{ $detalle->recurso->nro_serie ?? 'N/A' }}
-                                  @if($detalle->recurso->categoria)
-                                      ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
-                                  @endif
-                              </td>
-                              <td>
-                                  <!-- Mostrar el estado (activo o desactivo) -->
-                                  @if ($prestamo->estado == 'activo')
-                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
-                                  @else
-                                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
-                                  @endif
-                              </td>
-                              <td>
-                                  <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
-                                  @if ($prestamo->estado == 'activo')
-                                      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
-                                          Marcar como devuelto
-                                      </button>
-                                  @else
-                                      <span class="badge badge-secondary">Devuelto</span>
-                                  @endif
-                              </td>
-                          </tr>
-                      @endforeach
-                  @endforeach
-                  
-                  @if(isset($highlight))
-                  <script>
-                      console.log('Highlight recibido: {{ $highlight }}');
-                  </script>
-              @endif
+                    
+                        @foreach ($prestamos as $prestamo)
+                            @foreach ($prestamo->detalleprestamos as $detalle)
+                                @php
+                                    // Convertir la fecha_devolucion a un objeto Carbon
+                                    $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                                    // Verificar si la fecha actual es mayor que la fecha de devolución
+                                    $atrasado = $fechaActual->gt($fechaDevolucion);
+                                @endphp
+                    
+                                <tr id="loan-{{ $prestamo->id }}-{{ $detalle->id }}"> <!-- Asignando ID único -->
+                                    <td>{{ ++$i }}</td>
+                                    <td>{{ $prestamo->personal->nombres ?? 'N/A' }} {{ $prestamo->personal->a_paterno ?? '' }}</td>
+                                    <td>{{ $prestamo->fecha_prestamo }}</td>
+                                    <td>{{ $detalle->fecha_devolucion }}</td>
+                                    <td>{{ $prestamo->fecha_devolucion_real }}</td>
+                                    <td>{{ $prestamo->observacion }}</td>
+                                    <td>
+                                        {{ $detalle->recurso->nro_serie ?? 'N/A' }}
+                                        @if($detalle->recurso->categoria)
+                                            ({{ $detalle->recurso->categoria->nombre ?? 'Sin categoría' }})
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <!-- Mostrar el estado (activo o desactivo) -->
+                                        @if ($prestamo->estado == 'activo')
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Activo</span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Desactivo</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <!-- Botón de opciones: Marcar como devuelto si el estado es activo -->
+                                        @if ($prestamo->estado == 'activo')
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal-{{ $detalle->id }}">
+                                                Marcar como devuelto
+                                            </button>
+                                        @else
+                                            <span class="badge badge-secondary">Devuelto</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                    
                                 
 <!-- Modal para marcar como devuelto -->
 <div class="modal fade" id="devolucionModal-{{ $detalle->id }}" tabindex="-1" role="dialog" aria-labelledby="devolucionModalLabel-{{ $detalle->id }}" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center min-h-screen">
         <div class="modal-content bg-white rounded-lg shadow-lg border border-gray-300">
-            <div class="modal-header bg-blue-600 text-white flex justify-between items-center p-4 rounded-t-lg">
+            <div class="modal-header bg-vino text-white flex justify-between items-center p-4 rounded-t-lg">
                 <h5 class="modal-title font-semibold" id="devolucionModalLabel-{{ $detalle->id }}">{{ __('Marcar como devuelto') }}</h5>
                 <button type="button" class="text-white hover:text-gray-200" data-bs-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -346,12 +394,12 @@ function mostrarResumen(mensaje) {
                     </svg>
                 </button>
             </div>
-            <div class="modal-body p-6">
+            <div class="modal-body p-6 bg-crema">
                 <form id="devolucionForm-{{ $detalle->id }}" action="{{ route('prestamos.markAsReturned', $detalle->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Categoria del recurso -->
+                    <!-- Categoría del recurso -->
                     <div class="form-group mb-4">
                         <label for="categoríaRecurso-{{ $detalle->id }}" class="block text-gray-700 font-medium">{{ __('Categoría del recurso') }}</label>
                         <input type="text" id="categoríaRecurso-{{ $detalle->id }}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" value="{{ $detalle->recurso->categoria->nombre }}" readonly>
@@ -363,12 +411,12 @@ function mostrarResumen(mensaje) {
                         <input type="text" id="nroSerie-{{ $detalle->id }}" class="form-control w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg" value="{{ $detalle->recurso->nro_serie }}" readonly>
                     </div>
 
-                   <!-- Estado del recurso -->
+                    <!-- Estado del recurso -->
                     <div class="form-group mb-4">
                         <label for="estado-{{ $detalle->id }}" class="block text-gray-700 font-medium">{{ __('Estado del recurso') }}</label>
-                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg" data-live-search="false" data-width="100%" required>
-                            <option value="1"  {{ $detalle->recurso->estado == 1 ? 'selected' : '' }}>{{ __('Disponible') }}</option>
-                            <option value="4"  {{ $detalle->recurso->estado == 4 ? 'selected' : '' }}>{{ __('Dañado') }}</option>
+                        <select name="estado" id="estado-{{ $detalle->id }}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg" required>
+                            <option value="1" {{ $detalle->recurso->estado == 1 ? 'selected' : '' }}>{{ __('Disponible') }}</option>
+                            <option value="4" {{ $detalle->recurso->estado == 4 ? 'selected' : '' }}>{{ __('Dañado') }}</option>
                         </select>
                     </div>
 
@@ -389,6 +437,9 @@ function mostrarResumen(mensaje) {
         </div>
     </div>
 </div>
+
+                            @endforeach
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -398,16 +449,16 @@ function mostrarResumen(mensaje) {
 <!-- Modal de Creación/Edición de Préstamos -->
 <div class="modal fade" id="prestamoModal" tabindex="-1" aria-labelledby="prestamoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg flex items-center justify-center min-h-screen">
-        <div class="modal-content bg-white rounded-lg shadow-lg border border-gray-300">
-            <div class="modal-header bg-blue-600 text-white flex justify-between items-center p-4 rounded-t-lg">
-                <h5 class="modal-title font-semibold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
+        <div class="modal-content border-2 border-maroon rounded-lg">
+            <div class="modal-header bg-vino text-white">
+                <h5 class="modal-title w-100 text-center font-semibold text-lg" id="prestamoModalLabel">{{ __('Crear Préstamo') }}</h5>
                 <button type="button" class="text-white hover:text-gray-200" data-bs-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div class="modal-body p-6">
+            <div class="modal-body bg-crema p-6">
                 <!-- Inicio del formulario -->
                 <form action="{{ route('prestamos.store') }}" method="POST">
                     @csrf
@@ -443,7 +494,7 @@ function mostrarResumen(mensaje) {
                         <!-- Botones -->
                         <div class="flex justify-end space-x-2">
                             <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">{{ __('Guardar') }}</button>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700">{{ __('Guardar') }}</button>
                         </div>
                     </div>
                 </form>
@@ -503,132 +554,165 @@ document.addEventListener('DOMContentLoaded', function () {
     const addResourceButton = document.getElementById('add-resource');
     const modalCloseButton = document.getElementById('modal-close'); // Asegúrate de tener un botón para cerrar el modal
     let recursosAgregados = 0;
-    let recursosDisponibles = {{ $recursosDisponiblesCount }}; // Cantidad de recursos disponibles
-    let selectedResources = new Set(); // Para almacenar los recursos seleccionados
-    
-    addResourceButton.addEventListener('click', function() {
-        if (recursosAgregados < recursosDisponibles) {
-            recursosAgregados++;
+let recursosDisponibles = {{ $recursosDisponiblesCount }};
+let selectedResources = new Set(); // Para almacenar los recursos seleccionados
 
-            const newField = document.createElement('div');
-            newField.classList.add('border', 'border-gray-300', 'rounded-lg', 'shadow-sm', 'overflow-hidden', 'mb-4');
-            newField.innerHTML = `
-                <div class="p-4 bg-gray-100 cursor-pointer flex justify-between items-center" id="resource-header-${recursosAgregados}">
-                    <h3 class="font-medium text-gray-700">{{ __('Recurso') }} ${recursosAgregados}</h3>
-                    <div class="flex space-x-2">
-                        <button type="button" class="text-blue-600 hover:text-blue-800 toggle-resource" id="toggle-resource-${recursosAgregados}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                            </svg>
-                        </button>
-                        <button type="button" class="flex items-center text-red-600 hover:text-red-800 remove-resource" id="remove-resource-${recursosAgregados}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+// Añadir evento para añadir un recurso
+addResourceButton.addEventListener('click', function() {
+    if (recursosAgregados < recursosDisponibles) {
+        recursosAgregados++;
+
+        const newField = document.createElement('div');
+        newField.classList.add('border', 'border-gray-300', 'rounded-lg', 'shadow-sm', 'overflow-hidden', 'mb-4');
+        newField.innerHTML = `
+            <div class="p-4 bg-gray-100 cursor-pointer flex justify-between items-center" id="resource-header-${recursosAgregados}">
+                <h3 class="font-medium text-gray-700">{{ __('Recurso') }} ${recursosAgregados}</h3>
+                <div class="flex space-x-2">
+                    <button type="button" class="text-blue-600 hover:text-blue-800 toggle-resource" id="toggle-resource-${recursosAgregados}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </button>
+                    <button type="button" class="flex items-center text-red-600 hover:text-red-800 remove-resource" id="remove-resource-${recursosAgregados}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="p-4 resource-content" id="resource-content-${recursosAgregados}" style="display: block;">
-                    <div class="form-group">
-                        <label for="idRecurso-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Seleccione un recurso') }}</label>
-                        <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" 
-                                class="form-control selectpicker w-full mt-1" 
-                                data-live-search="true" 
-                                data-dropup-auto="false" 
-                                data-size="3" 
-                                required>
-                            <option value="">{{ __('Seleccione un recurso') }}</option>
-                            @foreach($categorias as $categoria)
-                                @foreach($recursos as $recurso)
-                                    @if($recurso->estado == 1 && $recurso->id_categoria == $categoria->id)
-                                        <option value="{{ $recurso->id }}" data-subtext="{{ $categoria->nombre }}">
-                                            {{ $recurso->nro_serie }}
-                                        </option>
-                                    @endif
-                                @endforeach
+            </div>
+            <div class="p-4 resource-content" id="resource-content-${recursosAgregados}" style="display: block;">
+                <div class="form-group">
+                    <label for="idRecurso-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Seleccione un recurso') }}</label>
+                    <select name="idRecurso[]" id="idRecurso-${recursosAgregados}" 
+                            class="form-control selectpicker w-full mt-1" 
+                            data-live-search="true" 
+                            data-dropup-auto="false" 
+                            data-size="3" 
+                            required>
+                        <option value="">{{ __('Seleccione un recurso') }}</option>
+                        @foreach($categorias as $categoria)
+                            @foreach($recursos as $recurso)
+                                @if($recurso->estado == 1 && $recurso->id_categoria == $categoria->id)
+                                    <option value="{{ $recurso->id }}" data-subtext="{{ $categoria->nombre }}">
+                                        {{ $recurso->nro_serie }}
+                                    </option>
+                                @endif
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
-                        <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
-                    </div>
+                        @endforeach
+                    </select>
                 </div>
-            `;
+                <div class="form-group mt-4">
+                    <label for="fecha_devolucion-${recursosAgregados}" class="block text-gray-700 font-medium">{{ __('Fecha de devolución') }}</label>
+                    <input type="datetime-local" name="fecha_devolucion[]" id="fecha_devolucion-${recursosAgregados}" class="form-control w-full mt-1 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200 ease-in-out" min="{{ now()->format('Y-m-d') }}T{{ now()->format('H:i') }}" required>
+                </div>
+            </div>
+        `;
 
-            // Añadir el nuevo campo al contenedor de recursos
-            recursosContainer.appendChild(newField);
+        // Añadir el nuevo campo al contenedor de recursos
+        recursosContainer.appendChild(newField);
 
-            // Inicializar el selectpicker para el nuevo select agregado
-            $(`#idRecurso-${recursosAgregados}`).selectpicker('refresh');
-
-            // Event Listener para el botón de colapsar/expandir
-            const toggleButton = newField.querySelector(`#toggle-resource-${recursosAgregados}`);
-            const resourceContent = newField.querySelector(`#resource-content-${recursosAgregados}`);
-
-            toggleButton.addEventListener('click', function () {
-                resourceContent.style.display = resourceContent.style.display === "block" ? "none" : "block";
-            });
-
-            // Event Listener para el botón de eliminar recurso
-            const removeButton = newField.querySelector(`#remove-resource-${recursosAgregados}`);
-            removeButton.addEventListener('click', function () {
-                const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
-                // Eliminar el recurso de la lista de recursos seleccionados
-                selectedResources.delete(selectElement.value);
-                newField.remove();
-                recursosAgregados--;
-                // Actualizar opciones en otros selects
-                updateResourceOptions();
-            });
-
-            // Event Listener para el cambio en el select de recursos
-            const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
-            selectElement.addEventListener('change', function () {
-                const selectedValue = this.value;
-                if (selectedValue) {
-                    selectedResources.add(selectedValue); // Agregar el recurso a la lista de seleccionados
-                    updateResourceOptions(); // Actualizar las opciones en los otros selects
-                }
-            });
-
-            // Actualizar las opciones en los selects al eliminar un recurso
-            updateResourceOptions();
-
-        } else {
-            // Mensaje si no hay más recursos disponibles
-            Swal.fire({
-                icon: 'warning',
-                title: 'Recursos no disponibles',
-                text: 'No se pueden agregar más recursos, no hay disponibles.',
-                timer: 2500,
-                showConfirmButton: false
-            });
-        }
-    });
-
-    // Función para actualizar las opciones en los selects de recursos
-    function updateResourceOptions() {
-        const allSelects = recursosContainer.querySelectorAll('select[id^="idRecurso-"]');
-
-        // Primero, habilitar todas las opciones
-        allSelects.forEach(select => {
-            const options = select.querySelectorAll('option');
-            options.forEach(option => {
-                option.style.display = 'block'; // Mostrar todas las opciones inicialmente
-            });
+        // Inicializar el selectpicker para el nuevo select agregado
+        $(`#idRecurso-${recursosAgregados}`).selectpicker({
+            liveSearch: true,
+            dropupAuto: false,
+            size: 5,
+            mobile: false 
         });
 
-        // Deshabilitar opciones que ya están seleccionadas en otros selects
-        selectedResources.forEach(resourceId => {
-            allSelects.forEach(select => {
-                const optionToHide = Array.from(select.options).find(option => option.value === resourceId);
-                if (optionToHide) {
-                    optionToHide.style.display = 'none'; // Ocultar opciones ya seleccionadas
+        // Event Listener para el botón de colapsar/expandir
+        const toggleButton = newField.querySelector(`#toggle-resource-${recursosAgregados}`);
+        const resourceContent = newField.querySelector(`#resource-content-${recursosAgregados}`);
+
+        toggleButton.addEventListener('click', function () {
+            resourceContent.style.display = resourceContent.style.display === "block" ? "none" : "block";
+        });
+
+        // Event Listener para el botón de eliminar recurso
+        const removeButton = newField.querySelector(`#remove-resource-${recursosAgregados}`);
+        removeButton.addEventListener('click', function () {
+            const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
+            selectedResources.delete(selectElement.value);
+            newField.remove();
+            recursosAgregados--;
+            updateResourceOptions(); // Actualizar opciones al eliminar
+        });
+
+        // Event Listener para el cambio en el select de recursos
+        const selectElement = newField.querySelector(`#idRecurso-${recursosAgregados}`);
+        selectElement.addEventListener('change', function () {
+            const previousValue = [...selectedResources].find(resource => resource === this.getAttribute('data-previous-value'));
+            const selectedValue = this.value;
+
+            // Verificar si el recurso ya está seleccionado
+            if (selectedResources.has(selectedValue)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Recurso ya seleccionado',
+                    text: 'Este recurso ya ha sido agregado.',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+                // Restablecer el select al valor anterior
+                this.value = this.getAttribute('data-previous-value');
+                $(this).selectpicker('refresh');
+            } else {
+                // Si hay un recurso previamente seleccionado, eliminarlo del conjunto
+                if (previousValue) {
+                    selectedResources.delete(previousValue);
                 }
-            });
+
+                // Agregar el nuevo valor seleccionado al conjunto
+                if (selectedValue) {
+                    selectedResources.add(selectedValue);
+                    this.setAttribute('data-previous-value', selectedValue);
+                }
+
+                updateResourceOptions(); // Actualizar las opciones en otros selects
+            }
+        });
+
+        // Actualizar las opciones en los selects cuando se agrega un recurso
+        updateResourceOptions();
+
+    } else {
+        // Mensaje si no hay más recursos disponibles
+        Swal.fire({
+            icon: 'warning',
+            title: 'Recursos no disponibles',
+            text: 'No se pueden agregar más recursos, no hay disponibles.',
+            timer: 2500,
+            showConfirmButton: false
         });
     }
+});
+
+// Función para actualizar las opciones de recursos en todos los selects
+function updateResourceOptions() {
+    // Obtener todos los selects de recursos
+    const resourceSelects = document.querySelectorAll('select[name="idRecurso[]"]');
+
+    // Recorrer cada select
+    resourceSelects.forEach(function(select) {
+        const currentValue = select.value; // Guardar valor actual seleccionado
+        const options = select.querySelectorAll('option'); // Obtener todas las opciones
+
+        // Recorrer opciones y deshabilitar las seleccionadas en otros selects
+        options.forEach(function(option) {
+            if (selectedResources.has(option.value) && option.value !== currentValue) {
+                option.disabled = true; // Deshabilitar opciones seleccionadas en otros selects
+            } else {
+                option.disabled = false; // Habilitar opciones no seleccionadas
+            }
+        });
+
+        // Refrescar selectpicker para aplicar los cambios
+        $(select).selectpicker('refresh');
+    });
+}
+
+
+
 
     // Event Listener para cerrar el modal
     modalCloseButton.addEventListener('click', function () {
@@ -686,19 +770,9 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
 
 </script>
 <script>
-    function toggleFilters() {
-        const container = document.getElementById('filtersContainer');
-        if (container.classList.contains('hidden')) {
-            container.classList.remove('hidden');
-            setTimeout(() => {
-                container.classList.remove('scale-y-0', 'opacity-0');
-            }, 10); 
-        } else {
-            container.classList.add('scale-y-0', 'opacity-0');
-            setTimeout(() => {
-                container.classList.add('hidden');
-            }, 500); 
-        }
+     function toggleFilters() {
+        const filtersContainer = document.getElementById('filtersContainer');
+        filtersContainer.classList.toggle('translate-x-full');
     }
 </script>
 
@@ -756,25 +830,30 @@ function confirmarDevolucion(detalleId, nroSerie, categoriaNombre) {
         updateMinDateTime();
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Obtener el parámetro 'highlight' de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const highlightId = urlParams.get('highlight');
-
-        // Si existe el parámetro 'highlight', desplazarse al elemento correspondiente
-        if (highlightId) {
-            const element = document.getElementById(`loan-${highlightId}`);
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "center" });
-                // Opcional: Resaltar brevemente el elemento al que se ha hecho scroll
-                element.style.backgroundColor = "#fff3cd"; // Color de resalte
-                setTimeout(() => {
-                    element.style.backgroundColor = ""; // Volver a color original
-                }, 2000); // Duración del resalte en milisegundos
-            }
-        }
-    });
-</script>
-
+<style>
+    .bg-crema {
+        background-color: #e3dbc8;
+    }
+    .bg-vino {
+        background-color: #9c1515;
+    }
+    .text-vino {
+        color: #9c1515;
+    }
+    .btn-vino {
+        background-color: #9c1515;
+        border-color: #9c1515;
+    }
+    .btn-vino:hover {
+        background-color: #7a1212;
+        border-color: #7a1212;
+    }
+    .btn-crema {
+        background-color: #e3dbc8;
+        color: #9c1515;
+    }
+    .hover\:bg-crema:hover {
+    background-color: #f5f5dc; /* Color crema al pasar el mouse */
+}
+</style>
     

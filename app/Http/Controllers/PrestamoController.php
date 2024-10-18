@@ -14,6 +14,11 @@ use App\Models\Recurso;
 use Illuminate\Support\Facades\DB;
 use App\Models\Categoria;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use App\Notifications\LoanDueNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class PrestamoController extends Controller
 {
@@ -22,8 +27,6 @@ class PrestamoController extends Controller
      */
     public function index(Request $request): View
     {
-        // Mostrar los datos que se envían desde el formulario
-
 
         // Inicia la consulta con los filtros
         $query = Prestamo::with('detalleprestamos.recurso');
@@ -74,11 +77,175 @@ class PrestamoController extends Controller
             ->filter() // Eliminar posibles nulos
             ->values(); // Reindexar la colección
 
-        // Retornar la vista con los resultados filtrados y la lista de personal
-        return view('prestamo.index', compact('prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos'))
+        $highlightId = $request->get('highlight'); // Obtener el ID a resaltar
+        $hoy = Carbon::now(); // Obtiene la fecha y hora actual
+
+        // Obtener préstamos activos con detalles cuyo recurso está por vencer o ya venció
+        $loans = Prestamo::where('estado', 'activo')
+            ->whereHas('detalleprestamos', function ($query) use ($hoy) {
+                $query->whereDate('fecha_devolucion', '=', $hoy->toDateString())
+                    ->orWhere('fecha_devolucion', '<', $hoy);
+            })
+            ->with([
+                'detalleprestamos.recurso.categoria',
+                'personal'
+            ])
+            ->get();
+
+        // Inicializar arrays para las notificaciones
+        $notificacionesHoy = [];
+        $notificacionesAtrasadas = [];
+
+        foreach ($loans as $loan) {
+            $user = $loan->personal;
+
+            // Verifica si ya existe una notificación en la base de datos
+            $existingNotification = DB::table('notifications')
+                ->where('notifiable_id', $user->id)
+                ->where('type', LoanDueNotification::class)
+                ->where('data->loan_id', $loan->id)
+                ->first();
+
+            if (!$existingNotification) {
+                // Si no existe, crea la notificación
+                $user->notify(new LoanDueNotification($loan));
+            }
+
+            foreach ($loan->detalleprestamos as $detalle) {
+                if (isset($detalle->fecha_devolucion)) {
+                    $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                    $hoy = Carbon::now();
+
+                    if ($fechaDevolucion->isToday()) {
+                        // Si la devolución es hoy
+                        if ($hoy->gt($fechaDevolucion)) {
+                            // Ya pasó la hora de devolución hoy (atraso)
+                            $minutosAtraso = $fechaDevolucion->diffInMinutes($hoy); // Diferencia correcta sin negativos
+                            $horasAtraso = floor($minutosAtraso / 60);
+                            $minutosAtraso = $minutosAtraso % 60;
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_atraso' => $horasAtraso,
+                                'minutos_atraso' => $minutosAtraso,
+                            ];
+                        } else {
+                            // Tiempo restante hoy
+                            $minutosRestantes = $hoy->diffInMinutes($fechaDevolucion);
+                            $horasRestantes = floor($minutosRestantes / 60);
+                            $minutosRestantes = $minutosRestantes % 60;
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_restantes' => $horasRestantes,
+                                'minutos_restantes' => $minutosRestantes,
+                            ];
+                        }
+                    } elseif ($fechaDevolucion->gt($hoy)) {
+                        // Si la devolución es en el futuro
+                        $diasRestantes = floor($hoy->diffInDays($fechaDevolucion));
+                        $horasRestantes = floor($hoy->diffInHours($fechaDevolucion) % 24);
+
+                        if ($diasRestantes > 0) {
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'dias_restantes' => $diasRestantes,
+                                'horas_restantes' => $horasRestantes,
+                            ];
+                        } else {
+                            // Si faltan menos de 24 horas
+                            $minutosRestantes = floor($hoy->diffInMinutes($fechaDevolucion) % 60);
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_restantes' => $horasRestantes,
+                                'minutos_restantes' => $minutosRestantes,
+                            ];
+                        }
+                    } elseif ($fechaDevolucion->lt($hoy)) {
+                        // Si la fecha de devolución ya pasó (atraso)
+                        $diasAtraso = floor($fechaDevolucion->diffInDays($hoy));
+
+                        $notificacionesAtrasadas[] = (object) [
+                            'id' => $detalle->id_recurso,
+                            'id_recurso' => $detalle->id_recurso,
+                            'categoria' => $detalle->recurso->categoria->nombre,
+                            'nro_serie' => $detalle->recurso->nro_serie,
+                            'a_paterno' => $user->a_paterno,
+                            'fecha_devolucion' => $detalle->fecha_devolucion,
+                            'dias_atraso' => $diasAtraso,
+                        ];
+                    }
+                }
+            }
+        }
+
+
+        // Contar total de notificaciones
+        $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
+
+        // Pasar las notificaciones a la vista
+        return view('prestamo.index', compact('loans', 'prestamos', 'personals', 'recursos', 'recursosDisponiblesCount', 'categorias', 'uniqueRecursos', 'highlightId', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
             ->with('i', ($request->input('page', 1) - 1) * $prestamos->perPage());
     }
 
+    public function exportPdf(Request $request)
+    {
+        // Inicia la consulta con los préstamos y sus relaciones
+        $query = Prestamo::with('detalleprestamos.recurso', 'personal');
+
+        // Aplica los mismos filtros que en el método index
+        if ($request->filled('personal_name')) {
+            $query->whereHas('personal', function ($q) use ($request) {
+                $q->where('id', $request->personal_name);
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            if ($request->filled('end_date')) {
+                $query->whereBetween('fecha_prestamo', [$request->start_date, $request->end_date]);
+            } else {
+                $query->where('fecha_prestamo', '>=', $request->start_date);
+            }
+        }
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('serial_number')) {
+            $query->whereHas('detalleprestamos.recurso', function ($q) use ($request) {
+                $q->where('nro_serie', 'like', '%' . $request->serial_number . '%');
+            });
+        }
+
+        // Ordenar los préstamos por estado y fecha
+        $prestamos = $query->orderByRaw("CASE WHEN estado = 'activo' THEN 1 ELSE 2 END")
+            ->orderBy('fecha_prestamo', 'desc')
+            ->get(); // Usa get() para obtener todos los resultados sin paginación
+
+        // Genera el PDF
+        $pdf = PDF::loadView('prestamo.pdf', compact('prestamos'));
+
+        // Descarga el archivo PDF
+        return $pdf->download('Reporte de prestamos.pdf');
+    }
 
 
 
@@ -176,7 +343,7 @@ class PrestamoController extends Controller
     {
         $prestamo = Prestamo::find($id);
 
-        return view('prestamo.show', compact('prestamo'));
+        return view('prestamo.index', compact('prestamo'));
     }
 
     /**
@@ -216,7 +383,6 @@ class PrestamoController extends Controller
     }
     public function markAsReturned(Request $request, $id)
     {
-
         // Encuentra el detalle del préstamo
         $detallePrestamo = DetallePrestamo::with('prestamo', 'recurso')->find($id);
 
@@ -231,36 +397,28 @@ class PrestamoController extends Controller
             return redirect()->route('prestamos.index')->with('error', 'Recurso no encontrado.');
         }
 
-        // Guarda la observación en el préstamo (no en detalleprestamos)
+        // Guarda la observación en el préstamo
         $prestamo = $detallePrestamo->prestamo;
-        $prestamo->observacion = $request->input('observacion', null); // El campo está en 'prestamos'
+        $prestamo->observacion = $request->input('observacion', null);
         $prestamo->save();
 
-        // Actualiza la fecha de devolución en el detalle del préstamo
-        $detallePrestamo->fecha_devolucion = now();
-        $detallePrestamo->save();
+        // Solo actualiza la fecha_devolucion si está vacía
+        if (!$detallePrestamo->fecha_devolucion) {
+            $detallePrestamo->fecha_devolucion = now();
+            $detallePrestamo->save();
+        }
 
-        // Cambia el estado del recurso según el valor del campo 'estado'
+        // Cambia el estado del recurso
         $nuevoEstado = $request->input('estado');
-
-        // Verificamos si el estado es diferente de 1
         if ($nuevoEstado !== null) {
-            if ($nuevoEstado != 1) {
-                // Si no es 1 (disponible), entonces se marca como dañado (estado 4)
-                $recurso->estado = 4; // Dañado
-            } else {
-                // Si es 1, se marca como disponible
-                $recurso->estado = 1; // Disponible
-            }
-
-            // Guarda el estado del recurso
+            $recurso->estado = $nuevoEstado != 1 ? 4 : 1;
             $recurso->save();
         }
 
-        // Verifica si todos los detalles del préstamo han sido devueltos
+        // Verifica si todos los detalles han sido devueltos
         if ($prestamo->detalleprestamos()->whereNull('fecha_devolucion')->count() == 0) {
             $prestamo->estado = 'desactivo';
-            $prestamo->fecha_devolucion_real = now(); // Fecha de devolución real
+            $prestamo->fecha_devolucion_real = now();
             $prestamo->save();
         }
 
@@ -268,38 +426,18 @@ class PrestamoController extends Controller
     }
 
 
-
-
-
-
-    public function obtenerPrestamosActivos()
+    private function filtrarPrestamos($request)
     {
-        $prestamos = Prestamo::where('estado', 'activo') // Cambia 'activo' por el estado que utilizas para los préstamos activos
-            ->with('personal') // Asegúrate de que la relación esté definida en tu modelo
-            ->get();
+        // Filtra los préstamos según los filtros del request
+        $query = Prestamo::with('detalleprestamos.recurso.categoria', 'personal');
 
-        $eventos = $prestamos->map(function ($prestamo) {
-            return [
-                'id' => $prestamo->id,
-                'eventTitle' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Puedes personalizar el título
-                'eventStartDate' => $prestamo->fecha_prestamo, // Asigna la fecha de inicio
-                'eventEndDate' => $prestamo->fecha_devolucion_real, // Asigna la fecha de finalización
-                'eventDecription' => $prestamo->observacion // Agrega la descripción si es necesario
-            ];
-        });
+        // Ejemplo de filtro por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
 
-        return response()->json($eventos);
+        return $query->get();
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

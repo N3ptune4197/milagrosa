@@ -49,28 +49,34 @@ class HomeController extends Controller
                 $user->notify(new LoanDueNotification($loan));
             }
 
-            // Notificaciones para hoy y atrasadas
             foreach ($loan->detalleprestamos as $detalle) {
                 if (isset($detalle->fecha_devolucion)) {
                     $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
+                    $hoy = Carbon::now();
 
                     if ($fechaDevolucion->isToday()) {
-                        // Si la devolución es hoy, calculamos horas y minutos restantes o atraso
+                        // Si la devolución es hoy
                         if ($hoy->gt($fechaDevolucion)) {
-                            // Si ya pasó la hora de devolución
-                            $minutosAtraso = intval($fechaDevolucion->diffInMinutes($hoy));
+                            // Ya pasó la hora de devolución hoy (atraso)
+                            $minutosAtraso = $fechaDevolucion->diffInMinutes($hoy); // Diferencia correcta sin negativos
+                            $horasAtraso = floor($minutosAtraso / 60);
+                            $minutosAtraso = $minutosAtraso % 60;
+
                             $notificacionesHoy[] = (object) [
                                 'id' => $detalle->id_recurso,
                                 'id_recurso' => $detalle->id_recurso,
                                 'categoria' => $detalle->recurso->categoria->nombre,
                                 'nro_serie' => $detalle->recurso->nro_serie,
                                 'a_paterno' => $user->a_paterno,
-                                'minutos_atraso' => $minutosAtraso,  // Atraso en minutos
+                                'horas_atraso' => $horasAtraso,
+                                'minutos_atraso' => $minutosAtraso,
                             ];
                         } else {
-                            // Si aún no ha llegado la hora, mostramos el tiempo restante
-                            $horasRestantes = intval($hoy->diffInHours($fechaDevolucion));
-                            $minutosRestantes = intval($hoy->diffInMinutes($fechaDevolucion) % 60);
+                            // Tiempo restante hoy
+                            $minutosRestantes = $hoy->diffInMinutes($fechaDevolucion);
+                            $horasRestantes = floor($minutosRestantes / 60);
+                            $minutosRestantes = $minutosRestantes % 60;
+
                             $notificacionesHoy[] = (object) [
                                 'id' => $detalle->id_recurso,
                                 'id_recurso' => $detalle->id_recurso,
@@ -83,12 +89,10 @@ class HomeController extends Controller
                         }
                     } elseif ($fechaDevolucion->gt($hoy)) {
                         // Si la devolución es en el futuro
-                        $horasTotalesRestantes = $hoy->diffInHours($fechaDevolucion);
+                        $diasRestantes = floor($hoy->diffInDays($fechaDevolucion));
+                        $horasRestantes = floor($hoy->diffInHours($fechaDevolucion) % 24);
 
-                        if ($horasTotalesRestantes >= 24) {
-                            // Si faltan más de 24 horas, mostrar días completos
-                            $diasRestantes = intval($hoy->diffInDays($fechaDevolucion));
-
+                        if ($diasRestantes > 0) {
                             $notificacionesHoy[] = (object) [
                                 'id' => $detalle->id_recurso,
                                 'id_recurso' => $detalle->id_recurso,
@@ -96,11 +100,11 @@ class HomeController extends Controller
                                 'nro_serie' => $detalle->recurso->nro_serie,
                                 'a_paterno' => $user->a_paterno,
                                 'dias_restantes' => $diasRestantes,
+                                'horas_restantes' => $horasRestantes,
                             ];
                         } else {
-                            // Si faltan menos de 24 horas, mostrar horas y minutos
-                            $horasRestantes = intval($hoy->diffInHours($fechaDevolucion));
-                            $minutosRestantes = intval($hoy->diffInMinutes($fechaDevolucion) % 60);
+                            // Si faltan menos de 24 horas
+                            $minutosRestantes = floor($hoy->diffInMinutes($fechaDevolucion) % 60);
 
                             $notificacionesHoy[] = (object) [
                                 'id' => $detalle->id_recurso,
@@ -113,8 +117,8 @@ class HomeController extends Controller
                             ];
                         }
                     } elseif ($fechaDevolucion->lt($hoy)) {
-                        // Si la fecha de devolución ya pasó
-                        $diasAtraso = intval($fechaDevolucion->diffInDays($hoy));
+                        // Si la fecha de devolución ya pasó (atraso)
+                        $diasAtraso = floor($fechaDevolucion->diffInDays($hoy));
 
                         $notificacionesAtrasadas[] = (object) [
                             'id' => $detalle->id_recurso,
@@ -123,16 +127,16 @@ class HomeController extends Controller
                             'nro_serie' => $detalle->recurso->nro_serie,
                             'a_paterno' => $user->a_paterno,
                             'fecha_devolucion' => $detalle->fecha_devolucion,
-                            'dias_atraso' => $diasAtraso, // Días de atraso sin decimales
+                            'dias_atraso' => $diasAtraso,
                         ];
                     }
                 }
             }
         }
 
+
         // Contar total de notificaciones
         $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
-
         // Pasar las notificaciones a la vista
         return view('home', compact('loans', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'));
     }
