@@ -90,7 +90,6 @@ const initCharts = () => {
     })
     .then(data => {
       // Verifica los datos obtenidos
-      console.log('Datos obtenidos:', data); // Imprime los datos en la consola
       
       // Establece la opción de ECharts con los datos formateados
       barras1.setOption(getOptionsChar1(data));
@@ -112,7 +111,6 @@ const initCharts = () => {
     })
     .then(data2 => {
       // Verifica los datos obtenidos
-      console.log('Datos obtenidos:', data2); // Imprime los datos en la consola
       
       // Establece la opción de ECharts con los datos formateados
       barras2.setOption(getOptionsChar2(data2));
@@ -130,3 +128,6 @@ const initCharts = () => {
 window.addEventListener("load", () => {
   initCharts();
 });
+
+
+

@@ -11,6 +11,9 @@ export default {
             fontFamily: {
                 montserrat: ['"Montserrat"', "system-ui"],
             },
+            colors: {
+                'fondo': '#f4f6f9'
+            }
         },
     },
     plugins: [require("flowbite/plugin")],

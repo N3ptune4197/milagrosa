@@ -43,12 +43,12 @@
 @stop
 
 @section('content')
-    <div class="mt-3">
+    <div class="mt-3 w-[100%]">
 
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
 
-            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[45%] xl:w-[54%]">
+            <div class="flex flex-col g-3 pl-1 lg-pl-3 mb-7 pt-3 w-[100%] lg:w-[45%] xl:w-[54%]">
                 <div class="titulo mb-2">
                     <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
                 </div>
@@ -108,7 +108,7 @@
                 
                 <div class="grafico-barras border-t-4 pt-3 lg:pt-5">
                     <h2 class="text-2xl font-montserrat font-bold text-center text-gray-500 mb-2">Préstamos Totales</h2>
-                    <div id="barras2" class="w-[100%] min-h-[430px] items-start "></div>
+                    <div id="barras2" class="shadow-md  w-[100%] min-h-[430px] items-start "></div>
                 </div>
 
 
@@ -119,24 +119,32 @@
                 
 
                 <div class="graficos w-[100%] mb-3">
-                    <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
+                    <div id="barras1" class="w-[100%] min-h-[430px] items-start shadow-md"></div>
+                </div>
+
+                <div class="grafico-3">
+                    #
                 </div>
                 
-                <div class="calendario mb-5 px-0 lg:px-2 border-t-4 pt-2 lg:pt-7">
-                    <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2">Calendario de Préstamos Pendientes</h2>
-                    <div id="calendar"></div>
-                </div>
+                
             </div>
 
         </div>
+        
 
 
-
-
-
+        <div class="section-two flex flex-col lg:flex-row g-3 px-2 pt-3 pb-5 mb-3 box-border border rounded-xl w-[100%] bg-white ">
+            <div class="calendario mb-5 lg:px-2 pt-2 w-[100%] lg:w-[98%] mx-auto lg:shadow-xl box-border">
+                <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2 underline underline-offset-2">Calendario de Préstamos Pendientes</h2>
+                <div id="calendar" class="px-1 lg:px-4 bg-white"></div>
+            </div>
+        </div>
 
 
     </div>
+
+
+
 @stop
 
 
@@ -416,6 +424,7 @@ window.addEventListener('click', function(e) {
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+        editable: true,
         locale: 'ES', // Para español
         events: function(fetchInfo, successCallback, failureCallback) {
             // Hacer la petición AJAX para obtener los eventos
@@ -431,11 +440,12 @@ window.addEventListener('click', function(e) {
                             end: evento.end,
                             description: evento.description,
                             fechaInicio: evento.fechaInicio,
-                            recursocategoria: evento.recursocategoria // Asegurarnos de que fechaInicio esté mapeada
+                            recursocategoria: evento.recursocategoria,
                         };
                     });
                     successCallback(eventos); // Pasar los eventos a FullCalendar
                 })
+                
                 .catch(error => {
                     console.error('Error fetching events:', error);
                     failureCallback(error);
@@ -451,14 +461,13 @@ window.addEventListener('click', function(e) {
             // Mostrar detalles del evento cuando se hace clic en un evento
             Swal.fire({
                 title: "Préstamo Pendiente! <i class='fa-solid fa-hourglass-half'></i><hr class='mt-1 w-[50%] mx-auto'>",
-                html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + ".",
+                html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + "",
                 imageUrl: "https://i.ibb.co/JyRTwNg/reloj-de-arena.png",
                 imageWidth: 150,
                 imageHeight: 120,
                 imageAlt: "Custom image"
             });
 
-            alert('Título: ' + info.event.title + '\nDescripción: ' + info.event.extendedProps.description);
         }
     });
 
