@@ -535,7 +535,7 @@ function confirmEdit(nombreRecurso, id, estado) {
                             Swal.fire({
                                 icon: "error",
                                 title: "Oops...",
-                                text: errorMessage,
+                                text: "No se puede eliminar este recurso porque esta relacionado con otros registros",
                                 footer: '<p>¡Salvados por la alerta!</p>'
                             });
                         }

@@ -5,10 +5,6 @@
 @section('content_header')
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-tags-fill"></i> <span class="font-semibold">Categorías</span></h1>
-        <!-- Botón para abrir el modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoriaModal" onclick="clearForm()"><i class="fa-solid fa-plus fa-shake"></i>
-            {{ __('Crear Nuevo') }}
-        </button>
     </div>
 @stop
 @section('content_top_nav_right')
@@ -185,13 +181,18 @@ window.addEventListener('click', function(e) {
 @stop
 @section('content')
 
-    <p class="mb-4">Aquí se mostrarán las categorías que tendrán los recursos</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre las Categorias.</p>
+    <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#categoriaModal" onclick="clearForm()">
+        {{ __('Crear Nuevo') }}
+    </button>
+</div>
 
     <div class="card">
         <div class="card-body">
             <div class="table-responsive mt-4">
                 <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-3" style="width:100%">
-                    <thead>
+                    <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>Id</th>
                             <th>Nombre</th>
@@ -207,10 +208,10 @@ window.addEventListener('click', function(e) {
                                 <td>{{ $categoria->descripcion }}</td>
                                 <td>
                                     <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST">
-                                        <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="confirmEdit('{{ $categoria->nombre }}', {{ $categoria->id }})"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" onclick="confirmEdit('{{ $categoria->nombre }}', {{ $categoria->id }})"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $categoria->nombre}}')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $categoria->nombre}}')">
                                             <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                         </button>
                                     </form>
@@ -223,18 +224,19 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 
-    <!-- Modal de Creación/Edición de Categorías -->
+   <!-- Modal de Creación/Edición de Categorías -->
 <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">
-        <div class="modal-content rounded-xl border-4 border-black">
+        <div class="modal-content rounded-lg border-2 border-maroon"> <!-- Bordes redondeados y borde color vino -->
+            
             <!-- Cabecera del modal -->
-            <div class="modal-header bg-blue-500 text-white flex justify-between items-center p-4 border-b-10 border-blue-800">
-                <h5 class="modal-title text-center flex-1 font-bold text-lg" id="categoriaModalLabel">{{ __('Agregar / Editar Categoría') }}</h5>
+            <div class="modal-header bg-vino text-white flex justify-between items-center p-4 border-b-10 border-blue-800"> <!-- Fondo vino y texto blanco -->
+                <h5 class="modal-title w-100 text-center" id="modalTitleCategoria">{{ __('Agregar / Editar Categoría') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <!-- Cuerpo del modal -->
-            <div class="modal-body">
+            <div class="modal-body bg-crema"> <!-- Fondo crema -->
                 <form id="categoriaForm" class="formulario-agregar" method="POST" action="{{ route('categorias.store') }}">
                     @csrf
                     <div class="mb-4">
@@ -258,7 +260,19 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 </div>
+<script>
+    // Cambiar el título del modal según si se va a crear o editar
+    document.getElementById('categoriaModal').addEventListener('show.bs.modal', function (event) {
+        var modalTitle = document.getElementById('modalTitleCategoria');
+        var categoria_id = document.getElementById('categoria_id').value; // Verificar si hay un ID de categoría
 
+        if (categoria_id) {
+            modalTitle.textContent = 'Editar Categoría'; // Cambiar el título a "Editar Categoría"
+        } else {
+            modalTitle.textContent = 'Agregar Categoría'; // Cambiar el título a "Agregar Categoría"
+        }
+    });
+</script>
 
 @stop
 
@@ -448,6 +462,32 @@ window.addEventListener('click', function(e) {
 </script>
 
 
+<style>
+    .bg-crema {
+        background-color: #e3dbc8;
+    }
+    .bg-vino {
+        background-color: #9c1515;
+    }
+    .text-vino {
+        color: #9c1515;
+    }
+    .btn-vino {
+        background-color: #9c1515;
+        border-color: #9c1515;
+    }
+    .btn-vino:hover {
+        background-color: #7a1212;
+        border-color: #7a1212;
+    }
+    .btn-crema {
+        background-color: #e3dbc8;
+        color: #9c1515;
+    }
+    .hover\:bg-crema:hover {
+    background-color: #f5f5dc; /* Color crema al pasar el mouse */
+}
+</style>
 
 
 @stop

@@ -5,10 +5,6 @@
 @section('content_header')
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-tags"></i> Marcas</h1>
-                
-        <button href="#" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#marcaModal" onclick="clearForm()"><i class="fa-solid fa-plus fa-shake"></i>
-            {{ __('Crear Nuevo') }}
-        </button>
     </div>
 @stop
 @section('content_top_nav_right')
@@ -184,15 +180,17 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
-
-
-<p class="mb-4">Aquí se mostrarán las marcas registradas.</p>
-
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre las Marcas.</p>
+    <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#marcaModal" onclick="clearForm()">
+        {{ __('Crear Nuevo') }}
+    </button>
+</div>
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
             <table id="marcasTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
-                <thead>
+                <thead class="bg-[#9c1515] text-white">
                     <tr>
                         <th>No</th>
                         <th>Nombre</th>
@@ -210,13 +208,13 @@ window.addEventListener('click', function(e) {
                                 
                                 <form action="{{ route('marcas.destroy', $marca->id) }}" method="POST" style="display:inline;">
                                     
-                                    <a class="btn btn-sm btn-success" href="javascript:void(0)" onclick="confirmEdit('{{ $marca->nombre }}', {{ $marca->id }})">
+                                    <a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" onclick="confirmEdit('{{ $marca->nombre }}', {{ $marca->id }})">
                                         <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
                                     </a>
 
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $marca->nombre }}')">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $marca->nombre }}')">
                                         <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                     </button>
                                 </form>
@@ -234,12 +232,12 @@ window.addEventListener('click', function(e) {
 <!-- Modal de Creación/Edición de Marcas -->
 <div class="modal fade" id="marcaModal" tabindex="-1" aria-labelledby="marcaModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">
-        <div class="modal-content rounded-xl border-4 border-black">
-            <div class="modal-header bg-blue-500 text-white flex justify-between items-center p-4 border-b-10 border-blue-800">
-                <h5 class="modal-title text-center flex-1 font-bold text-lg" id="marcaModalLabel">{{ __('Agregar / Editar Marca') }}</h5>
+        <div class="modal-content border-2 border-maroon rounded-lg">
+            <div class="modal-header bg-vino text-white rounded-lg">
+                <h5 class="modal-title w-100 text-center" id="modalTitleMarca">{{ __('Agregar / Editar Marca') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body bg-crema">
                 <form id="marcaForm" method="POST">
                     @csrf
                     <div class="mb-3">
@@ -250,7 +248,7 @@ window.addEventListener('click', function(e) {
                         <label for="descripcion" class="form-label">{{ __('Descripción') }}</label>
                         <textarea name="descripcion" id="descripcion" class="form-control" rows="3" placeholder="Descripción de la Marca" required></textarea>
                     </div>
-                    
+
                     <input type="hidden" name="marca_id" id="marca_id">
                     
                     <div class="modal-footer">
@@ -262,6 +260,7 @@ window.addEventListener('click', function(e) {
         </div>
     </div>
 </div>
+
 @stop
 
 @section('css')
@@ -296,46 +295,22 @@ window.addEventListener('click', function(e) {
                 url: 'https://cdn.datatables.net/plug-ins/2.1.4/i18n/es-MX.json',
             },
         });
-
-        // Script para manejar la apertura del modal para edición
-        /* document.addEventListener('DOMContentLoaded', function() {
-            var marcaModal = document.getElementById('marcaModal');
-            marcaModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget; // Button that triggered the modal
-                var id = button.getAttribute('data-id');
-                var nombre = button.getAttribute('data-nombre');
-                var descripcion = button.getAttribute('data-descripcion');
-                var action = button.getAttribute('data-action');
-
-                var modalTitle = marcaModal.querySelector('.modal-title');
-                var form = marcaModal.querySelector('form');
-                var inputId = marcaModal.querySelector('input[name="marca_id"]');
-                var inputNombre = marcaModal.querySelector('input[name="nombre"]');
-                var inputDescripcion = marcaModal.querySelector('textarea[name="descripcion"]');
-
-                if (id) {
-                    // Editing mode
-                    modalTitle.textContent = '{{ __('Editar Marca') }}';
-                    form.action = action;
-                    form.querySelector('input[name="_method"]').value = 'PUT'; // Update method
-                    inputId.value = id;
-                    inputNombre.value = nombre;
-                    inputDescripcion.value = descripcion;
-                } else {
-                    // Creating mode
-                    modalTitle.textContent = '{{ __('Agregar Marca') }}';
-                    form.action = '{{ route('marcas.store') }}';
-                    form.querySelector('input[name="_method"]').value = 'POST'; // Create method
-                    inputId.value = '';
-                    inputNombre.value = '';
-                    inputDescripcion.value = '';
-                }
-            });
-        }); */
     </script>
 
 
-<!--                        agregar marca                            -->
+<script>
+    document.getElementById('marcaModal').addEventListener('show.bs.modal', function (event) {
+    var modalTitle = document.getElementById('modalTitleMarca'); // Título del modal de marcas
+    var marca_id = document.getElementById('marca_id').value; // ID oculto del recurso (marca)
+
+    // Si hay un ID presente, es una edición; si no, es creación
+    if (marca_id && marca_id !== '') {
+        modalTitle.textContent = 'Editar Marca';
+    } else {
+        modalTitle.textContent = 'Agregar Marca';
+    }
+});
+</script>
     @if (session('success'))
         <script>
             Swal.fire({
@@ -482,6 +457,31 @@ window.addEventListener('click', function(e) {
                     
     </script>
     
-
+    <style>
+        .bg-crema {
+            background-color: #e3dbc8;
+        }
+        .bg-vino {
+            background-color: #9c1515;
+        }
+        .text-vino {
+            color: #9c1515;
+        }
+        .btn-vino {
+            background-color: #9c1515;
+            border-color: #9c1515;
+        }
+        .btn-vino:hover {
+            background-color: #7a1212;
+            border-color: #7a1212;
+        }
+        .btn-crema {
+            background-color: #e3dbc8;
+            color: #9c1515;
+        }
+        .hover\:bg-crema:hover {
+        background-color: #f5f5dc; /* Color crema al pasar el mouse */
+    }
+    </style>
 
 @stop
