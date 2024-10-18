@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+use Carbon\Carbon;
 use App\Models\Prestamo;
 use App\Models\Personal;
 use Illuminate\Http\RedirectResponse;
@@ -381,6 +383,7 @@ class PrestamoController extends Controller
         return Redirect::route('prestamos.index')
             ->with('success', 'Préstamo eliminado exitosamente');
     }
+
     public function markAsReturned(Request $request, $id)
     {
         // Encuentra el detalle del préstamo
@@ -426,18 +429,38 @@ class PrestamoController extends Controller
     }
 
 
-    private function filtrarPrestamos($request)
+
+
+
+
+    public function obtenerPrestamosActivos()
     {
-        // Filtra los préstamos según los filtros del request
-        $query = Prestamo::with('detalleprestamos.recurso.categoria', 'personal');
+        $prestamos = Prestamo::where('estado', 'activo') // Cambia 'activo' por el estado que utilizas para los préstamos activos
+            ->with('personal') // Asegúrate de que la relación esté definida en tu modelo
+            ->get();
 
-        // Ejemplo de filtro por estado
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->estado);
-        }
+        $eventos = $prestamos->map(function ($prestamo) {
+            return [
+                'id' => $prestamo->id,
+                'eventTitle' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Puedes personalizar el título
+                'eventStartDate' => $prestamo->fecha_prestamo, // Asigna la fecha de inicio
+                'eventEndDate' => $prestamo->fecha_devolucion_real, // Asigna la fecha de finalización
+                'eventDecription' => $prestamo->observacion // Agrega la descripción si es necesario
+            ];
+        });
 
-        return $query->get();
+        return response()->json($eventos);
     }
+
+
+
+
+
+
+
+
+
+
 
 
 

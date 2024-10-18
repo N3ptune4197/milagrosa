@@ -35,8 +35,7 @@ Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.
 
 
 
-Route::get('/api/prestamos-activos', [PrestamoController::class, 'obtenerPrestamosActivos'])->middleware('auth');
-
+Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosActivosCalendario']);
 
 
 

@@ -13,11 +13,14 @@
     <div class="relative">
         <a class="nav-link cursor-pointer" id="notificationDropdown">
             <i class="far fa-bell"></i>
+
+            <!-- -->
             <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-white text-center text-xs">
                 {{ $totalNotificaciones }} 
             </span>
         </a>
         <div class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50" id="notificationMenu">
+            <!-- -->
             <div class="px-4 py-2 text-sm text-gray-700 border-b">
                 {{ $totalNotificaciones }} Notificaciones
             </div>

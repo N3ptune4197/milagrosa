@@ -48,12 +48,12 @@
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
 
-            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[45%] xl:w-[55%]">
+            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[45%] xl:w-[54%]">
                 <div class="titulo mb-2">
                     <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
                 </div>
 
-                <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%]">
+                <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%] mb-5">
 
                     <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('categorias.index') }}">
                         <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
@@ -106,18 +106,25 @@
                 </div>
 
                 
+                <div class="grafico-barras border-t-4 pt-3 lg:pt-5">
+                    <h2 class="text-2xl font-montserrat font-bold text-center text-gray-500 mb-2">Préstamos Totales</h2>
+                    <div id="barras2" class="w-[100%] min-h-[430px] items-start "></div>
+                </div>
 
-                <h2 class="text-2xl mt-5 font-montserrat font-bold text-center text-gray-500 mb-3">Préstamos Totales</h2>
-                <div id="barras2" class="w-[100%] min-h-[430px] items-start "></div>
 
     
             </div>
 
-            <div class="echarts w-[100%] lg:w-[55%] xl:w-[42%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
+            <div class="echarts w-[100%] lg:w-[55%] xl:w-[45%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
                 
 
                 <div class="graficos w-[100%] mb-3">
                     <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
+                </div>
+                
+                <div class="calendario mb-5 px-0 lg:px-2 border-t-4 pt-2 lg:pt-7">
+                    <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2">Calendario de Préstamos Pendientes</h2>
+                    <div id="calendar"></div>
                 </div>
             </div>
 
@@ -127,9 +134,6 @@
 
 
 
-        <div class="calendario mb-5">
-            <div id="calendar"></div>
-        </div>
 
 
     </div>
@@ -336,7 +340,7 @@ window.addEventListener('click', function(e) {
 
 
 
-
+<script src="https://kit.fontawesome.com/89c262ed76.js" crossorigin="anonymous"></script>
 
 @section('css')
     {{-- Add here extra stylesheets --}}
@@ -399,11 +403,68 @@ window.addEventListener('click', function(e) {
         document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth'
+          initialView: 'dayGridMonth',
         });
         calendar.render();
       });
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ES', // Para español
+        events: function(fetchInfo, successCallback, failureCallback) {
+            // Hacer la petición AJAX para obtener los eventos
+            fetch('/calendarioActivo')
+                .then(response => response.json())
+                .then(data => {
+                    // Formatear los eventos que recibimos
+                    var eventos = data.map(function(evento) {
+                        return {
+                            id: evento.id,
+                            title: evento.title,
+                            start: evento.start,
+                            end: evento.end,
+                            description: evento.description,
+                            fechaInicio: evento.fechaInicio,
+                            recursocategoria: evento.recursocategoria // Asegurarnos de que fechaInicio esté mapeada
+                        };
+                    });
+                    successCallback(eventos); // Pasar los eventos a FullCalendar
+                })
+                .catch(error => {
+                    console.error('Error fetching events:', error);
+                    failureCallback(error);
+                });
+        },
+
+
+
+
+
+
+        eventClick: function(info) {
+            // Mostrar detalles del evento cuando se hace clic en un evento
+            Swal.fire({
+                title: "Préstamo Pendiente! <i class='fa-solid fa-hourglass-half'></i><hr class='mt-1 w-[50%] mx-auto'>",
+                html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + ".",
+                imageUrl: "https://i.ibb.co/JyRTwNg/reloj-de-arena.png",
+                imageWidth: 150,
+                imageHeight: 120,
+                imageAlt: "Custom image"
+            });
+
+            alert('Título: ' + info.event.title + '\nDescripción: ' + info.event.extendedProps.description);
+        }
+    });
+
+    // Renderizar el calendario
+    calendar.render();
+});
     </script>
 
 @stop
