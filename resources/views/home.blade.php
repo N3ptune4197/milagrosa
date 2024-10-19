@@ -48,15 +48,16 @@
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
 
-            <div class="flex flex-col g-3 pl-1 lg-pl-3 mb-7 pt-3 w-[100%] lg:w-[45%] xl:w-[54%]">
+            <div class="flex flex-col g-3 pl-3 mb-7 pt-3 lg:w-[45%] xl:w-[54%]">
+
                 <div class="titulo mb-2">
                     <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
                 </div>
 
-                <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%] mb-5">
+                <div class="contenedor flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%] mb-5">
 
                     <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('categorias.index') }}">
-                        <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
+                        <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg flex items-center">
                             <span class="bi bi-tags-fill text-4xl m-3 flex-shrink-0 text-blue-900"></span>
                             <div class="flex-1 text-right p-3">
                                 <span class="block text-gray-800">Categorias</span>
@@ -68,7 +69,7 @@
         
                     
                     <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('personals.index') }}">
-                        <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
+                        <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 shadow-lg flex items-center">
                             <span class="bi bi-people-fill text-4xl m-3 flex-shrink-0 text-red-900 "></span>
                             <div class="flex-1 text-right p-3">
                                 <span class="block text-gray-800">Personal</span>
@@ -80,7 +81,7 @@
         
         
                     <a href="{{ route('recursos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
-                        <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+                        <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg flex items-center">
                             <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
                             <div class="flex-1 text-right p-3">
                                 <span class="block text-gray-800">Recursos</span>
@@ -92,7 +93,7 @@
         
         
                     <a href="{{ route('prestamos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
-                        <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
+                        <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg flex items-center">
                             <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
                             <div class="flex-1 text-right p-3">
                                 <span class="block text-gray-800">Préstamos Activos</span>
