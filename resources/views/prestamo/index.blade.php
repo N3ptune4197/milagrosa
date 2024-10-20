@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Gestión de Préstamos')
+@section('title', 'Préstamos')
 
 @section('content_header')
 <div class="d-flex justify-content-between mb-2">
@@ -182,11 +182,6 @@ window.addEventListener('click', function(e) {
 @stop
 @section('content')
 <p class="mb-0">Aquí puedes agregar y ver la información sobre los Prestamos.</p>
-    @if ($message = Session::get('success'))
-        <div class="alert alert-success mb-4">
-            <p>{{ $message }}</p>
-        </div>
-    @endif
 
     <div class="card">
         <div class="card-body">

@@ -38,6 +38,12 @@ const getOptionsChar1 = (data) => {
 
 const getOptionsChar2 = (data2) => {
   return {
+    
+    title: {
+      text: 'Docentes con más Préstamos Totales',
+      subtext: '',
+      left: 'center'
+    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -77,6 +83,56 @@ const getOptionsChar2 = (data2) => {
 
 
 
+
+
+const getOptionsChar3 = (data3) => {
+  return{
+    title: {
+      text: 'Recursos más utilizados',
+      subtext: '',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      bottom: 'bottom',
+      left: 'center',
+    },
+    series: [
+      {
+        name: 'Recursos más utilizados',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 40,
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: data3.map(item => ({ value: item.recursos_mas_utilizados, 
+                                    name: `${item.nombre}: ${item.nro_serie}` })) 
+      }
+    ]
+  };
+}
+
+
+
 const initCharts = () => {
   const barras1 = echarts.init(document.getElementById("barras1"));
 
@@ -100,6 +156,10 @@ const initCharts = () => {
 
 
 
+
+
+
+
     const barras2 = echarts.init(document.getElementById("barras2"));
 
     fetch('/prestamos-obtenerDocentesConMasPrestamos') 
@@ -119,6 +179,29 @@ const initCharts = () => {
       console.error('Error al cargar los datos:', error);
     });
 
+
+
+
+
+        
+    const barras3 = echarts.init(document.getElementById("barras3"));
+
+    fetch('/prestamos-obtenerRecursosMasUtilizados') 
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data3 => {
+      // Verifica los datos obtenidos
+      
+      // Establece la opción de ECharts con los datos formateados
+      barras3.setOption(getOptionsChar3(data3));
+    })
+    .catch(error => {
+      console.error('Error al cargar los datos:', error);
+    });
 };
 
 

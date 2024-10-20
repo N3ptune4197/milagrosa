@@ -320,14 +320,14 @@ return [
 
 
 
-        ['header' => 'DOCENTES'],
+        ['header' => 'CALENDARIO'],
 
         [
-            'text' => 'Personal',
-            'url' => 'personals',
-            'icon' => 'bi bi-people-fill',
-        ],
+            'text' => 'Calendario',
+            'url' => 'calendario',
 
+            'icon' => 'bi bi-calendar3',
+        ],
 
         ['header' => 'PRESTAMOS'],
 
@@ -338,6 +338,14 @@ return [
             'icon' => 'bi bi-hourglass-split',
         ],
 
+
+        ['header' => 'DOCENTES'],
+
+        [
+            'text' => 'Personal',
+            'url' => 'personals',
+            'icon' => 'bi bi-people-fill',
+        ],
 
         ['header' => 'RECURSOS'],
 
