@@ -191,7 +191,7 @@ window.addEventListener('click', function(e) {
     <div class="card">
         <div class="card-body">
             <div class="table-responsive mt-4">
-                <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-3" style="width:100%">
+                <table id="example" class="table table-striped table-bordered mt-2 table-hover mb-2" style="width:100%">
                     <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>Id</th>

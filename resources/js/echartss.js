@@ -21,7 +21,7 @@ const getOptionsChar1 = (data) => {
         radius: '50%',
         data: data.map(docente => ({
           value: docente.prestamos_activos,
-          name: `${docente.nombres} ${docente.a_paterno} ${docente.a_materno}`
+          name: `${docente.nombres} ${docente.a_paterno}`
         })),
         emphasis: {
           itemStyle: {

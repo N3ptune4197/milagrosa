@@ -48,10 +48,21 @@
     <div class="mt-3 w-[100%]">
 
 
-        <div class="section-one flex flex-col lg:flex-row g-3 px-2 pt-3 pb-5 mb-3 box-border border rounded-xl w-[100%] bg-white ">
-            <div class="calendario mb-5 lg:px-2 pt-2 w-[100%] lg:w-[85%] xl:w-[65%] lg:shadow-2xl box-border mx-auto bg-gray-50 border-t-8 border-indigo-500/50  rounded-lg">
-                <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2 "><i class="fa-solid fa-calendar-days"></i> <span class="underline underline-offset-2">Calendario de Préstamos Pendientes</span></h2>
-                <div id="calendar" class="px-1 lg:px-4 bg-gray-50"></div>
+        <div class="section-one flex flex-col lg:flex-row g-3 px-2 pt-5 pb-5 mb-3 border rounded-2xl w-[100%] bg-white ">
+            <div class="calendario mb-5 lg:px-4 py-4 w-[100%] lg:w-[85%] xl:w-[70%] lg:shadow-2xl box-border mx-auto bg-blue-500/5 border-t-8 border-indigo-500/100  rounded-lg overflow-hidden">
+                <class class="titulo flex justify-between px-2 flex-center">
+
+                    <p></p>
+
+                    <h2 class="text-center font-montserrat font-bold text-gray-500 my-2">
+                        <i class="fa-solid fa-calendar-days fa-md"></i> <span class="underline underline-offset-2 text-md lg:text-2xl">Calendario de Préstamos Pendientes</span>
+                    </h2>
+                    
+
+
+                    <i class="fa-solid fa-thumbtack fa-lg flex items-center"></i>
+                </class>
+                <div id="calendar" class="px-1 lg:px-4"></div>
             </div>
         </div>
 

@@ -60,7 +60,7 @@
                         <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 flex items-center">
                             <span class="bi bi-tags-fill text-4xl m-3 flex-shrink-0 text-blue-900"></span>
                             <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Categorias</span>
+                                <span class="block text-gray-800 font-semibold font-montserrat">Categorias</span>
                                 <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                         <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 flex items-center">
                             <span class="bi bi-people-fill text-4xl m-3 flex-shrink-0 text-red-900 "></span>
                             <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Personal</span>
+                                <span class="block text-gray-800 font-semibold font-montserrat">Personal</span>
                                 <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                         <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 flex items-center">
                             <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
                             <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Recursos</span>
+                                <span class="block text-gray-800 font-semibold font-montserrat">Recursos</span>
                                 <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadRecursos['COUNT(*)'] ?></span>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                         <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 flex items-center">
                             <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
                             <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Préstamos Activos</span>
+                                <span class="block text-gray-800 font-semibold font-montserrat">Préstamos Activos</span>
                                 <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPrestamos['COUNT(*)'] ?></span>
                             </div>
                         </div>

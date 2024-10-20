@@ -200,7 +200,7 @@ window.addEventListener('click', function(e) {
                 </div>
             
                 <!-- Botón Crear Nuevo Préstamo a la derecha -->
-                <a href="#" class="btn btn-primary text-white font-semibold px-5 py-2"
+                <a href="#" class="btn btn-primary text-white font-semibold px-4 py-3   "
                     data-bs-toggle="modal" data-bs-target="#prestamoModal" data-placement="right">
                     Crear Nuevo Préstamo
                 </a>
@@ -208,7 +208,7 @@ window.addEventListener('click', function(e) {
             
            <!-- Botón para abrir los filtros flotantes -->
             <div class="fixed top-11 right-4 z-50">
-                <button id="openFilters" onclick="toggleFilters()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+                <button id="openFilters" onclick="toggleFilters()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -317,7 +317,7 @@ window.addEventListener('click', function(e) {
             
             <!-- Tabla de Préstamos -->
             <div class="table-responsive">
-                <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
+                <table id="prestamosTable" class="table table-striped table-bordered mt-2 table-hover mb-2" style="width:100%">
                     <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
