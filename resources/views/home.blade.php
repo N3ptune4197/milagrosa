@@ -43,108 +43,81 @@
 @stop
 
 @section('content')
-    <div class="mt-3 w-[100%]">
+<div class="section-two flex flex-col lg:flex-row g-3 px-2 pt-3 pb-5 mb-3 box-border border rounded-xl w-[100%] bg-white">
+    <div class="calendario mb-5 lg:px-2 pt-2 w-[100%] lg:w-[98%] mx-auto lg:shadow-xl box-border">
+        <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2 underline underline-offset-2">
+            Calendario de Préstamos Pendientes
+        </h2>
+        <div id="calendar" class="px-1 lg:px-4 bg-white min-h-[500px]"></div>
+    </div>
+</div>
 
-        <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
-
-
-            <div class="flex flex-col g-3 pl-1 lg-pl-3 mb-7 pt-3 w-[100%] lg:w-[45%] xl:w-[54%]">
-                <div class="titulo mb-2">
-                    <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">Inicio Rápido</h2>
-                </div>
-
-                <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%] mb-5">
-
-                    <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('categorias.index') }}">
-                        <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
-                            <span class="bi bi-tags-fill text-4xl m-3 flex-shrink-0 text-blue-900"></span>
-                            <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Categorias</span>
-                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
-                            </div>
-                        </div>
-                    </a>
-                    
-        
-                    
-                    <a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('personals.index') }}">
-                        <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
-                            <span class="bi bi-people-fill text-4xl m-3 flex-shrink-0 text-red-900 "></span>
-                            <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Personal</span>
-                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
-                            </div>
-                        </div>
-                    </a>
-        
-        
-        
-                    <a href="{{ route('recursos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
-                        <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
-                            <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
-                            <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Recursos</span>
-                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadRecursos['COUNT(*)'] ?></span>
-                            </div>
-                        </div>
-                    </a>
-        
-        
-        
-                    <a href="{{ route('prestamos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
-                        <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
-                            <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
-                            <div class="flex-1 text-right p-3">
-                                <span class="block text-gray-800">Préstamos Activos</span>
-                                <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPrestamos['COUNT(*)'] ?></span>
-                            </div>
-                        </div>
-                    </a>
-        
-        
-        
-                </div>
-
-                
-                <div class="grafico-barras border-t-4 pt-3 lg:pt-5">
-                    <h2 class="text-2xl font-montserrat font-bold text-center text-gray-500 mb-2">Préstamos Totales</h2>
-                    <div id="barras2" class="shadow-md  w-[100%] min-h-[430px] items-start "></div>
-                </div>
-
-
-    
-            </div>
-
-            <div class="echarts w-[100%] lg:w-[55%] xl:w-[45%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
-                
-
-                <div class="graficos w-[100%] mb-3">
-                    <div id="barras1" class="w-[100%] min-h-[430px] items-start shadow-md"></div>
-                </div>
-
-                <div class="grafico-3">
-                    #
-                </div>
-                
-                
-            </div>
-
+<div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
+    <!-- Reordenamos Inicio Rápido y Gráficos para evitar sobreposición -->
+    <div class="flex flex-col g-3 pl-1 lg-pl-3 mb-7 pt-3 w-[100%] lg:w-[45%] xl:w-[54%]">
+        <div class="titulo mb-2">
+            <h2 class="text-2xl ml-3 md:ml-14 lg:text-2xl font-montserrat font-bold mb-3 text-center text-gray-600">
+                Inicio Rápido
+            </h2>
         </div>
-        
+        <div class="contenedor-pl flex flex-row flex-wrap gap-4 md:gap-1 lg:gap-3 w-[100%] mb-5">
+            
+<a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('categorias.index') }}">
+    <div class="rounded-lg border-l-[5px] py-1 border-blue-500 bg-blue-100 shadow-lg h-full flex items-center">
+        <span class="bi bi-tags-fill text-4xl m-3 flex-shrink-0 text-blue-900"></span>
+        <div class="flex-1 text-right p-3">
+            <span class="block text-gray-800">Categorias</span>
+            <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadCategoria['COUNT(*)'] ?></span>
+        </div>
+    </div>
+</a>
 
+<a class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline" href="{{ route('personals.index') }}">
+    <div class="rounded-lg border-l-[5px] py-1 border-red-500 bg-red-100 shadow-lg h-full flex items-center">
+        <span class="bi bi-people-fill text-4xl m-3 flex-shrink-0 text-red-900 "></span>
+        <div class="flex-1 text-right p-3">
+            <span class="block text-gray-800">Personal</span>
+            <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPersonal['COUNT(*)'] ?></span>
+        </div>
+    </div>
+</a>
 
-        <div class="section-two flex flex-col lg:flex-row g-3 px-2 pt-3 pb-5 mb-3 box-border border rounded-xl w-[100%] bg-white ">
-            <div class="calendario mb-5 lg:px-2 pt-2 w-[100%] lg:w-[98%] mx-auto lg:shadow-xl box-border">
-                <h2 class="text-center font-montserrat font-bold text-gray-500 text-2xl mt-2 underline underline-offset-2">Calendario de Préstamos Pendientes</h2>
-                <div id="calendar" class="px-1 lg:px-4 bg-white"></div>
-            </div>
+<a href="{{ route('recursos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+    <div class="rounded-lg border-l-[5px] py-1 border-amber-500 bg-amber-100 shadow-lg h-full flex items-center">
+        <span class="bi bi-box-fill text-4xl m-3 flex-shrink-0 text-amber-900"></span>
+        <div class="flex-1 text-right p-3">
+            <span class="block text-gray-800">Recursos</span>
+            <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadRecursos['COUNT(*)'] ?></span>
+        </div>
+    </div>
+</a>
+
+<a href="{{ route('prestamos.index') }}" class="block w-full sm:w-[45%] md:1/2 lg:w-[95%] xl:w-[47%] no-underline">
+    <div class="rounded-lg border-l-[5px] py-1 border-green-500 bg-green-100 shadow-lg h-full flex items-center">
+        <span class="bi bi-clock-fill text-4xl m-3 flex-shrink-0 text-green-900"></span>
+        <div class="flex-1 text-right p-3">
+            <span class="block text-gray-800">Préstamos Activos</span>
+            <span class="text-gray-800 text-3xl font-bold"><?php echo $cantidadPrestamos['COUNT(*)'] ?></span>
+        </div>
+    </div>
+</a>
         </div>
 
-
+        <!-- Gráfico de barras movido abajo para evitar conflicto con cards -->
+        <div class="grafico-barras border-t-4 pt-3 lg:pt-5">
+            <h2 class="text-2xl font-montserrat font-bold text-center text-gray-500 mb-2">Préstamos Totales</h2>
+            <div id="barras2" class="shadow-md w-[100%] min-h-[430px] items-start"></div>
+        </div>
     </div>
 
-
-
+    <!-- Gráficos Echarts movidos para ajustarse mejor al layout -->
+    <div class="echarts w-[100%] lg:w-[55%] xl:w-[45%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3">
+        <div class="graficos w-[100%] mb-3">
+            <div id="barras1" class="w-[100%] min-h-[430px] items-start shadow-md"></div>
+        </div>
+        <div class="grafico-3"></div>
+    </div>
+</div>
 @stop
 
 
@@ -405,75 +378,60 @@ window.addEventListener('click', function(e) {
     </script>
     
 
-
-    <!--  CALENDARIOOOOOOOOOOOOOOOOOOOOOOOOOOOO           -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var today = new Date();
+    
         var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-        });
-        calendar.render();
-      });
-
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        editable: true,
-        locale: 'ES', // Para español
-        events: function(fetchInfo, successCallback, failureCallback) {
-            // Hacer la petición AJAX para obtener los eventos
-            fetch('/calendarioActivo')
-                .then(response => response.json())
-                .then(data => {
-                    // Formatear los eventos que recibimos
-                    var eventos = data.map(function(evento) {
-                        return {
-                            id: evento.id,
-                            title: evento.title,
-                            start: evento.start,
-                            end: evento.end,
-                            description: evento.description,
-                            fechaInicio: evento.fechaInicio,
-                            recursocategoria: evento.recursocategoria,
-                        };
+            initialView: 'timeGridDay',  // Cambia la vista a un formato de día
+            editable: true,
+            locale: 'ES', // Para español
+            headerToolbar: {
+                left: 'prev,next today',  // Controles para navegar el calendario
+                center: 'title',
+                right: 'timeGridDay,timeGridWeek,dayGridMonth' // Cambiar entre vistas
+            },
+            validRange: {
+                start: today // Restringir para que solo muestre fechas de hoy en adelante
+            },
+            events: function(fetchInfo, successCallback, failureCallback) {
+                fetch('/calendarioActivo')
+                    .then(response => response.json())
+                    .then(data => {
+                        var eventos = data.map(function(evento) {
+                            return {
+                                id: evento.id,
+                                title: evento.title,
+                                start: evento.start,
+                                end: evento.end,
+                                description: evento.description,
+                                fechaInicio: evento.fechaInicio,
+                                recursocategoria: evento.recursocategoria,
+                            };
+                        });
+                        successCallback(eventos);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching events:', error);
+                        failureCallback(error);
                     });
-                    successCallback(eventos); // Pasar los eventos a FullCalendar
-                })
-                
-                .catch(error => {
-                    console.error('Error fetching events:', error);
-                    failureCallback(error);
+            },
+            eventClick: function(info) {
+                Swal.fire({
+                    title: "Préstamo Pendiente! <i class='fa-solid fa-hourglass-half'></i><hr class='mt-1 w-[50%] mx-auto'>",
+                    html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + "",
+                    imageUrl: "https://i.ibb.co/JyRTwNg/reloj-de-arena.png",
+                    imageWidth: 150,
+                    imageHeight: 120,
+                    imageAlt: "Custom image"
                 });
-        },
-
-
-
-
-
-
-        eventClick: function(info) {
-            // Mostrar detalles del evento cuando se hace clic en un evento
-            Swal.fire({
-                title: "Préstamo Pendiente! <i class='fa-solid fa-hourglass-half'></i><hr class='mt-1 w-[50%] mx-auto'>",
-                html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + "",
-                imageUrl: "https://i.ibb.co/JyRTwNg/reloj-de-arena.png",
-                imageWidth: 150,
-                imageHeight: 120,
-                imageAlt: "Custom image"
-            });
-
-        }
+            }
+        });
+    
+        // Renderizar el calendario
+        calendar.render();
     });
-
-    // Renderizar el calendario
-    calendar.render();
-});
-    </script>
+</script>
 
 @stop
