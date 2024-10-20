@@ -16,7 +16,7 @@ class ChartController extends Controller
             ->select('p.nombres', 'p.a_paterno', 'p.a_materno', DB::raw('COUNT(*) AS total_prestamos'))
             ->groupBy('p.id', 'p.nombres', 'p.a_paterno', 'p.a_materno') // Asegúrate de agrupar por todas las columnas seleccionadas
             ->orderBy('total_prestamos', 'DESC')
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         // Retorna los datos como JSON
@@ -35,4 +35,19 @@ class ChartController extends Controller
 
         return response()->json($docentesActivos);
     }
+
+
+    public function getRecursosMasUtilizados() {
+        $recursosMasUtilizados = DB::table('detalleprestamos as dp')
+            ->join('recursos as r', 'dp.id_recurso', '=', 'r.id')
+            ->join('categorias as c', 'r.id_categoria', '=', 'c.id')
+            ->select('r.nro_serie', 'c.nombre' ,DB::raw('COUNT(dp.id_recurso) AS recursos_mas_utilizados'))
+            ->groupBy('r.nro_serie', 'c.nombre') // Agrupamos por 'nro_serie'
+            ->orderBy('recursos_mas_utilizados', 'DESC')
+            ->take(5) // Limitar a los 5 más utilizados
+            ->get();
+    
+        return response()->json($recursosMasUtilizados);
+    }
+    
 }

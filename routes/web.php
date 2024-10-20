@@ -7,6 +7,7 @@ use App\Http\Controllers\PrestamoController;
 use App\Http\Controllers\RecursoController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CalendarioController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +33,8 @@ Route::resource('recursos', RecursoController::class)->middleware('auth');
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
 
+Route::resource('calendario', CalendarioController::class)->middleware('auth');
+
 
 
 
@@ -49,3 +52,4 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/prestamos-obtenerDocentesConMasPrestamos', [ChartController::class, 'getDocentesConPrestamos'])->middleware('auth');
 Route::get('/prestamos-obtenerDocentesConPrestamosActivos', [ChartController::class, 'getDocentesConPrestamosActivos'])->middleware('auth');
+Route::get('/prestamos-obtenerRecursosMasUtilizados', [ChartController::class, 'getRecursosMasUtilizados'])->middleware('auth');
