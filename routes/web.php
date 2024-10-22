@@ -35,6 +35,7 @@ Route::resource('recursos', RecursoController::class)->middleware('auth');
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
 
+Route::resource('calendario', CalendarioController::class)->middleware('auth');
 
 
 
@@ -44,11 +45,12 @@ Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosAct
 
 
 Route::middleware([AdminMiddleware::class])->group(function () {
+    Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users/store', [UserController::class, 'store'])->name('admin.users.store');
-    Route::get('/admin/users/index', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/admin/users/index', [UserController::class, 'index'])->name('admin.users.index'); // Ruta para ver el listado de usuarios
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit'); // Ruta para editar usuarios
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update'); // Ruta para actualizar usuarios
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy'); // Ruta para eliminar usuarios
 });
 
 
@@ -61,4 +63,4 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/prestamos-obtenerDocentesConMasPrestamos', [ChartController::class, 'getDocentesConPrestamos'])->middleware('auth');
 Route::get('/prestamos-obtenerDocentesConPrestamosActivos', [ChartController::class, 'getDocentesConPrestamosActivos'])->middleware('auth');
-Route::get('/prestamos-getCategoriasMasUtilizadas', [ChartController::class, 'getCategoriasMasUtilizadas'])->middleware('auth');
+Route::get('/prestamos-obtenerRecursosMasUtilizados', [ChartController::class, 'getRecursosMasUtilizados'])->middleware('auth');
