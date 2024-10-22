@@ -42,7 +42,15 @@
     </div>
 
 @stop
-
+@section('content_top_nav_right')
+@if (Auth::check() && Auth::user()->role === 'admin')
+    <div class="text-right mb-4">
+        <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
+            <i class="bi bi-person-add"></i> Ver Usuarios
+        </a>
+    </div>
+@endif
+@stop
 @section('content')
 
     <div class="mt-3 w-[100%]">

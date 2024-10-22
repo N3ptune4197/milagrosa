@@ -10,6 +10,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CalendarioController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminMiddleware;
 
 
 Route::get('/', function () {
@@ -40,6 +42,14 @@ Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.
 Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosActivosCalendario']);
 
 
+
+Route::middleware([AdminMiddleware::class])->group(function () {
+    Route::post('/admin/users/store', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/index', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+});
 
 
 
