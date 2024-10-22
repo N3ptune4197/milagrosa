@@ -101,7 +101,7 @@ const getOptionsChar3 = (data3) => {
     },
     series: [
       {
-        name: 'Recursos más utilizados',
+        name: 'Categorias más utilizados',
         type: 'pie',
         radius: ['40%', '70%'],
         avoidLabelOverlap: false,

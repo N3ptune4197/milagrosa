@@ -33,7 +33,6 @@ Route::resource('recursos', RecursoController::class)->middleware('auth');
 Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middleware('auth');
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
 
-Route::resource('calendario', CalendarioController::class)->middleware('auth');
 
 
 

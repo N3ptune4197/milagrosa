@@ -349,8 +349,6 @@ window.addEventListener('click', function(e) {
     
 
 
-    @viteReactRefresh
-    @vite('resources/js/main.jsx')
 
 
     @vite('resources/css/app.css')
@@ -365,18 +363,10 @@ window.addEventListener('click', function(e) {
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
-    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 
 
-<!--    // Calendario           -->
-    <script src=" https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js "></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
 
 
 
@@ -394,61 +384,5 @@ window.addEventListener('click', function(e) {
         });
     </script>
     
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var today = new Date();
-    
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridDay',  // Cambia la vista a un formato de día
-            editable: true,
-            locale: 'ES', // Para español
-            headerToolbar: {
-                left: 'prev,next today',  // Controles para navegar el calendario
-                center: 'title',
-                right: 'timeGridDay,timeGridWeek,dayGridMonth' // Cambiar entre vistas
-            },
-            validRange: {
-                start: today // Restringir para que solo muestre fechas de hoy en adelante
-            },
-            events: function(fetchInfo, successCallback, failureCallback) {
-                fetch('/calendarioActivo')
-                    .then(response => response.json())
-                    .then(data => {
-                        var eventos = data.map(function(evento) {
-                            return {
-                                id: evento.id,
-                                title: evento.title,
-                                start: evento.start,
-                                end: evento.end,
-                                description: evento.description,
-                                fechaInicio: evento.fechaInicio,
-                                recursocategoria: evento.recursocategoria,
-                            };
-                        });
-                        successCallback(eventos);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching events:', error);
-                        failureCallback(error);
-                    });
-            },
-            eventClick: function(info) {
-                Swal.fire({
-                    title: "Préstamo Pendiente! <i class='fa-solid fa-hourglass-half'></i><hr class='mt-1 w-[50%] mx-auto'>",
-                    html: "<b>Personal:</b> " + info.event.title + "</br>" + "<b>Recurso:</b> " + info.event.extendedProps.description + "</br>" + "<b>Fecha del Préstamo:</b> " + info.event.extendedProps.fechaInicio + "",
-                    imageUrl: "https://i.ibb.co/JyRTwNg/reloj-de-arena.png",
-                    imageWidth: 150,
-                    imageHeight: 120,
-                    imageAlt: "Custom image"
-                });
-            }
-        });
-    
-        // Renderizar el calendario
-        calendar.render();
-    });
-</script>
 
 @stop
