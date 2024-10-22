@@ -45,12 +45,11 @@ Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosAct
 
 
 Route::middleware([AdminMiddleware::class])->group(function () {
-    Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users/store', [UserController::class, 'store'])->name('admin.users.store');
-    Route::get('/admin/users/index', [UserController::class, 'index'])->name('admin.users.index'); // Ruta para ver el listado de usuarios
-    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit'); // Ruta para editar usuarios
-    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update'); // Ruta para actualizar usuarios
-    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy'); // Ruta para eliminar usuarios
+    Route::get('/admin/users/index', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
 
