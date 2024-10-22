@@ -196,7 +196,7 @@ window.addEventListener('click', function(e) {
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="personalsTable" class="table table-striped table-bordered mt-2 table-hover mb-2" style="width:100%">
+                <table id="personalsTable" class="table table-striped table-bordered mt-2 table-hover" style="width:100%">
                     <thead class="bg-[#9c1515] text-white">
                         <tr>
                             <th>No</th>
@@ -286,7 +286,7 @@ window.addEventListener('click', function(e) {
                             <!-- Teléfono -->
                             <div class="mb-4">
                                 <label for="telefono" class="block text-sm font-medium text-gray-700">{{ __('Teléfono') }}</label>
-                                <input type="text" name="telefono" id="telefono" onkeypress='return validaNumericos(event)' minlength="9" maxlength="9" required class="block w-full mt-1 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 py-2 pl-2 focus:ring-indigo-500 sm:text-sm" placeholder="Teléfono">
+                                <input type="text" name="telefono" id="telefono" onkeypress='return validaNumericos(event)' minlength="9" maxlength="9" class="block w-full mt-1 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 py-2 pl-2 focus:ring-indigo-500 sm:text-sm" placeholder="Teléfono">
                             </div>
                         </div>
 
@@ -325,7 +325,7 @@ window.addEventListener('click', function(e) {
                 <!-- Campo 'Otro Cargo' (se muestra solo si se selecciona "Otro") -->
                 <div class="mb-4" id="otroCargoDiv" style="display: none;">
                     <label for="otro_cargo" class="block text-sm font-medium text-gray-700">{{ __('Especifique otro cargo') }}</label>
-                    <input required type="text" name="otro_cargo" id="otro_cargo" class="block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Especifique otro cargo" >
+                    <input type="text" name="otro_cargo" id="otro_cargo" class="block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Especifique otro cargo">
                 </div>
 
                     <!-- Input hidden para ID del personal -->
@@ -446,24 +446,16 @@ window.addEventListener('click', function(e) {
                 if (documento.length === 8) {
                     buscarDni(documento);
                 } else {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "¡Cuidado!",
-                        text: "El dni debe tener 8 dígitos",
-                    });
+                    alert("El DNI debe tener 8 dígitos.");
                 }
             } else if (tipoDoc === "Documento de Extranjeria") { // Extranjero
                 if (documento.length === 9) {
                     buscarExtranjero(documento);
                 } else {
-                    
-                    Swal.fire({
-                        icon: "warning",
-                        title: "¡Cuidado!",
-                        text: "El documento de extranjería debe tener 9 dígitos",
-                    });
+                    alert("El número de extranjero debe tener 9 dígitos.");
                 }
             } else {
+                alert("Seleccione un tipo de documento válido.");
             }
         });
 
@@ -477,21 +469,11 @@ window.addEventListener('click', function(e) {
                         $("#a_paterno").val(response.apellidoPaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
                         $("#a_materno").val(response.apellidoMaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
 
-                    }else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "DNI no encontrado",
-                            text: "No se encontraron datos para el dni ingresado!",
-                        });
+
                     }
                 },
                 error: function() {
-                    
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: "Hubo un error al realizar la solicitud",
-                    });
+                    alert("Hubo un error al realizar la solicitud.");
                 }
             });
         }
@@ -509,24 +491,14 @@ window.addEventListener('click', function(e) {
                         $("#a_paterno").val(response.data.apellido_paterno).prop('readonly', true);
                         $("#a_materno").val(response.data.apellido_materno).prop('readonly', true);
                     } else {
-                        
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error",
-                            text: "No se encontraron datos para el número de extranjero ingresado",
-                        });
-                            $("#nombres").val('').prop('readonly', false);
-                            $("#a_paterno").val('').prop('readonly', false);
-                            $("#a_materno").val('').prop('readonly', false);
-                        }
-                    },
+                        alert("Número de extranjero no válido.");
+                        $("#nombres").val('').prop('readonly', false);
+                        $("#a_paterno").val('').prop('readonly', false);
+                        $("#a_materno").val('').prop('readonly', false);
+                    }
+                },
                 error: function() {
-                    
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: "No se encontraron datos para el número de extranjero ingresado",
-                    });
+                    alert("Error al buscar número de extranjero.");
                 }
             });
         }
@@ -556,13 +528,16 @@ window.addEventListener('click', function(e) {
         text: '{{ session('error') }}',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#66b366'
-    })
+    }).then(() => {
+        // Reabre el modal si hay un error
+        $('#personalModal').modal('show');
+    });
 </script>
 @endif
 
 
 <script>
-/*     $("#buscar").click(function() {
+    $("#buscar").click(function() {
         let dni = $("#nro_documento").val();
 
         if (dni.length === 8) {
@@ -575,19 +550,15 @@ window.addEventListener('click', function(e) {
                         $("#a_paterno").val(response.apellidoPaterno);
                         $("#a_materno").val(response.apellidoMaterno);
                     } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "DNI no encontrado",
-                            text: "No se encontraron datos para el dni ingresado!",
-                        });
+                        alert("No se encontraron datos para el DNI ingresado.");
                     }
                 },
                 error: function() {
-                    alert("No se encontraron datos para el dni ingresado.");
+                    alert("Hubo un error al realizar la solicitud.");
                 }
             });
         }
-    }); */
+    });
  
 
         function editPersonal(id) {
@@ -686,7 +657,7 @@ window.addEventListener('click', function(e) {
                         let errorMessage = xhr.responseJSON.message || "Ocurrió un error inesperado.";
                         Swal.fire({
                             icon: "error",
-                            title: "Error",
+                            title: "Oops...",
                             text: errorMessage, // Mensaje del servidor
                             footer: '<p>¡Salvados por la alerta! <i class="fa-regular fa-face-grin-beam-sweat"></i></p>'
                         });
