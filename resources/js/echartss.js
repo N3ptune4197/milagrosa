@@ -124,8 +124,8 @@ const getOptionsChar3 = (data3) => {
         labelLine: {
           show: false
         },
-        data: data3.map(item => ({ value: item.recursos_mas_utilizados, 
-                                    name: `${item.nombre}: ${item.nro_serie}` })) 
+        data: data3.map(item => ({ value: item.cantidad_prestamos, 
+                                    name: `${item.nombre}` })) 
       }
     ]
   };
@@ -186,7 +186,7 @@ const initCharts = () => {
         
     const barras3 = echarts.init(document.getElementById("barras3"));
 
-    fetch('/prestamos-obtenerRecursosMasUtilizados') 
+    fetch('/prestamos-getCategoriasMasUtilizadas') 
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');

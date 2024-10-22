@@ -465,9 +465,9 @@ window.addEventListener('click', function(e) {
                         <div class="form-group">
                             <label for="id_personal" class="block text-gray-700 font-medium">{{ __('Personal') }}</label>
                             <select name="idPersonal" class="form-control selectpicker w-full mt-1" id="id_personal" required data-live-search="true" data-size="3">
-                                <option value="">{{ __('Seleccione la persona') }}</option>
+                                <option value="">{{ __('Seleccione un Personal') }}</option>
                                 @foreach ($personals as $personal)
-                                    <option value="{{ $personal->id }}">{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
+                                    <option value="{{ $personal->id }}" >{{ $personal->nombres }} {{ $personal->a_paterno }}</option>
                                 @endforeach
                             </select>
                         </div>

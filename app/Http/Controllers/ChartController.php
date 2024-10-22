@@ -37,17 +37,18 @@ class ChartController extends Controller
     }
 
 
-    public function getRecursosMasUtilizados() {
-        $recursosMasUtilizados = DB::table('detalleprestamos as dp')
+    public function getCategoriasMasUtilizadas() {
+        $categoriasMasUtilizadas = DB::table('detalleprestamos as dp')
             ->join('recursos as r', 'dp.id_recurso', '=', 'r.id')
             ->join('categorias as c', 'r.id_categoria', '=', 'c.id')
-            ->select('r.nro_serie', 'c.nombre' ,DB::raw('COUNT(dp.id_recurso) AS recursos_mas_utilizados'))
-            ->groupBy('r.nro_serie', 'c.nombre') // Agrupamos por 'nro_serie'
-            ->orderBy('recursos_mas_utilizados', 'DESC')
-            ->take(5) // Limitar a los 5 más utilizados
+            ->select('c.nombre', DB::raw('COUNT(dp.id_recurso) AS cantidad_prestamos'))
+            ->groupBy('c.nombre') // Agrupamos por la categoría
+            ->orderBy('cantidad_prestamos', 'DESC')
+            ->take(5) // Limitar a las 5 categorías más utilizadas
             ->get();
     
-        return response()->json($recursosMasUtilizados);
+        return response()->json($categoriasMasUtilizadas);
     }
+    
     
 }
