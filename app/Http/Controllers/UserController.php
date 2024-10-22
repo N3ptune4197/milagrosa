@@ -32,9 +32,9 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Usuario creado exitosamente');
+
     }
 
-    // Mostrar todos los usuarios (para listar y editar/eliminar)
     public function index()
     {
         $users = User::all();
@@ -47,25 +47,25 @@ class UserController extends Controller
         return view('admin.edit-user', compact('user'));
     }
 
-    // Actualizar la información del usuario
     public function update(Request $request, User $user)
     {
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|string|in:admin,user',
         ]);
 
         $user->update([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : $user->password,
             'role' => $validatedData['role'],
+            //La contraseña no se puede editar
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado exitosamente');
     }
+
 
     // Eliminar usuario
     public function destroy(User $user)
