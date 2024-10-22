@@ -106,10 +106,6 @@
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Iniciar sesión</button>
                     </div>
 
-                    <p class="mt-3 text-center">
-                        ¿No tienes cuenta? <a href="{{ route('register') }}" class="text-underline">Registrarse</a>
-                    </p>
-
                 </form>
 
             </div>
