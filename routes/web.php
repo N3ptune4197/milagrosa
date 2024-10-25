@@ -55,7 +55,7 @@ Route::middleware([AdminMiddleware::class])->group(function () {
 
 
 
-
+Route::resource('calendario', CalendarioController::class)->middleware('auth');
 /*                                    echarts  */
 // web.php
 
@@ -63,4 +63,17 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/prestamos-obtenerDocentesConMasPrestamos', [ChartController::class, 'getDocentesConPrestamos'])->middleware('auth');
 Route::get('/prestamos-obtenerDocentesConPrestamosActivos', [ChartController::class, 'getDocentesConPrestamosActivos'])->middleware('auth');
-Route::get('/prestamos-obtenerRecursosMasUtilizados', [ChartController::class, 'getRecursosMasUtilizados'])->middleware('auth');
+
+
+Route::get('/prestamos-getCategoriasMasUtilizadas', [ChartController::class, 'getCategoriasMasUtilizadas'])->middleware('auth');
+
+
+
+
+
+
+
+/*                  TWILIO                  */
+
+
+Route::get('/notificarPrestamosPorVencer', [PrestamoController::class, 'notificarPrestamosPorVencer'])->middleware('auth');
