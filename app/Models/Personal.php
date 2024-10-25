@@ -45,4 +45,8 @@ class Personal extends Model
         return $this->belongsTo(\App\Models\Tipodoc::class, 'id_tipodocs', 'id');
     }
 
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'idPersonal', 'id'); // Ajusta los nombres de las columnas según sea necesario
+    }
 }
