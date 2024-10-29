@@ -42,8 +42,235 @@
     </div>
 @stop
 
+
 @section('content')
-    <div class="w-[100%]">
+<html data-theme="light"></html>
+
+
+
+<style>
+    .contenedor-sidebar::-webkit-scrollbar {
+        width: 10px
+    }
+</style>
+
+
+
+
+
+
+
+
+<!-- Sidebar -->
+<div class="fixed flex flex-col -top-0 left-0 w-16 hover:w-64 md:w-64 bg-gray-800 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar contenedor-sidebar">
+    <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
+      <ul class="flex flex-col py-4 space-y-1">
+
+
+
+
+        <li>
+          <a href="{{ route('home') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6 mb-1">
+            <span class="inline-flex justify-center items-center ml-2">
+               <i class="bi bi-grid-fill"></i>
+            </span>
+            <span class="ml-[6px] text-sm tracking-wide truncate">Dashboard</span>
+          </a>
+        </li>
+        
+
+
+
+
+        <li class="px-5 hidden md:block">
+            <div class="flex flex-row items-center h-8">
+              <div class="text-sm font-semibold tracking-wide text-gray-400 uppercase">CALENDARIO</div>
+            </div>
+          </li>
+
+        <li>
+          <a href="{{ route('calendario.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6 mb-1">
+            <span class="inline-flex justify-center items-center ml-2">
+                <i class="bi bi-calendar3"></i>
+            </span>
+            <span class="ml-[6px] text-sm tracking-wide truncate">Calendario</span>
+          </a>
+        </li>
+
+
+
+
+
+        <li class="px-5 hidden md:block">
+            <div class="flex flex-row items-center h-8">
+              <div class="text-sm font-semibold tracking-wide text-gray-400 uppercase">PRESTAMOS</div>
+            </div>
+          </li>
+
+        <li>
+          <a href="{{ route('prestamos.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center ml-2">
+                <i class="bi bi-hourglass-split"></i>
+            </span>
+            <span class="ml-[6px] text-sm tracking-wide truncate">Préstamos</span>
+          </a>
+        </li>
+
+
+
+
+
+
+        <li class="px-5 hidden md:block">
+            <div class="flex flex-row items-center h-8">
+              <div class="text-sm font-semibold tracking-wide text-gray-400 uppercase">PERSONAL</div>
+            </div>
+          </li>
+
+        <li>
+          <a href="{{ route('personals.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center ml-2">
+                <i class="bi bi-people-fill"></i>
+            </span>
+            <span class="ml-[6px] text-sm tracking-wide truncate">Personal</span>
+          </a>
+        </li>
+
+
+
+
+
+
+
+        <li class="px-5 hidden md:block">
+            <div class="flex flex-row items-center h-8">
+              <div class="text-sm font-semibold tracking-wide text-gray-400 uppercase">RECURSOS</div>
+            </div>
+          </li>
+
+        <li>
+          <a href="{{ route('personals.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center ml-2">
+                <i class="bi bi-pc-display-horizontal"></i>
+            </span>
+            <span class="ml-[6px] text-sm tracking-wide truncate">Recursos</span>
+          </a>
+        </li>
+
+        
+        <li>
+            <a href="{{ route('personals.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+              <span class="inline-flex justify-center items-center  ml-2">
+                  <i class="bi bi-people-fill"></i>
+              </span>
+              <span class="ml-[6px] text-sm tracking-wide truncate">Marcas</span>
+            </a>
+          </li>
+
+          
+        <li>
+            <a href="{{ route('personals.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+              <span class="inline-flex justify-center items-center  ml-2">
+                  <i class="bi bi-people-fill"></i>
+              </span>
+              <span class="ml-[6px] text-sm tracking-wide truncate">Categorias</span>
+            </a>
+          </li>
+
+
+
+
+
+
+
+
+
+        <li>
+          <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center  ml-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </span>
+            <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
+            <span class="hidden md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">1.2k</span>
+          </a>
+        </li>
+        <li class="px-5 hidden md:block">
+          <div class="flex flex-row items-center mt-5 h-8">
+            <div class="text-sm font-light tracking-wide text-gray-400 uppercase">Settings</div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center ml-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </span>
+            <span class="ml-2 text-sm tracking-wide truncate">Profile</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+            <span class="inline-flex justify-center items-center ml-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </span>
+            <span class="ml-2 text-sm tracking-wide truncate">Settings</span>
+          </a>
+        </li>
+      </ul>
+      <p class="mb-14 px-5 py-3 hidden md:block text-center text-xs">Copyright @2021</p>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="w-[100%] bg-gray-200">
 
         <div class="section-one flex flex-col lg:flex-row g-3 bg-white px-2 pt-3 pb-5 mb-3 border rounded-xl gap-2">
 
@@ -118,11 +345,11 @@
             <div class="echarts w-[100%] lg:w-[55%] xl:w-[45%] border-t-4 pl-2 pt-4 lg:border-t-0 lg:border-l-4 lg:pt-3 ">
                 
 
-                <div class="graficos w-[100%] mb-3">
+                <div class="graficos w-[100%] mb-3 -z-10">
                     <div id="barras1" class="w-[100%] min-h-[430px] items-start"></div>
                 </div>
 
-                <div class="grafico-3 border-t-4 pt-2 lg:pt-44">
+                <div class="grafico-3 border-t-4 pt-2 lg:pt-44 -z-10">
                     <div id="barras3" class="w-[100%] min-h-[430px] items-start"></div>
                 </div>
                 
@@ -134,13 +361,12 @@
 
 
     </div>
-</div>
 @stop
 
 
 @section('content_top_nav_right')
 @if (Auth::check() && Auth::user()->role === 'admin')
-    <div class="text-right mb-4">
+    <div class="text-right">
         <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
             <i class="bi bi-person-add"></i> Ver Usuarios
         </a>
@@ -319,7 +545,7 @@ window.addEventListener('click', function(e) {
 <script>
    function deleteNotification(notificationId) {
     $.ajax({
-        url: `/notificaciones/${notificationId}`,
+        url: /notificaciones/${notificationId},
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Asegúrate de que la meta etiqueta del CSRF esté en tu layout
@@ -327,7 +553,7 @@ window.addEventListener('click', function(e) {
         success: function(response) {
             if (response.success) {
                 // Eliminamos el elemento visualmente
-                $(`#notification-${notificationId}`).remove();
+                $(#notification-${notificationId}).remove();
             } else {
                 console.error(response.message);
             }
@@ -353,9 +579,6 @@ window.addEventListener('click', function(e) {
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-
-
-
 
     @vite('resources/css/app.css')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

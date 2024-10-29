@@ -16,6 +16,10 @@ export default {
             }
         },
     },
-    plugins: [require("flowbite/plugin")],
+    plugins: [
+        require("flowbite/plugin"),
+        require('daisyui'),
+        
+    ],
 };
 //<script src="../path/to/flowbite/dist/flowbite.min.js"></script>

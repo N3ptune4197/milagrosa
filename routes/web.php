@@ -56,6 +56,7 @@ Route::middleware([AdminMiddleware::class])->group(function () {
 
 
 Route::resource('calendario', CalendarioController::class)->middleware('auth');
+
 /*                                    echarts  */
 // web.php
 

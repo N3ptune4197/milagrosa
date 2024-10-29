@@ -1,29 +1,3 @@
-<?php
-    $conexion = new PDO("mysql:host=localhost;dbname=milagrosa","root","");
-    $PDO = $conexion;
-
-
-    $statement = $PDO->prepare("SELECT COUNT(*) FROM categorias");
-    $statement->execute();
-    $cantidadCategoria = $statement->fetch(PDO::FETCH_ASSOC);
-
-    
-    $statement2 = $PDO->prepare("SELECT COUNT(*) FROM personals");
-    $statement2->execute();
-    $cantidadPersonal = $statement2->fetch(PDO::FETCH_ASSOC);
-
-    
-    $statement3 = $PDO->prepare("SELECT COUNT(*) FROM recursos");
-    $statement3->execute();
-    $cantidadRecursos = $statement3->fetch(PDO::FETCH_ASSOC);
-
-    
-    $statement4 = $PDO->prepare("SELECT COUNT(*) FROM detalleprestamos AS dp INNER JOIN prestamos AS p ON p.id = dp.idprestamo WHERE p.estado = 'activo'");
-
-    $statement4->execute();
-    $cantidadPrestamos = $statement4->fetch(PDO::FETCH_ASSOC);
-
-?>
 
 
 

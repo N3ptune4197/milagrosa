@@ -1,14 +1,13 @@
 // resources/js/App.jsx
 import React from 'react';
-import HomeEcharts from './HomeRechart';
-import { Calendar } from 'fullcalendar/index.js';
+import Demo from './SideBar';
 
 
 
 function App() {
   return (
     <>
-        <Calendar />
+    <Demo />
     </>
   );
 }
