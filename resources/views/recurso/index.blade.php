@@ -3,6 +3,7 @@
 @section('title', 'Recursos')
 
 @section('content_header')
+
 <div class="d-flex justify-content-between mb-2">
     <h1><i class="bi bi-pc-display-horizontal"></i> Recursos</h1>
 </div>
@@ -186,6 +187,12 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
+
+
+
+@include('partials.sidebar')
+
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre los Recursos.</p>
     <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#recursoModal" onclick="clearForm()">
@@ -351,8 +358,7 @@ window.addEventListener('click', function(e) {
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    @viteReactRefresh
-    @vite('resources/js/main.jsx')
+    
     @vite('resources/css/app.css')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 @stop

@@ -197,10 +197,10 @@ return [
     'classes_content_header' => '',
     'classes_content' => '',
     'classes_sidebar' => 'd-none sidebar-dark-danger elevation-4',
-    'classes_sidebar_nav' => ' d-none',
-    'classes_topnav' => 'd-none navbar-white navbar-light',
-    'classes_topnav_nav' => 'd-none navbar-expand',
-    'classes_topnav_container' => 'd-none container',
+    'classes_sidebar_nav' => 'd-none',
+    'classes_topnav' => ' d-none navbar-white navbar-light',
+    'classes_topnav_nav' => ' d-none navbar-expand',
+    'classes_topnav_container' => ' d-none container',
 
 
 

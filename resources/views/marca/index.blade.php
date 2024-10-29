@@ -186,6 +186,12 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
+
+
+
+@include('partials.sidebar')
+
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre las Marcas.</p>
     <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#marcaModal" onclick="clearForm()">
@@ -275,8 +281,6 @@ window.addEventListener('click', function(e) {
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
    
-    @viteReactRefresh
-    @vite('resources/js/main.jsx')
 
     
     @vite('resources/css/app.css')

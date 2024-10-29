@@ -188,6 +188,11 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
+
+
+@include('partials.sidebar')
+
+
 <p class="mb-0">Aquí puedes agregar y ver la información sobre los Prestamos.</p>
 
     <div class="card">
@@ -525,8 +530,7 @@ window.addEventListener('click', function(e) {
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-    @viteReactRefresh
-    @vite('resources/js/main.jsx')
+
 
     
     @vite('resources/css/app.css')

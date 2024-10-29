@@ -186,6 +186,11 @@ window.addEventListener('click', function(e) {
 </script>
 @stop
 @section('content')
+
+
+@include('partials.sidebar')
+
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p class="mb-0">Aquí puedes agregar, ver, editar, eliminar la información sobre el Personal.</p>
     <button type="button" class="btn btn-primary text-white py-3 px-4" data-bs-toggle="modal" data-bs-target="#personalModal" onclick="clearForm()">
