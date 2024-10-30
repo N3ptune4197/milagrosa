@@ -4,7 +4,13 @@
     <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
       <ul class="flex flex-col py-4 space-y-1">
 
-
+       <!-- Logo y titulo del colegio -->
+       <li class="flex items-center justify-center md:justify-start px-4 mb-6">
+        <a href="{{ route('home') }}" class="flex flex-row items-center space-x-2">
+          <img src="{{ asset('imagenes/medalla-logo.png') }}" alt="Medalla Milagrosa Logo" class="w-10 h-10 object-contain">
+          <span class="text-base font-semibold hidden md:block whitespace-nowrap">Medalla Milagrosa</span>
+        </a>
+      </li>
 
 
         <li>
