@@ -1,9 +1,6 @@
 
-
-
-
 @extends('adminlte::page')
-
+@include('partials.navbar')
 @section('title', 'Calendario')
 
 @section('content_header')

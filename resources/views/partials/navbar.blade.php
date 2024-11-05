@@ -1,20 +1,10 @@
 <nav class="bg-gray-800 fixed top-0 w-full z-10">
   <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
     <div class="relative flex h-16 items-center justify-between">
-      <!-- Botón del menú móvil -->
-      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <!-- Icono cuando el menú está cerrado -->
-          <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-        </button>
-      </div>
       <!-- Logo -->
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex flex-shrink-0 items-center">
-          <img class="h-8 w-auto" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+          <img class="h-8 w-auto" src="public/imagenes/AIP.webp" alt="Usuario">
         </div>
       </div>
       <!-- Sección derecha con notificaciones y perfil -->
@@ -23,7 +13,7 @@
         <div class="relative">
           <button type="button" onclick="toggleNotifications()" class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
             <span class="sr-only">View notifications</span>
-            <i class="fas fa-bell text-lg"></i> <!-- Icono de campana ajustado -->
+            <i class="fas fa-bell text-lg"></i> <!-- Icono de campana-->
             <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-white text-center text-xs">
               {{ $totalNotificaciones }}
             </span>
@@ -84,8 +74,8 @@
         <!-- Dropdown de perfil -->
         <div class="relative ml-3">
           <button type="button" onclick="toggleProfileMenu()" class="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-            <span class="sr-only">Open user menu</span>
-            <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+            <img class="h-8 w-8 rounded-full" src="{{ asset('imagenes/AIP.webp') }}" alt="">
+
           </button>
           <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
             <a href="#" class="block px-4 py-2 text-sm text-gray-700">Your Profile</a>
@@ -97,16 +87,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Menú móvil -->
-  <div class="sm:hidden hidden" id="mobile-menu">
-    <div class="space-y-1 px-2 pb-3 pt-2">
-      <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">Dashboard</a>
-      <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-      <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-      <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
     </div>
   </div>
   <!-- Modal para ver todas las notificaciones -->
@@ -173,8 +153,6 @@
   </div>
 </div>
 </nav>
-
-<!-- JavaScript para alternar los desplegables -->
 <!-- JavaScript para alternar los desplegables -->
 <script>
   function toggleNotifications() {
@@ -206,7 +184,6 @@
     document.getElementById('allNotificationsModal').classList.add('hidden');
   }
 </script>
-
 @section ('links')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 @stop
