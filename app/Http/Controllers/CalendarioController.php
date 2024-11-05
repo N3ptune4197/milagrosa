@@ -48,23 +48,72 @@ class CalendarioController extends Controller
             foreach ($loan->detalleprestamos as $detalle) {
                 if (isset($detalle->fecha_devolucion)) {
                     $fechaDevolucion = Carbon::parse($detalle->fecha_devolucion);
-                    if ($fechaDevolucion->isToday()) {
-                        // Procesar notificaciones del mismo día
-                        $minutosDiferencia = $fechaDevolucion->diffInMinutes($hoy);
-                        $horasDiferencia = floor($minutosDiferencia / 60);
-                        $minutosDiferencia = $minutosDiferencia % 60;
+                    $hoy = Carbon::now();
 
-                        $notificacionesHoy[] = (object) [
-                            'id' => $detalle->id_recurso,
-                            'id_recurso' => $detalle->id_recurso,
-                            'categoria' => $detalle->recurso->categoria->nombre,
-                            'nro_serie' => $detalle->recurso->nro_serie,
-                            'a_paterno' => $user->a_paterno,
-                            'horas_diferencia' => $horasDiferencia,
-                            'minutos_diferencia' => $minutosDiferencia,
-                        ];
+                    if ($fechaDevolucion->isToday()) {
+                        // Si la devolución es hoy
+                        if ($hoy->gt($fechaDevolucion)) {
+                            // Ya pasó la hora de devolución hoy (atraso)
+                            $minutosAtraso = $fechaDevolucion->diffInMinutes($hoy); // Diferencia correcta sin negativos
+                            $horasAtraso = floor($minutosAtraso / 60);
+                            $minutosAtraso = $minutosAtraso % 60;
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_atraso' => $horasAtraso,
+                                'minutos_atraso' => $minutosAtraso,
+                            ];
+                        } else {
+                            // Tiempo restante hoy
+                            $minutosRestantes = $hoy->diffInMinutes($fechaDevolucion);
+                            $horasRestantes = floor($minutosRestantes / 60);
+                            $minutosRestantes = $minutosRestantes % 60;
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_restantes' => $horasRestantes,
+                                'minutos_restantes' => $minutosRestantes,
+                            ];
+                        }
+                    } elseif ($fechaDevolucion->gt($hoy)) {
+                        // Si la devolución es en el futuro
+                        $diasRestantes = floor($hoy->diffInDays($fechaDevolucion));
+                        $horasRestantes = floor($hoy->diffInHours($fechaDevolucion) % 24);
+
+                        if ($diasRestantes > 0) {
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'dias_restantes' => $diasRestantes,
+                                'horas_restantes' => $horasRestantes,
+                            ];
+                        } else {
+                            // Si faltan menos de 24 horas
+                            $minutosRestantes = floor($hoy->diffInMinutes($fechaDevolucion) % 60);
+
+                            $notificacionesHoy[] = (object) [
+                                'id' => $detalle->id_recurso,
+                                'id_recurso' => $detalle->id_recurso,
+                                'categoria' => $detalle->recurso->categoria->nombre,
+                                'nro_serie' => $detalle->recurso->nro_serie,
+                                'a_paterno' => $user->a_paterno,
+                                'horas_restantes' => $horasRestantes,
+                                'minutos_restantes' => $minutosRestantes,
+                            ];
+                        }
                     } elseif ($fechaDevolucion->lt($hoy)) {
-                        // Notificaciones de préstamos atrasados
+                        // Si la fecha de devolución ya pasó (atraso)
                         $diasAtraso = floor($fechaDevolucion->diffInDays($hoy));
 
                         $notificacionesAtrasadas[] = (object) [
