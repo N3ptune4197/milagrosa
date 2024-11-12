@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 
 @section('title', 'Usuarios')
-
+@include('partials.navbar')
 @section('content_header')
     <div class="d-flex justify-content-between mb-2">
         <h1><i class="bi bi-person"></i> Usuarios</h1>
