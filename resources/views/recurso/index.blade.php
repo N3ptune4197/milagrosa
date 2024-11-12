@@ -29,10 +29,14 @@
                         <tr>
                             <th>No</th>
                             <th>Nro Serie</th>
-                            <th>Categoría</th>
+                            <th>Modelo</th>
                             <th>Marca</th>
+                            <th>Categoría</th>
+                            <th>Fuente de Adquisición</th>
+                            <th>Estado de Conservación</th>
                             <th>Estado</th>
                             <th>Fecha Registro</th>
+                            <th>Observacion</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
@@ -41,40 +45,34 @@
                             <tr>
                                 <td>{{ ++$i }}</td>
                                 <td>{{ $recurso->nro_serie }}</td>
-                                <td>{{ $recurso->categoria->nombre ?? 'N/A' }}</td>
+                                <td>{{ $recurso->modelo ?? 'N/A' }}</td>
                                 <td>{{ $recurso->marca->nombre ?? 'N/A' }}</td>
+                                <td>{{ $recurso->categoria->nombre ?? 'N/A' }}</td>
+                                <td>{{ $recurso->fuente_adquisicion ?? 'Especificar' }}</td>
+                                <td>{{ $recurso->estado_conservacion ?? 'Sin Reparación' }}</td>
                                 <td>
                                     @if ($recurso->estado == 1)
-                                        <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Disponible</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">Disponible</span>
                                     @elseif($recurso->estado == 2)
-                                        <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">Prestado</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">Prestado</span>
                                     @elseif($recurso->estado == 3)
-                                        <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-yellow-500 rounded-full">En
-                                            Mantenimiento</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-yellow-500 rounded-full">En Mantenimiento</span>
                                     @elseif($recurso->estado == 4)
-                                        <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Dañado</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">Dañado</span>
                                     @else
-                                        <span
-                                            class="inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-300 rounded-full">Desconocido</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-300 rounded-full">Desconocido</span>
                                     @endif
                                 </td>
-
                                 <td>{{ $recurso->fecha_registro->format('d/m/Y') }}</td>
+                                <td>{{ $recurso->observacion ?? 'N/A' }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary"
-                                        onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }}, {{ $recurso->estado }})">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="confirmEdit('{{ $recurso->nombre }}', {{ $recurso->id }}, {{ $recurso->estado }})">
                                         <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
                                     </button>
-                                    <form action="{{ route('recursos.destroy', $recurso->id) }}" method="POST"
-                                        style="display:inline-block;">
+                                    <form action="{{ route('recursos.destroy', $recurso->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm"
-                                            onclick="confirmDelete(event, this.form, '{{ $recurso->nombre }}')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(event, this.form, '{{ $recurso->nombre }}')">
                                             <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
                                         </button>
                                     </form>
@@ -82,12 +80,12 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table>                
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE RECURSOS -->
+ <!-- MODAL DE RECURSOS -->
 <div class="modal fade" id="recursoModal" tabindex="-1" aria-labelledby="recursoModalLabel" aria-hidden="true">
     <div class="modal-dialog flex items-center justify-center" role="document">
         <div class="modal-content border-2 border-maroon rounded-lg">
@@ -98,22 +96,17 @@
             <div class="modal-body bg-crema">
                 <form id="recursoForm" method="POST" action="{{ route('recursos.store') }}">
                     @csrf
-                    <!-- Campo oculto para el ID del recurso -->
                     <input type="hidden" id="recurso_id" name="recurso_id">
-                    <!-- Campo oculto para el método del formulario (PUT o POST) -->
                     <input type="hidden" id="_method" name="_method" value="POST">
 
                     <!-- Número de serie -->
                     <div class="mb-4">
                         <label for="nro_serie" class="block text-sm font-medium text-gray-700">{{ __('Número de Serie') }}</label>
                         <input type="text" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm" name="nro_serie" id="nro_serie" placeholder="Número de Serie" required>
-                        @if ($errors->has('nro_serie'))
-                            <span class="text-red-500 text-sm">{{ $errors->first('nro_serie') }}</span>
-                        @endif
                     </div>
 
                     <!-- Categoría y Marca -->
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 mb-4">
                         <div class="flex-1">
                             <label for="categoria" class="block text-sm font-medium text-gray-700">{{ __('Categoría') }}</label>
                             <select name="id_categoria" id="categoria" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
@@ -123,7 +116,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="flex-1">
                             <label for="marca" class="block text-sm font-medium text-gray-700">{{ __('Marca') }}</label>
                             <select name="id_marca" id="marca" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
@@ -133,6 +125,45 @@
                                 @endforeach
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Modelo -->
+                    <div class="mb-4">
+                        <label for="modelo" class="block text-sm font-medium text-gray-700">{{ __('Modelo') }}</label>
+                        <input type="text" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm" name="modelo" id="modelo" placeholder="Modelo">
+                    </div>
+
+                    <!-- Fuente de Adquisición y Estado de Conservación -->
+                    <div class="flex space-x-4 mb-4">
+                        <div class="flex-1">
+                            <label for="fuente_adquisicion" class="block text-sm font-medium text-gray-700">{{ __('Fuente de Adquisición') }}</label>
+                            <select name="fuente_adquisicion" id="fuente_adquisicion" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm">
+                                <option value="especificar">{{ __('Especificar') }}</option>
+                                <option value="donacion externa">{{ __('Donación Externa') }}</option>
+                                <option value="donacion interna">{{ __('Donación Interna') }}</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label for="estado_conservacion" class="block text-sm font-medium text-gray-700">{{ __('Estado de Conservación') }}</label>
+                            <select name="estado_conservacion" id="estado_conservacion" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm">
+                                <option value="sin reparacion">{{ __('Sin Reparación') }}</option>
+                                <option value="con reparacion">{{ __('Con Reparación') }}</option>
+                                <option value="opera defecto">{{ __('Opera con Defecto') }}</option>
+                                <option value="no opera">{{ __('No Opera') }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Campo extra para "Especificar Fuente" -->
+                    <div class="mb-4" id="fuente_especificar_container" style="display: none;">
+                        <label for="fuente_especificar" class="block text-sm font-medium text-gray-700">{{ __('Especificar Fuente') }}</label>
+                        <input type="text" class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm" name="fuente_especificar" id="fuente_especificar" placeholder="Especificar Fuente">
+                    </div>
+
+                    <!-- Observación -->
+                    <div class="mb-4">
+                        <label for="observacion" class="block text-sm font-medium text-gray-700">{{ __('Observación') }}</label>
+                        <textarea class="block w-full mt-1 py-2 pl-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm" name="observacion" id="observacion" placeholder="Observación"></textarea>
                     </div>
 
                     <!-- Campo de estado (solo aparece al editar) -->
@@ -155,6 +186,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Mostrar campo adicional si "Especificar" es seleccionado en Fuente de Adquisición
+    document.getElementById('fuente_adquisicion').addEventListener('change', function() {
+        const especificarField = document.getElementById('fuente_especificar_container');
+        especificarField.style.display = this.value === 'especificar' ? 'block' : 'none';
+    });
+
+    // Set default to display 'Especificar' field when the modal opens
+    window.addEventListener('load', function() {
+        document.getElementById('fuente_adquisicion').dispatchEvent(new Event('change'));
+    });
+</script>
+
 
 <!-- Script para cambiar el título del modal y mostrar el campo de estado -->
 <script>

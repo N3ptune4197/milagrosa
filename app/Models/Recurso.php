@@ -37,6 +37,10 @@ class Recurso extends Model
         'estado',
         'nro_serie',
         'id_marca',
+        'modelo',
+        'fuente_adquisicion',
+        'estado_conservacion',
+        'observacion',
         // No incluir 'fecha_registro' aquí
     ];
 

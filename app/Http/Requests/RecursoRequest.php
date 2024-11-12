@@ -25,6 +25,10 @@ class RecursoRequest extends FormRequest
             'id_categoria' => 'required|exists:categorias,id',
             'nro_serie' => ['required', 'string', 'unique:recursos,nro_serie,' . $this->route('recurso')],
             'id_marca' => 'required|exists:marcas,id',
+            'fuente_adquisicion' => 'required|string|max:255',
+            'estado_conservacion' => 'required|string|max:255',
+            'modelo' => 'nullable|string|max:255',
+            'observacion' => 'nullable|string|max:500',
         ];
     }
 

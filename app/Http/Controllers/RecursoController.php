@@ -199,9 +199,14 @@ class RecursoController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('recursos')->ignore($request->input('recurso_id')) // Ignorar en actualizaciones
+                Rule::unique('recursos')->ignore($request->input('recurso_id'))
             ],
+            'modelo' => 'nullable|string|max:255',
+            'fuente_adquisicion' => 'required|in:donacion externa,donacion interna,especificar',
+            'estado_conservacion' => 'required|in:sin reparacion,con reparacion,opera defecto,no opera',
+            'observacion' => 'nullable|string',
         ]);
+
         try {
             $validatedData = $request->validated();
             $validatedData['estado'] = 1; // Estado por defecto 'disponible'
@@ -211,9 +216,10 @@ class RecursoController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->validator)
-                ->withInput(); // Aquí no es necesario agregar el mensaje de error genérico
+                ->withInput();
         }
     }
+
 
 
 
@@ -244,17 +250,29 @@ class RecursoController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('recursos')->ignore($id) // Ignorar el recurso actual
+                Rule::unique('recursos')->ignore($id), // Ignorar el recurso actual
             ],
+            'modelo' => 'nullable|string|max:255',
+            'fuente_adquisicion' => 'nullable|string|max:255',
+            'estado_conservacion' => 'nullable|string|max:255',
+            'observacion' => 'nullable|string',
+            'id_categoria' => 'required|exists:categorias,id',
+            'id_marca' => 'required|exists:marcas,id',
+            'estado' => 'required|integer|in:1,2,3,4', // Asumiendo que estos son los valores permitidos
         ]);
+
         $recurso = Recurso::find($id);
 
         $recurso->nro_serie = $request->nro_serie;
+        $recurso->modelo = $request->modelo;
+        $recurso->fuente_adquisicion = $request->fuente_adquisicion;
+        $recurso->estado_conservacion = $request->estado_conservacion;
+        $recurso->observacion = $request->observacion;
         $recurso->id_categoria = $request->id_categoria;
         $recurso->id_marca = $request->id_marca;
         $recurso->estado = $request->estado;
 
-        // No actualizamos 'fecha_registro', solo los campos relevantes
+        // Guardamos los cambios
         $recurso->save();
 
         return redirect()->route('recursos.index')->with('success', 'Recurso actualizado con éxito.');
