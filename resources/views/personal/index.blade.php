@@ -247,20 +247,18 @@
         $("#tipodoc").change(function() {
             var selectedValue = $(this).val();
 
-            if (selectedValue === "Documento Nacional de Identidad") { // ID para DNI
+            if (selectedValue === "Documento Nacional de Identidad") {
                 $("#nro_documento").attr("maxlength", 8);
                 $("#nro_documento").attr("minlength", 8);
                 $("#nro_documento").attr("placeholder", "Ingresar DNI");
-                $("#nro_documento").attr("readonly", false); // Limpiar la longitud máxima si no está seleccionado
-
-
-            } else if (selectedValue === "Documento de Extranjeria") { // ID para extranjero
+                $("#nro_documento").attr("readonly", false);
+            } else if (selectedValue === "Documento de Extranjeria") {
                 $("#nro_documento").attr("maxlength", 9);
                 $("#nro_documento").attr("minlength", 9);
-                $("#nro_documento").attr("placeholder", "Ingresar Número de Extranjero");
-                $("#nro_documento").attr("readonly", false); // Limpiar la longitud máxima si no está seleccionado
+                $("#nro_documento").attr("placeholder", "Ingresar Número de Carnet de Extranjería");
+                $("#nro_documento").attr("readonly", false);
             } else {
-                $("#nro_documento").attr("readonly", true); // Limpiar la longitud máxima si no está seleccionado
+                $("#nro_documento").attr("readonly", true);
                 $("#nro_documento").attr("placeholder", "Seleccionar Tipo de Documento");
             }
         });
@@ -269,41 +267,49 @@
             var tipoDoc = $("#tipodoc").val();
             var documento = $("#nro_documento").val();
 
-            if (tipoDoc === "Documento Nacional de Identidad") { // DNI
+            if (tipoDoc === "Documento Nacional de Identidad") {
                 if (documento.length === 8) {
                     buscarDni(documento);
                 } else {
-                    alert("El DNI debe tener 8 dígitos.");
+                    Swal.fire("Error", "El DNI debe tener 8 dígitos.", "error");
                 }
-            } else if (tipoDoc === "Documento de Extranjeria") { // Extranjero
+            } else if (tipoDoc === "Documento de Extranjeria") {
                 if (documento.length === 9) {
                     buscarExtranjero(documento);
                 } else {
-                    alert("El número de extranjero debe tener 9 dígitos.");
+                    Swal.fire("Error", "El número de Carnet de Extranjería debe tener 9 dígitos.", "error");
                 }
             } else {
-                alert("Seleccione un tipo de documento válido.");
+                Swal.fire("Error", "Seleccione un tipo de documento válido.", "error");
             }
         });
 
         function buscarDni(dni) {
-            $.ajax({
-                url: `/buscar-dni/${dni}`, // Ruta que apunta a tu controlador
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        $("#nombres").val(response.nombres).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
-                        $("#a_paterno").val(response.apellidoPaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
-                        $("#a_materno").val(response.apellidoMaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
+    if ($("#tipodoc").val() !== "Documento Nacional de Identidad" || dni.length !== 8) {
+        Swal.fire("Error", "El DNI debe tener 8 dígitos y debe seleccionar 'Documento Nacional de Identidad'.", "error");
+        limpiarCampos();
+        return;
+    }
 
-
-                    }
-                },
-                error: function() {
-                    alert("Hubo un error al realizar la solicitud.");
-                }
-            });
+    $.ajax({
+        url: `/buscar-dni/${dni}`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                $("#nombres").val(response.nombres).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
+                $("#a_paterno").val(response.apellidoPaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
+                $("#a_materno").val(response.apellidoMaterno).prop('readonly', true).addClass('bg-gray-300 text-gray-500 cursor-not-allowed');
+            } else {
+                Swal.fire("Información", "No se encontraron datos para el DNI ingresado.", "info");
+                limpiarCampos();
+            }
+        },
+        error: function() {
+            Swal.fire("Error", "Hubo un error al realizar la solicitud.", "error");
+            limpiarCampos();
         }
+    });
+}
 
         function buscarExtranjero(cee) {
             $.ajax({
@@ -313,19 +319,18 @@
                     "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNzg1MSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.aUC04TeTppjiWLTK0a62C5SbMcGgP_ZpGZzRt0rea74"
                 },
                 success: function(response) {
-                    if (response.status === 200) {
+                    if (response.status === 200 && cee.length === 9) {
                         $("#nombres").val(response.data.nombres).prop('readonly', true);
                         $("#a_paterno").val(response.data.apellido_paterno).prop('readonly', true);
                         $("#a_materno").val(response.data.apellido_materno).prop('readonly', true);
                     } else {
-                        alert("Número de extranjero no válido.");
-                        $("#nombres").val('').prop('readonly', false);
-                        $("#a_paterno").val('').prop('readonly', false);
-                        $("#a_materno").val('').prop('readonly', false);
+                        Swal.fire("Información", "Número de extranjero no válido.", "info");
+                        limpiarCampos();
                     }
                 },
                 error: function() {
-                    alert("Error al buscar número de extranjero.");
+                    Swal.fire("Error", "Error al buscar número de extranjero.", "error");
+                    limpiarCampos();
                 }
             });
         }
@@ -364,30 +369,6 @@
 
 
 <script>
-    $("#buscar").click(function() {
-        let dni = $("#nro_documento").val();
-
-        if (dni.length === 8) {
-            $.ajax({
-                url: `/buscar-dni/${dni}`, // Ruta que apunta a tu controlador
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        $("#nombres").val(response.nombres);
-                        $("#a_paterno").val(response.apellidoPaterno);
-                        $("#a_materno").val(response.apellidoMaterno);
-                    } else {
-                        alert("No se encontraron datos para el DNI ingresado.");
-                    }
-                },
-                error: function() {
-                    alert("Hubo un error al realizar la solicitud.");
-                }
-            });
-        }
-    });
- 
-
         function editPersonal(id) {
                 $.ajax({
                     url: '/personals/' + id + '/edit',
