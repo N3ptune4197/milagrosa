@@ -152,6 +152,16 @@ function toggleRecursos() {
             </a>
           </li>
 @endif
+@if (Auth::check() && Auth::user()->role === 'admin')
+        <li>
+            <a href="{{ route('basededatos.index') }}" class="flex flex-row items-center h-11 focus:outline-none hover:bg-red-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:text-white pr-6 rounded-lg">
+              <span class="inline-flex justify-center items-center  ml-2">
+                <i class="bi bi-database-lock"></i>
+              </span>
+              <span class="ml-2 text-sm tracking-wide truncate">Copia de seguridad</span>
+            </a>
+          </li>
+@endif
     </div>
   </div>
 
