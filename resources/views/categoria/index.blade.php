@@ -3,7 +3,7 @@
 @section('title', 'Categorias')
 @include('partials.navbar')
 @section('content_header')
-    <div class="d-flex justify-content-between mb-2">
+    <div class="d-flex justify-content-between mt-[25px]">
         <h1><i class="bi bi-tags-fill"></i> <span class="font-semibold">Categorías</span></h1>
     </div>
 @stop
@@ -53,6 +53,8 @@
             </div>
         </div>
     </div>
+
+
 
    <!-- Modal de Creación/Edición de Categorías -->
 <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
