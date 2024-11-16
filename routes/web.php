@@ -38,9 +38,8 @@ Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middl
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
 
 
-Route::resource('calendario', CalendarioController::class)->middleware('auth');
-Route::resource('basededatos', BaseDeDatosController::class)->middleware('auth');
 
+Route::resource('calendario', CalendarioController::class)->middleware('auth');
 
 
 
@@ -55,11 +54,9 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit'); // Ruta para editar usuarios
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update'); // Ruta para actualizar usuarios
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy'); // Ruta para eliminar usuarios
+    Route::resource('basededatos', BaseDeDatosController::class)->middleware('auth');
 });
 
-
-
-Route::resource('calendario', CalendarioController::class)->middleware('auth');
 
 /*                                    echarts  */
 // web.php
