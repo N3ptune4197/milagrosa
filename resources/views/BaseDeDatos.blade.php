@@ -37,26 +37,27 @@
                 <div class="exportar w-[48%] flex flex-col">
                     <span class="text-center font-montserrat font-semibold text-xl mb-4">Exportar Base de Datos</span>
                     <span class="text-sm mb-2 pr-3">Crea una copia de seguridad de tu base de datos para restaurar la información en caso de necesidad.</span>
-                    <span class="text-sm border-l-4 pl-2 py-1 rounded bg-red-100 border-red-600" ><b class="text-red-600">¡Atención!</b> Realiza una revisión previa de la base de datos para evitar errores en la exportación.</span>
+                    <span class="text-sm border-l-4 pl-2 py-1 rounded bg-orange-100 border-orange-300" ><b class="text-orange-600 text-lg">¡Cuidado!</b> Realiza una revisión previa de la base de datos para evitar errores en la exportación.</span>
 
-                    <div class="button mt-5">
-                        <button class="font-montserrat font-semibold rounded-lg px-3 py-2 bg-[#1d6700] text-[#ffffff]" onclick="window.location.href='{{ route('exportarBD') }}'">Exportar Base de Datos</button>
+                    <div class="button mt-3 mb-3">
+                        <button class="font-montserrat font-semibold rounded-lg px-7 py-3 bg-[#1d6700] text-[#ffffff] shadow-xl" onclick="window.location.href='{{ route('exportarBD') }}'"> <i class="fa-solid fa-file-arrow-down fa-lg mr-2 fa-shake"></i> Exportar Base de Datos</button>
                     </div>
+                    <span class="text-sm border-l-4 pl-2 py-1 rounded bg-red-100 border-red-600 " ><b class="text-red-600 text-lg">No modifiques el archivo.</b> Cualquier cambio en el archivo de exportación puede causar errores durante la importación.</span>
                 </div>
     
                 <div class="importar w-[51%] flex flex-col pl-3 border-l-4 border-gray-400">
                     <span class="text-center font-montserrat font-semibold text-xl mb-4">Importar Base de Datos</span>
                     <span class="text-sm mb-2 pr-3">Recupera una copia de seguridad de tu base de datos para volver a un estado anterior.</span>
-                    <span class="text-sm border-l-4 pl-2 py-1 rounded bg-orange-100 border-orange-300" ><b class="text-orange-600">¡Cuidado!</b> Verifica que el archivo seleccionado corresponda a la base de datos que deseas restaurar.</span>
+                    <span class="text-sm border-l-4 pl-2 py-1 rounded bg-orange-100 border-orange-300" ><b class="text-orange-600 text-lg">¡Cuidado!</b> Verifica que el archivo seleccionado corresponda a la base de datos que deseas restaurar.</span>
 
-                    <form action="{{ route('importarBD') }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                    <form action="{{ route('importarBD') }}" method="POST" enctype="multipart/form-data" class="mt-4 ">
                         @csrf
 
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Subir Archivo</label>
                         <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file" name="archivo_mysql" accept=".sql" required>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Extensión del archivo:  .sql</p>
 
-                        <button type="submit" class="font-montserrat mt-2 px-3 py-2 bg-red-600 rounded-lg text-white font-semibold">Importar Base de Datos</button>
+                        <button type="submit" class="font-montserrat mt-2 px-7 py-3 bg-red-600 rounded-lg text-white font-semibold shadow-lg"><i class="fa-solid fa-file-arrow-up fa-lg mr-2"></i> Importar Base de Datos</button>
                     </form>
 
                 </div> 
@@ -82,6 +83,7 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <script src="https://kit.fontawesome.com/89c262ed76.js" crossorigin="anonymous"></script>
 
 
 
