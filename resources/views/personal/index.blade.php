@@ -145,7 +145,6 @@
                     <select name="cargo" id="cargo" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" onchange="mostrarOtroCargo(this)">
                         <option value="Profesor">{{ __('Profesor') }}</option>
                         <option value="Personal Administrativo">{{ __('Personal Administrativo') }}</option>
-                        <option value="Otro">{{ __('Otro') }}</option>
                     </select>
                 </div>
 
