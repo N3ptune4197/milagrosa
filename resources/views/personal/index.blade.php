@@ -316,7 +316,7 @@
                 url: `https://api.factiliza.com/pe/v1/cee/info/${cee}`,
                 method: 'GET',
                 headers: {
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNzg1MSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.aUC04TeTppjiWLTK0a62C5SbMcGgP_ZpGZzRt0rea74"
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNzk4MSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.TAa8diFlvFPb5wAPtRvEhX2Fy4T79VACkIwsiVKtyZw"
                 },
                 success: function(response) {
                     if (response.status === 200 && cee.length === 9) {
