@@ -383,7 +383,8 @@ class PrestamoController extends Controller
             ->with('success', 'Préstamo eliminado exitosamente');
     }
 
-    public function markAsReturned(Request $request, $id){
+    public function markAsReturned(Request $request, $id)
+    {
         // Encuentra el detalle del préstamo
         $detallePrestamo = DetallePrestamo::with('prestamo', 'recurso')->find($id);
 
@@ -432,32 +433,30 @@ class PrestamoController extends Controller
 
 
 
-        public function obtenerPrestamosActivosCalendario()
-        {
+    public function obtenerPrestamosActivosCalendario()
+    {
 
-            $prestamos = Prestamo::where('estado', 'activo')
-                ->with(['personal', 'detalleprestamos.recurso.categoria'])  // Asegúrate de que la relación personal esté definida en el modelo Prestamo
-                ->get();
+        $prestamos = Prestamo::where('estado', 'activo')
+            ->with(['personal', 'detalleprestamos.recurso.categoria'])  // Asegúrate de que la relación personal esté definida en el modelo Prestamo
+            ->get();
 
-            $eventos = $prestamos->map(function ($prestamo) {
-                $detalle = $prestamo->detalleprestamos->first(); // Obtener el primer detalle de préstamo
-                $recurso = $detalle ? $detalle->recurso : null; // Obtener el recurso si existe en el detalle del préstamo
-                $categoria = $recurso ? $recurso->categoria:null;
-                return [
-                    'id' => $prestamo->id,
-                    'title' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Título personalizado
-                    'start' => $detalle->fecha_devolucion, // Fecha de inicio
-                    'end' => $detalle->fecha_devolucion, // Fecha de finalización
-                    'description' => $prestamo->observacion . ($recurso ? '' . $recurso->nro_serie : ''), // Descripción opcional
-                    'recurso_categoria' => $categoria->nombre,
-                    'fechaInicio' => Carbon::parse($prestamo->fecha_prestamo)->format('d/m/y') ,
-                ];
-            });
+        $eventos = $prestamos->map(function ($prestamo) {
+            $detalle = $prestamo->detalleprestamos->first(); // Obtener el primer detalle de préstamo
+            $recurso = $detalle ? $detalle->recurso : null; // Obtener el recurso si existe en el detalle del préstamo
+            $categoria = $recurso ? $recurso->categoria : null;
+            return [
+                'id' => $prestamo->id,
+                'title' => $prestamo->personal->nombres . ' ' . $prestamo->personal->a_paterno, // Título personalizado
+                'start' => $detalle->fecha_devolucion, // Fecha de inicio
+                'end' => $detalle->fecha_devolucion, // Fecha de finalización
+                'description' => $prestamo->observacion . ($recurso ? '' . $recurso->nro_serie : ''), // Descripción opcional
+                'recurso_categoria' => $categoria->nombre,
+                'fechaInicio' => Carbon::parse($prestamo->fecha_prestamo)->format('d/m/y'),
+            ];
+        });
 
-            return response()->json($eventos);
-        }
-
-
+        return response()->json($eventos);
+    }
 
 
 
@@ -467,83 +466,87 @@ class PrestamoController extends Controller
 
 
 
-        // TDO LO QUE TENGA QUE VER CON ENVIAR MENSAJES A WSP
+
+
+    // TDO LO QUE TENGA QUE VER CON ENVIAR MENSAJES A WSP
 
 
 
 
-        public function notificarPrestamosPorVencer() {
-            // Obtenemos todos los préstamos activos
-            $docentes = Personal::with(['prestamos' => function ($query) {
+    public function notificarPrestamosPorVencer()
+    {
+        // Obtenemos todos los préstamos activos
+        $docentes = Personal::with([
+            'prestamos' => function ($query) {
                 $query->where('estado', 'activo'); // Solo prestamos activos
-            }])->get();
-        
-            $mensajesEnviados = []; // Para almacenar los mensajes enviados
-            $prestamosVencidos = []; // Para controlar préstamos ya vencidos
-        
-            // ... (resto del código sin cambios)
+            }
+        ])->get();
 
-            foreach ($docentes as $docente) {
-                foreach ($docente->prestamos as $prestamo) {
-                    $fechaDevolucion = Carbon::parse($prestamo->fecha_devolucion);
-                    $fechaHoy = Carbon::now();
-                    $diferenciaMinutos = $fechaDevolucion->diffInMinutes($fechaHoy, false);
+        $mensajesEnviados = []; // Para almacenar los mensajes enviados
+        $prestamosVencidos = []; // Para controlar préstamos ya vencidos
 
-                    // Verificar si ya se envió un mensaje para este préstamo
-                    if (in_array($prestamo->id, $prestamosVencidos)) {
-                        continue;
-                    }
+        // ... (resto del código sin cambios)
 
-                    // Primero verificar si ya venció
-                    if ($diferenciaMinutos < 0) {
-                        // El préstamo ya venció
-                        $mensaje = "Estimado(a) {$docente->nombres}, su préstamo ya ha vencido. Por favor, realice la devolución inmediatamente.";
-                        $mensajesEnviados[] = $this->enviarMensajeWhatsApp($docente->telefono, $mensaje);
-                        $prestamosVencidos[] = $prestamo->id;
+        foreach ($docentes as $docente) {
+            foreach ($docente->prestamos as $prestamo) {
+                $fechaDevolucion = Carbon::parse($prestamo->fecha_devolucion);
+                $fechaHoy = Carbon::now();
+                $diferenciaMinutos = $fechaDevolucion->diffInMinutes($fechaHoy, false);
 
-                    } else if ($diferenciaMinutos <= 59 && $diferenciaMinutos >1) {
-                        // Faltan 10 minutos o menos para que venza el préstamo
-                        $mensaje = "Estimado(a) {$docente->nombres}, su préstamo vencerá en menos de una hora. Por favor, realice la devolución a tiempo.";
-                        $mensajesEnviados[] = $this->enviarMensajeWhatsApp($docente->telefono, $mensaje);
-                    }
+                // Verificar si ya se envió un mensaje para este préstamo
+                if (in_array($prestamo->id, $prestamosVencidos)) {
+                    continue;
+                }
+
+                // Primero verificar si ya venció
+                if ($diferenciaMinutos < 0) {
+                    // El préstamo ya venció
+                    $mensaje = "Estimado(a) {$docente->nombres}, su préstamo ya ha vencido. Por favor, realice la devolución inmediatamente.";
+                    $mensajesEnviados[] = $this->enviarMensajeWhatsApp($docente->telefono, $mensaje);
+                    $prestamosVencidos[] = $prestamo->id;
+
+                } else if ($diferenciaMinutos <= 59 && $diferenciaMinutos > 1) {
+                    // Faltan 10 minutos o menos para que venza el préstamo
+                    $mensaje = "Estimado(a) {$docente->nombres}, su préstamo vencerá en menos de una hora. Por favor, realice la devolución a tiempo.";
+                    $mensajesEnviados[] = $this->enviarMensajeWhatsApp($docente->telefono, $mensaje);
                 }
             }
-
-// ... (resto del código sin cambios)
-        
-            // Retornar respuesta con los resultados
-            return response()->json([
-                'success' => true,
-                'messages' => $mensajesEnviados,
-                'count' => count($mensajesEnviados)
-            ]);
         }
-        
-        
+
+        // Retornar respuesta con los resultados
+        return response()->json([
+            'success' => true,
+            'messages' => $mensajesEnviados,
+            'count' => count($mensajesEnviados)
+        ]);
+    }
 
 
 
 
-        public function enviarMensajeWhatsApp($telefono, $mensaje) {
-            // Credenciales de Twilio desde el archivo .env
-            $sid = env('TWILIO_SID');
-            $token = env('TWILIO_AUTH_TOKEN');
-            $twilio = new Client($sid, $token);
-        
-            try {
-                // Enviar mensaje
-                $message = $twilio->messages->create(
-                    "whatsapp:+51$telefono",
-                    [
-                        "from" => env('TWILIO_WHATSAPP_FROM'), // Número de Twilio
-                        "body" => $mensaje // Mensaje que se enviará
-                    ]
-                );
-                return "Mensaje enviado con éxito.";
-            } catch (\Exception $e) {
-                return "Error al enviar el mensaje: " . $e->getMessage();
-            }
+
+
+    public function enviarMensajeWhatsApp($telefono, $mensaje)
+    {
+        // Credenciales de Twilio desde el archivo .env
+        $sid = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
+        $twilio = new Client($sid, $token);
+
+        try {
+            // Enviar mensaje
+            $message = $twilio->messages->create(
+                "whatsapp:+51$telefono",
+                [
+                    "from" => env('TWILIO_WHATSAPP_FROM'), // Número de Twilio
+                    "body" => $mensaje // Mensaje que se enviará
+                ]
+            );
+            return "Mensaje enviado con éxito.";
+        } catch (\Exception $e) {
+            return "Error al enviar el mensaje: " . $e->getMessage();
         }
+    }
 
 
 

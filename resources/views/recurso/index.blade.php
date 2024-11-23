@@ -21,6 +21,112 @@
         {{ __('Crear Nuevo') }}
     </button>
 </div>
+<div class="fixed top-11 right-4 z-50">
+    <button id="openFilters" onclick="toggleFilters()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+</div>
+
+<!-- Contenedor de filtros flotantes -->
+<div id="filtersContainer" class="fixed top-11 right-0 w-80 h-screen bg-white shadow-xl transform transition-transform translate-x-full z-50 overflow-y-auto p-6">
+    <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-gray-700">Filtros de Recursos</h2>
+        <!-- Botón para cerrar los filtros -->
+        <button id="closeFilters" onclick="toggleFilters()" class="text-gray-700 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Filtros desplegables -->
+    <div>
+        <form method="GET" action="{{ route('recursos.index') }}">
+            <div class="grid grid-cols-1 gap-4 items-end">
+                
+                <!-- Categoría -->
+                <div class="relative">
+                    <label for="categoria_id" class="block text-sm text-gray-600 mb-1">Categoría</label>
+                    <select name="categoria_id" id="categoria_id"
+                        class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                        data-live-search="true" data-size="3">
+                        <option value="" selected>Seleccionar Categoría</option>
+                        @foreach ($categorias as $categoria)
+                            <option value="{{ $categoria->id }}" {{ request('categoria_id') == $categoria->id ? 'selected' : '' }}>
+                                {{ $categoria->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Marca -->
+                <div class="relative">
+                    <label for="marca_id" class="block text-sm text-gray-600 mb-1">Marca</label>
+                    <select name="marca_id" id="marca_id"
+                        class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                        data-live-search="true" data-size="3">
+                        <option value="" selected>Seleccionar Marca</option>
+                        @foreach ($marcas as $marca)
+                            <option value="{{ $marca->id }}" {{ request('marca_id') == $marca->id ? 'selected' : '' }}>
+                                {{ $marca->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Número de Serie -->
+                <div class="relative">
+                    <label for="serial_number" class="block text-sm text-gray-600 mb-1">Número de Serie</label>
+                    <select id="serial_number" name="serial_number"
+                        class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                        data-live-search="true" data-size="3">
+                        <option value="" selected>Seleccione un número de serie</option>
+                        @foreach ($recursos as $recurso)
+                            <option value="{{ $recurso->nro_serie }}" {{ request('serial_number') == $recurso->nro_serie ? 'selected' : '' }}>
+                                {{ $recurso->nro_serie }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Estado -->
+                <div class="relative">
+                    <label for="estado" class="block text-sm text-gray-600 mb-1">Estado</label>
+                    <select name="estado" id="estado"
+                        class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                        data-live-search="true" data-size="3">
+                        <option value="" selected>Seleccionar Estado</option>
+                        <option value="1" {{ request('estado') == '1' ? 'selected' : '' }}>Disponible</option>
+                        <option value="2" {{ request('estado') == '2' ? 'selected' : '' }}>Prestado</option>
+                        <option value="3" {{ request('estado') == '3' ? 'selected' : '' }}>En mantenimiento</option>
+                        <option value="4" {{ request('estado') == '4' ? 'selected' : '' }}>Dañado</option>
+                    </select>
+                </div>
+
+                <!-- Fecha de Registro -->
+                <div class="relative">
+                    <label for="fecha_registro" class="block text-sm text-gray-600 mb-1">Fecha de Registro</label>
+                    <input type="date" name="fecha_registro" id="fecha_registro"
+                        class="block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
+                        value="{{ request('fecha_registro') }}">
+                </div>
+            </div>
+
+            <!-- Botones de acción dentro de los filtros -->
+            <div class="mt-6 flex justify-center space-x-4">
+                <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                    Buscar
+                </button>
+                <a href="{{ route('recursos.index') }}" class="px-5 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                    Limpiar Filtros
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -488,4 +594,10 @@ function confirmEdit(nombreRecurso, id, estado) {
         background-color: #f5f5dc; /* Color crema al pasar el mouse */
     }
     </style>
+    <script>
+        function toggleFilters() {
+           const filtersContainer = document.getElementById('filtersContainer');
+           filtersContainer.classList.toggle('translate-x-full');
+       }
+   </script>
 @stop
