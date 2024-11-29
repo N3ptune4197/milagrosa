@@ -139,10 +139,11 @@ class PersonalController extends Controller
             }
         }
 
+        $personalCount = DB::select('SELECT COUNT(*) as total FROM personals')[0]->total;
 
         // Contar total de notificaciones
         $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
-        $personals = Personal::paginate();
+        $personals = Personal::paginate($personalCount);
         // Pasar las notificaciones a la vista
         return view('personal.index', compact('loans', 'personals', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
             ->with('i', ($request->input('page', 1) - 1) * $personals->perPage());

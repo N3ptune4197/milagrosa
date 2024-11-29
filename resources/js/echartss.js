@@ -88,7 +88,7 @@ const getOptionsChar2 = (data2) => {
 const getOptionsChar3 = (data3) => {
   return{
     title: {
-      text: 'Recursos más utilizados',
+      text: 'Categorias más utilizados',
       subtext: '',
       left: 'center'
     },

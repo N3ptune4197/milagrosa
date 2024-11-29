@@ -16,8 +16,11 @@ use App\Notifications\LoanDueNotification;
 use Illuminate\Support\Facades\DB;
 use App\Models\Prestamo;
 
+
+
 class RecursoController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
@@ -51,8 +54,12 @@ class RecursoController extends Controller
             $query->whereDate('fecha_registro', $request->fecha_registro);
         }
 
+
+
+        $recursosCount = DB::select('SELECT COUNT(*) as total FROM recursos')[0]->total;
+
         // Paginación después de aplicar los filtros
-        $recursos = $query->paginate();
+        $recursos = $query->paginate($recursosCount);
 
         $categorias = Categoria::select('id', 'nombre')->get();
         $marcas = Marca::select('id', 'nombre')->get();

@@ -9,6 +9,7 @@ require_once '/path/to/vendor/autoload.php';
 
 class TwilioController extends Controller
 {
+    
     public function enviarMensajeWhatsApp($telefono, $mensaje) {
         // Credenciales de Twilio desde el archivo .env
         $sid = env('TWILIO_SID');

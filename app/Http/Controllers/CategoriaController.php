@@ -20,7 +20,9 @@ class CategoriaController extends Controller
      */
     public function index(Request $request): View
     {
-        $categorias = Categoria::paginate();
+        $categoriaCount = DB::select('SELECT COUNT(*) as total FROM categorias')[0]->total;
+
+        $categorias = Categoria::paginate($categoriaCount);
         $hoy = Carbon::now(); // Obtiene la fecha y hora actual
 
         // Obtener préstamos activos con detalles cuyo recurso está por vencer o ya venció
