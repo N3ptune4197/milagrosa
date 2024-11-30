@@ -14,6 +14,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\BaseDeDatosController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\ProfileController;
+
+
 
 
 Route::get('/', function () {
@@ -21,6 +24,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
 Route::get('prestamos/export-pdf', [PrestamoController::class, 'exportPdf'])->name('prestamos.exportPdf');
 Route::resource('categorias', App\Http\Controllers\CategoriaController::class)->middleware('auth');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth');
@@ -38,12 +42,41 @@ Route::get('/api/personals', [PersonalController::class, 'autocomplete'])->middl
 Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
 
 
-
+// Calendario
 Route::resource('calendario', CalendarioController::class)->middleware('auth');
-
-
-
 Route::get('/calendarioActivo', [PrestamoController::class, 'obtenerPrestamosActivosCalendario']);
+
+
+
+// Profile
+/* Route::middleware('auth')->group(function () {
+    Route::resource('profile', ProfileController::class);
+    
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+ */
+
+// Profile
+
+Route::middleware('auth')->group(function () {
+    // Ruta para mostrar el perfil
+    Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
+
+    // Ruta para mostrar el formulario de edición del perfil
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
+    // Ruta para actualizar el perfil
+    Route::post('profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+
+
+
+
+
+
+
 
 
 

@@ -2,29 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Marca;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\MarcaRequest;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Prestamo;
 use App\Notifications\LoanDueNotification;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
-class MarcaController extends Controller
+class ProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request): View
+    // Mostrar la página del perfil
+    public function index()
     {
-        $marcaCount = DB::select('SELECT COUNT(*) as total FROM marcas')[0]->total;
-
-        $marcas = Marca::paginate($marcaCount);
-
         $hoy = Carbon::now(); // Obtiene la fecha y hora actual
 
         // Obtener préstamos activos con detalles cuyo recurso está por vencer o ya venció
@@ -143,57 +133,54 @@ class MarcaController extends Controller
             }
         }
 
-
         // Contar total de notificaciones
         $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
 
-        // Pasar las notificaciones a la vista
-        return view('profile', compact('loans', 'marcas', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
-            ->with('i', ($request->input('page', 1) - 1) * $marcas->perPage());
+        return view('profile.Profile', compact('notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(MarcaRequest $request): RedirectResponse
+    // Mostrar la vista de edición del perfil
+    public function edit()
     {
-        Marca::create($request->validated());
-        return redirect()->back()->with('success', 'Marca creada exitosamente.');
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Pasar los datos del usuario a la vista
+        return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    // Actualizar la información del perfil
+    public function update(Request $request)
     {
-        $marca = Marca::findOrFail($id);
-        return response()->json($marca);
-    }
+        // Obtener el usuario autenticado
+        $user = Auth::user();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(MarcaRequest $request, $id): RedirectResponse
-    {
-        $marca = Marca::findOrFail($id);
-        $marca->update($request->validated());
-        return redirect()->back()->with('success', 'Marca actualizada exitosamente.');
-    }
+        // Validar los datos
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id, // Ignorar email del usuario actual
+            'phone' => 'nullable|string|max:15',
+            'password' => 'nullable|string|min:8|confirmed', // Confirmación de contraseña
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        try {
-            $marca = Marca::findOrFail($id);
-            $marca->delete();
-            return response()->json(['message' => 'Marca eliminada correctamente.'], 200);
-        } catch (QueryException $e) {
-            if ($e->getCode() === 23000) {
-                return response()->json(['message' => 'No se puede eliminar esta marca porque está relacionada con otros registros.'], 400);
-            }
-            return response()->json(['message' => 'Error al eliminar la marca.'], 500);
+        // Actualizar nombre de usuario
+        $user->name = $request->input('username');
+
+        // Actualizar email
+        $user->email = $request->input('email');
+
+        // Actualizar número de teléfono
+        $user->phone = $request->input('phone');
+
+        // Actualizar contraseña solo si se proporciona
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
         }
+
+        // Guardar cambios
+        $user->save();
+
+        // Redirigir con mensaje de éxito
+        return redirect()->route('profile.index')->with('success', 'Perfil actualizado correctamente.');
     }
 }

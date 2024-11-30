@@ -80,12 +80,15 @@
             <img class="h-8 w-8 rounded-full" src="{{ asset('imagenes/AIP.webp') }}" alt="">
 
           </button>
-          <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700">Your Profile</a>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700">Settings</a>
+          
+          <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+            <div class="px-4 py-3 text-sm text-black bg-blue-300">
+              <i class="fa-solid fa-user fa-md text-black"></i> Bienvenido, <span class="font-bold">{{ auth()->user()->name }}</span> <!-- Aquí se muestra el nombre -->
+            </div>
+            <a href="{{route('profile.index')}}" class="block px-4 py-2 my-1 text-sm text-gray-700 hover:bg-gray-200"><i class="fa-solid fa-gear fa-md"></i> Configuración de cuenta</a>
             <form method="POST" action="{{ route('logout') }}">
               @csrf
-              <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700">Cerrar sesión</button>
+              <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 font-bold text-red hover:bg-red-200"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
             </form>
           </div>
         </div>

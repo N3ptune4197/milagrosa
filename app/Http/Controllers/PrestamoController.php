@@ -357,7 +357,7 @@ class PrestamoController extends Controller
          // Credenciales de Twilio
          $sid = env('TWILIO_SID');
          $token = env('TWILIO_AUTH_TOKEN');
-         $from = 'whatsapp:+14155238886'; // Número habilitado de Twilio para WhatsApp
+         $from = env('TWILIO_WHATSAPP_FROM'); // Número habilitado de Twilio para WhatsApp
          $to = 'whatsapp:+51970111651'; // Número del docente (asegúrate de que esté en formato internacional)
      
          // Crea un cliente de Twilio
