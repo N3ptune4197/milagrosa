@@ -21,9 +21,7 @@ class MarcaController extends Controller
      */
     public function index(Request $request): View
     {
-        $marcaCount = DB::select('SELECT COUNT(*) as total FROM marcas')[0]->total;
-
-        $marcas = Marca::paginate($marcaCount);
+        $marcas = Marca::paginate();
 
         $hoy = Carbon::now(); // Obtiene la fecha y hora actual
 
@@ -148,7 +146,7 @@ class MarcaController extends Controller
         $totalNotificaciones = count($notificacionesHoy) + count($notificacionesAtrasadas);
 
         // Pasar las notificaciones a la vista
-        return view('profile', compact('loans', 'marcas', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
+        return view('marca.index', compact('loans', 'marcas', 'notificacionesHoy', 'notificacionesAtrasadas', 'totalNotificaciones'))
             ->with('i', ($request->input('page', 1) - 1) * $marcas->perPage());
     }
 
