@@ -21,8 +21,8 @@ class MarcaController extends Controller
      */
     public function index(Request $request): View
     {
-        $marcas = Marca::paginate();
-
+        $marcaCount = DB::select('SELECT COUNT(*) as total FROM marcas')[0]->total;
+        $marcas = Marca::paginate($marcaCount);
         $hoy = Carbon::now(); // Obtiene la fecha y hora actual
 
         // Obtener préstamos activos con detalles cuyo recurso está por vencer o ya venció
