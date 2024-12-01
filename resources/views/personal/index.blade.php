@@ -52,7 +52,7 @@
                                     <form action="{{ route('personals.destroy', $personal->id) }}" method="POST">
 
                                         <a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" onclick="confirmEdit('{{ $personal->nombres }}', {{ $personal->id }}, '{{ $personal->a_paterno}}', '{{ $personal->a_materno}}' )">
-                                            <i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}
+                                            <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
                                         </a>
 
                                         @csrf

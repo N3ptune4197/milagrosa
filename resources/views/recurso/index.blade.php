@@ -337,6 +337,8 @@
 @stop
 
 @section('js')
+
+
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.bootstrap4.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
@@ -361,7 +363,6 @@
                 },
                 select: true, // Permite seleccionar filas
                 hover: true, // Añade efecto hover a las filas
-                pagingType: 'simple', // Paginación más limpia
             });
 
             // Si hay un error en la validación de 'nro_serie'
