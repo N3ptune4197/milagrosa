@@ -220,6 +220,23 @@
         @endif
     
     </script>
+    @if ($errors->has('email'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'El correo electrónico ya está registrado. Por favor, use otro.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            }).then(() => {
+                // Reabrir el modal para corregir el dato
+                $('#userModal').modal('show');
+            });
+        });
+    </script>
+@endif
+
     <style>
         .bg-crema {
             background-color: #e3dbc8;

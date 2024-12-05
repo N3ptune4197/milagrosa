@@ -296,8 +296,25 @@
                 }
             });
         }
-                    
+                   
     </script>
+    @if ($errors->has('nombre'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'El nombre de la marca ya existe. Por favor, ingrese uno nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            }).then(() => {
+                // Vuelve a abrir el modal para corregir la entrada
+                $('#marcaModal').modal('show');
+            });
+        });
+    </script>
+@endif
+
     
     <style>
         .bg-crema {

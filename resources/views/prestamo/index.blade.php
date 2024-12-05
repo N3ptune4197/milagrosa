@@ -67,7 +67,7 @@
                            <!-- Nombre del Personal -->
                     <select id="personal_name" name="personal_name"
                     class="selectpicker font-bold block w-full bg-gray-100 p-2 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none"
-                    data-live-search="true" data-width="100%" data-size="3">
+                    data-live-search="true" data-width="100%" data-size="5">
                     <option value="" disabled {{ request('personal_name') ? '' : 'selected' }}>Seleccione un personal</option>
                     @foreach ($personals as $personal)
                     <option value="{{ $personal->id }}" {{ request('personal_name') == $personal->id ? 'selected' : '' }}>
@@ -416,7 +416,7 @@ addResourceButton.addEventListener('click', function() {
                             class="form-control selectpicker w-full mt-1" 
                             data-live-search="true" 
                             data-dropup-auto="false" 
-                            data-size="3" 
+                            data-size="5" 
                             required>
                         <option value="">{{ __('Seleccione un recurso') }}</option>
                         @foreach($categorias as $categoria)

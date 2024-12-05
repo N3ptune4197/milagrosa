@@ -295,6 +295,23 @@
     }
 
 </script>
+@if ($errors->has('nombre'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'El nombre de la categoría ya existe. Por favor, ingrese uno nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            }).then(() => {
+                // Vuelve a abrir el modal para corregir la entrada
+                $('#categoriaModal').modal('show');
+            });
+        });
+    </script>
+@endif
+
 
 
 <style>

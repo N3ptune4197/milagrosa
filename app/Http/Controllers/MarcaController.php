@@ -13,6 +13,7 @@ use App\Models\Prestamo;
 use App\Notifications\LoanDueNotification;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class MarcaController extends Controller
 {
@@ -155,9 +156,22 @@ class MarcaController extends Controller
      */
     public function store(MarcaRequest $request): RedirectResponse
     {
+        // Valida que el nombre sea único
+        $request->validate([
+            'nombre' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('marcas')
+            ],
+        ]);
+
+        // Crear la marca
         Marca::create($request->validated());
+
         return redirect()->back()->with('success', 'Marca creada exitosamente.');
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -174,11 +174,10 @@ class PersonalController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('personals')->ignore($request->input('personal_id')) // Ignorar en actualizaciones
+                Rule::unique('personals')
             ],
         ]);
 
-        // Verifica si el número de documento ya existe
         if (Personal::where('nro_documento', $request->nro_documento)->exists()) {
             return redirect()->back()->with('error', 'El documento ya existe. Por favor, ingrese uno nuevo.');
         }

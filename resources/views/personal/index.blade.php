@@ -500,13 +500,24 @@
             }
         });
     }
-
-
-
-
-
-
 </script>
+@if ($errors->has('nro_documento'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'El número de documento ya existe. Por favor, ingrese uno nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            }).then(() => {
+                // Reabrir el modal para corregir el dato
+                $('#personalModal').modal('show');
+            });
+        });
+    </script>
+@endif
+
 <style>
     .bg-crema {
         background-color: #e3dbc8;

@@ -278,148 +278,148 @@ class PrestamoController extends Controller
 
 
 
-     
 
-     public function store(PrestamoRequest $request): RedirectResponse
-{
-    // Obtener los datos del formulario
-    $idPersonal = $request->input('idPersonal');
-    $observacion = $request->input('observacion');
-    $idRecursos = $request->input('idRecurso'); // Array de recursos seleccionados
-    $fechaDevoluciones = $request->input('fecha_devolucion'); // Array de fechas de devolución
 
-    // Validar que haya recursos seleccionados
-    if (empty($idRecursos) || !is_array($idRecursos)) {
-        return back()->withErrors(['error' => 'Debes seleccionar al menos un recurso.']);
-    }
+    public function store(PrestamoRequest $request): RedirectResponse
+    {
+        // Obtener los datos del formulario
+        $idPersonal = $request->input('idPersonal');
+        $observacion = $request->input('observacion');
+        $idRecursos = $request->input('idRecurso'); // Array de recursos seleccionados
+        $fechaDevoluciones = $request->input('fecha_devolucion'); // Array de fechas de devolución
 
-    // Validar que las fechas de devolución estén presentes y sean válidas
-    if (empty($fechaDevoluciones) || !is_array($fechaDevoluciones) || count($fechaDevoluciones) !== count($idRecursos)) {
-        return back()->withErrors(['error' => 'Debes proporcionar una fecha de devolución para cada recurso seleccionado.']);
-    }
-
-    // Validar la cantidad de recursos disponibles
-    $cantidadRecursosSeleccionados = count($idRecursos);
-    $cantidadRecursosDisponibles = Recurso::where('estado', 1)->count();
-
-    if ($cantidadRecursosSeleccionados > $cantidadRecursosDisponibles) {
-        return Redirect::back()->withErrors(['error' => 'No puedes seleccionar más recursos de los que están disponibles.']);
-    }
-
-    // Iniciar una transacción para asegurar la integridad de los datos
-    DB::beginTransaction();
-
-    try {
-        // Array para almacenar los detalles de los recursos y fechas
-        $detalles = [];
-
-        // Recorrer los recursos seleccionados para crear los detalles del préstamo
-        foreach ($idRecursos as $index => $idRecursoItem) {
-            $recurso = Recurso::find($idRecursoItem);
-
-            // Verificar que el recurso esté disponible antes de procesar
-            if ($recurso && $recurso->estado == 1) {
-                // Crear un préstamo individual para cada recurso
-                $prestamo = Prestamo::create([
-                    'idPersonal' => $idPersonal,
-                    'fecha_prestamo' => now(), // Fecha actual del sistema
-                    'observacion' => $observacion
-                ]);
-
-                // Crear el detalle del préstamo asociado con 'fecha_devolucion'
-                DetallePrestamo::create([
-                    'idprestamo' => $prestamo->id,
-                    'id_recurso' => $recurso->id,
-                    'fecha_devolucion' => $fechaDevoluciones[$index],
-                ]);
-
-                // Actualizar el estado del recurso a "Prestado"
-                $recurso->estado = 2; // Estado 2 significa "Prestado"
-                $recurso->save();
-
-                // Agregar los detalles del préstamo al array para el mensaje de WhatsApp
-                $detalles[] = [
-                    'id_recurso' => $recurso->id,
-                    'fecha_devolucion' => $fechaDevoluciones[$index],
-                ];
-            } else {
-                // Si el recurso no está disponible, lanzar una excepción
-                throw new \Exception("El recurso con ID {$idRecursoItem} no está disponible.");
-            }
+        // Validar que haya recursos seleccionados
+        if (empty($idRecursos) || !is_array($idRecursos)) {
+            return back()->withErrors(['error' => 'Debes seleccionar al menos un recurso.']);
         }
 
-        // Enviar mensaje de WhatsApp con Twilio
-        $personal = Personal::find($idPersonal);
-        $this->sendWhatsAppNotification($personal, $prestamo, $detalles);
+        // Validar que las fechas de devolución estén presentes y sean válidas
+        if (empty($fechaDevoluciones) || !is_array($fechaDevoluciones) || count($fechaDevoluciones) !== count($idRecursos)) {
+            return back()->withErrors(['error' => 'Debes proporcionar una fecha de devolución para cada recurso seleccionado.']);
+        }
 
-        // Confirmar la transacción
-        DB::commit();
+        // Validar la cantidad de recursos disponibles
+        $cantidadRecursosSeleccionados = count($idRecursos);
+        $cantidadRecursosDisponibles = Recurso::where('estado', 1)->count();
 
-        return Redirect::route('prestamos.index')
-            ->with('success', 'Préstamo creado exitosamente.');
-    } catch (\Exception $e) {
-        // Revertir la transacción en caso de error
-        DB::rollback();
+        if ($cantidadRecursosSeleccionados > $cantidadRecursosDisponibles) {
+            return Redirect::back()->withErrors(['error' => 'No puedes seleccionar más recursos de los que están disponibles.']);
+        }
 
-        return Redirect::back()->withErrors(['error' => 'Error al crear los préstamos: ' . $e->getMessage()]);
+        // Iniciar una transacción para asegurar la integridad de los datos
+        DB::beginTransaction();
+
+        try {
+            // Array para almacenar los detalles de los recursos y fechas
+            $detalles = [];
+
+            // Recorrer los recursos seleccionados para crear los detalles del préstamo
+            foreach ($idRecursos as $index => $idRecursoItem) {
+                $recurso = Recurso::find($idRecursoItem);
+
+                // Verificar que el recurso esté disponible antes de procesar
+                if ($recurso && $recurso->estado == 1) {
+                    // Crear un préstamo individual para cada recurso
+                    $prestamo = Prestamo::create([
+                        'idPersonal' => $idPersonal,
+                        'fecha_prestamo' => now(), // Fecha actual del sistema
+                        'observacion' => $observacion
+                    ]);
+
+                    // Crear el detalle del préstamo asociado con 'fecha_devolucion'
+                    DetallePrestamo::create([
+                        'idprestamo' => $prestamo->id,
+                        'id_recurso' => $recurso->id,
+                        'fecha_devolucion' => $fechaDevoluciones[$index],
+                    ]);
+
+                    // Actualizar el estado del recurso a "Prestado"
+                    $recurso->estado = 2; // Estado 2 significa "Prestado"
+                    $recurso->save();
+
+                    // Agregar los detalles del préstamo al array para el mensaje de WhatsApp
+                    $detalles[] = [
+                        'id_recurso' => $recurso->id,
+                        'fecha_devolucion' => $fechaDevoluciones[$index],
+                    ];
+                } else {
+                    // Si el recurso no está disponible, lanzar una excepción
+                    throw new \Exception("El recurso con ID {$idRecursoItem} no está disponible.");
+                }
+            }
+
+            // Enviar mensaje de WhatsApp con Twilio
+            $personal = Personal::find($idPersonal);
+            $this->sendWhatsAppNotification($personal, $prestamo, $detalles);
+
+            // Confirmar la transacción
+            DB::commit();
+
+            return Redirect::route('prestamos.index')
+                ->with('success', 'Préstamo creado exitosamente.');
+        } catch (\Exception $e) {
+            // Revertir la transacción en caso de error
+            DB::rollback();
+
+            return Redirect::back()->withErrors(['error' => 'Error al crear los préstamos: ' . $e->getMessage()]);
+        }
     }
-}
 
 
 
 
-private function sendWhatsAppNotification(Personal $personal, Prestamo $prestamo, array $detalles)
-{
-    // Credenciales de Twilio
-    $sid = env('TWILIO_SID');
-    $token = env('TWILIO_AUTH_TOKEN');
-    $from = env('TWILIO_WHATSAPP_FROM'); // Número habilitado de Twilio para WhatsApp
-    $encargado = auth()->user()->phone; // Número del encargado (asegúrate de que esté en formato internacional)
-    $personaltelefono = $personal->telefono; // Número del docente (asegúrate de que esté en formato internacional)
-    
-    // Crea un cliente de Twilio
-    $client = new Client($sid, $token);
+    private function sendWhatsAppNotification(Personal $personal, Prestamo $prestamo, array $detalles)
+    {
+        // Credenciales de Twilio
+        $sid = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
+        $from = env('TWILIO_WHATSAPP_FROM'); // Número habilitado de Twilio para WhatsApp
+        $encargado = auth()->user()->phone; // Número del encargado (asegúrate de que esté en formato internacional)
+        $personaltelefono = $personal->telefono; // Número del docente (asegúrate de que esté en formato internacional)
 
-    // Construir el mensaje para el encargado
-    $messageToEncargada = "*{$personal->nombres} {$personal->a_paterno} {$personal->a_materno}* realizó un préstamo.\n";
-    $messageToEncargada .= "- Fecha del préstamo: {$prestamo->fecha_prestamo->format('d/m/Y')}\n\n";
-    $messageToEncargada .= "Detalles del préstamo:\n";
+        // Crea un cliente de Twilio
+        $client = new Client($sid, $token);
 
-    foreach ($detalles as $detalle) {
-        $recurso = Recurso::find($detalle['id_recurso']); // Obtiene el nombre del recurso
-        $categoriaaa = $recurso->categoria->nombre;
-        $fechaDevolucionaa = Carbon::parse($detalle['fecha_devolucion'])->format('d/m/Y H:i');
-        $messageToEncargada .= "- Recurso: *{$recurso->nro_serie}*  *($categoriaaa)*\n  Fecha de devolución: *{$fechaDevolucionaa}* \n\n";
+        // Construir el mensaje para el encargado
+        $messageToEncargada = "*{$personal->nombres} {$personal->a_paterno} {$personal->a_materno}* realizó un préstamo.\n";
+        $messageToEncargada .= "- Fecha del préstamo: {$prestamo->fecha_prestamo->format('d/m/Y')}\n\n";
+        $messageToEncargada .= "Detalles del préstamo:\n";
+
+        foreach ($detalles as $detalle) {
+            $recurso = Recurso::find($detalle['id_recurso']); // Obtiene el nombre del recurso
+            $categoriaaa = $recurso->categoria->nombre;
+            $fechaDevolucionaa = Carbon::parse($detalle['fecha_devolucion'])->format('d/m/Y H:i');
+            $messageToEncargada .= "- Recurso: *{$recurso->nro_serie}*  *($categoriaaa)*\n  Fecha de devolución: *{$fechaDevolucionaa}* \n\n";
+        }
+
+        $messageToEncargada .= "\nPara ver más detalles, ingrese al sistema.";
+
+        // Construir el mensaje para el docente
+        $messageToDocente = "Usted llevo prestado un recurso del area de AIP.\n\n";
+        $messageToDocente = "Usted llevo prestado un recurso del area de AIP:\n\n";
+
+        foreach ($detalles as $detalle) {
+            $recurso = Recurso::find($detalle['id_recurso']); // Obtiene el nombre del recurso
+            $categoriaaa = $recurso->categoria->nombre;
+
+            $fechaDevolucionaa = Carbon::parse($detalle['fecha_devolucion'])->format('d/m/Y H:i');
+            $messageToDocente .= "- Recurso: *{$recurso->nro_serie}*  *($categoriaaa)*\n  Fecha de devolución: *{$fechaDevolucionaa}* \n\n";
+        }
+
+        $messageToDocente .= "\nPor favor, asegúrate de devolver los equipos en el plazo establecido.";
+
+        // Enviar mensaje al encargado
+        $client->messages->create('whatsapp:+51' . $encargado, [
+            'from' => $from,
+            'body' => $messageToEncargada,
+        ]);
+
+        // Enviar mensaje al docente
+        $client->messages->create('whatsapp:+51' . $personaltelefono, [
+            'from' => $from,
+            'body' => $messageToDocente,
+        ]);
     }
-
-    $messageToEncargada .= "\nPara ver más detalles, ingrese al sistema.";
-
-    // Construir el mensaje para el docente
-    $messageToDocente = "Usted realizó un préstamo.\n\n";
-    $messageToDocente = "Detalles del préstamo:\n\n";
-
-    foreach ($detalles as $detalle) {
-        $recurso = Recurso::find($detalle['id_recurso']); // Obtiene el nombre del recurso
-        $categoriaaa = $recurso->categoria->nombre;
-
-        $fechaDevolucionaa = Carbon::parse($detalle['fecha_devolucion'])->format('d/m/Y H:i');
-        $messageToDocente .= "- Recurso: *{$recurso->nro_serie}*  *($categoriaaa)*\n  Fecha de devolución: *{$fechaDevolucionaa}* \n\n";
-    }
-
-    $messageToDocente .= "\nPor favor, asegúrate de devolver los equipos en el plazo establecido.";
-
-    // Enviar mensaje al encargado
-    $client->messages->create('whatsapp:+51'.$encargado, [
-        'from' => $from,
-        'body' => $messageToEncargada,
-    ]);
-
-    // Enviar mensaje al docente
-    $client->messages->create('whatsapp:+51'.$personaltelefono, [
-        'from' => $from,
-        'body' => $messageToDocente,
-    ]);
-}
 
 
 

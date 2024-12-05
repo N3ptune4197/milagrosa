@@ -13,6 +13,7 @@ use App\Models\Prestamo;
 use App\Notifications\LoanDueNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 class CategoriaController extends Controller
 {
     /**
@@ -161,12 +162,22 @@ class CategoriaController extends Controller
 
     public function store(CategoriaRequest $request): RedirectResponse
     {
-        // Validación y creación de la categoría
+        // Valida que el nombre sea único
+        $request->validate([
+            'nombre' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categorias')
+            ],
+        ]);
+
+        // Crear la categoría
         Categoria::create($request->validated());
 
-        // Redirigir de vuelta con un mensaje de éxito
         return redirect()->back()->with('success', 'Categoría creada exitosamente.');
     }
+
 
 
 

@@ -215,7 +215,7 @@
                     <div class="flex space-x-4 mb-4">
                         <div class="flex-1">
                             <label for="categoria" class="block text-sm font-medium text-gray-700">{{ __('Categoría') }}</label>
-                            <select name="id_categoria" id="categoria" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
+                            <select name="id_categoria" id="categoria" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" data-size="5" required>
                                 <option value="">{{ __('Seleccione una categoría') }}</option>
                                 @foreach ($categorias as $categoria)
                                     <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
@@ -224,7 +224,7 @@
                         </div>
                         <div class="flex-1">
                             <label for="marca" class="block text-sm font-medium text-gray-700">{{ __('Marca') }}</label>
-                            <select name="id_marca" id="marca" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" required>
+                            <select name="id_marca" id="marca" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm" data-live-search="true" data-size="5" required>
                                 <option value="">{{ __('Seleccione una marca') }}</option>
                                 @foreach ($marcas as $marca)
                                     <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
@@ -244,7 +244,6 @@
                         <div class="flex-1">
                             <label for="fuente_adquisicion" class="block text-sm font-medium text-gray-700">{{ __('Fuente de Adquisición') }}</label>
                             <select name="fuente_adquisicion" id="fuente_adquisicion" class="selectpicker block w-full mt-1 bg-gray-50 border border-gray-300 py-2 pl-2 rounded-md shadow-sm">
-                                <option value="especificar">{{ __('Especificar') }}</option>
                                 <option value="donacion externa">{{ __('Donación Externa') }}</option>
                                 <option value="donacion interna">{{ __('Donación Interna') }}</option>
                             </select>
